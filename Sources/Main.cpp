@@ -30,9 +30,13 @@
 #include "TankSystem.h"
 #include "Tank.h"
 
+#include "Ant.h"
+
 using namespace Kore;
 
 namespace {
+	Ant* ant;
+
 	const int width = 1024;
 	const int height = 768;
 	const int MAX_DESERTED = 5;
@@ -201,11 +205,14 @@ namespace {
 			tankTics->update(deltaT);
 		}
 
-		renderLandscape(tex);
-		tankTics->render(tex, View, vLocation);
+		//renderLandscape(tex);
+		//tankTics->render(tex, View, vLocation);
 
-		projectiles->render(vLocation, tex, View);
-		particleRenderer->render(tex, View, vLocation);
+		//projectiles->render(vLocation, tex, View);
+		//particleRenderer->render(tex, View, vLocation);
+
+		ant->move();
+		ant->render(vLocation, tex, View);
 
 		textRenderer->start();
 		gameOver = gameOver || tankTics->deserted >= MAX_DESERTED;
@@ -359,6 +366,8 @@ namespace {
         particleImage = new Texture("Data/Textures/particle.png", true);
         particleRenderer = new ParticleRenderer(structures);
         projectiles = new Projectiles(1000, 20, particleImage, projectileMesh, structures, &physics);
+
+		ant = new Ant;
 
 		Graphics::setRenderState(DepthTest, true);
 		Graphics::setRenderState(DepthTestCompare, ZCompareLess);
