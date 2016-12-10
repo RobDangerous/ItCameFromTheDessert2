@@ -30,9 +30,13 @@
 #include "TankSystem.h"
 #include "Tank.h"
 
+#include "Ant.h"
+
 using namespace Kore;
 
 namespace {
+	Ant* ant;
+
 	const int width = 1024;
 	const int height = 768;
 	const int MAX_DESERTED = 5;
@@ -224,6 +228,9 @@ namespace {
             
             ++current;
         }
+
+		ant->move();
+		ant->render(vLocation, tex, View);
 
 		/*projectiles->render(vLocation, tex, View);
 		particleRenderer->render(tex, View, vLocation);
@@ -419,6 +426,8 @@ namespace {
         objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
         objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), 1.0f);
         
+
+		ant = new Ant;
 
 		Graphics::setRenderState(DepthTest, true);
 		Graphics::setRenderState(DepthTestCompare, ZCompareLess);
