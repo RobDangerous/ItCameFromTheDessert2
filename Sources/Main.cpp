@@ -199,9 +199,11 @@ namespace {
 		else {
 			cameraZoom = t / START_DELAY;
 		}
-
+        
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
         
+        cameraPosition.z() = cameraZoom * 150 + (1 - cameraZoom) * 10;
+        vec3 off = vec3(0, -1, 0) * cameraZoom + (1 - cameraZoom) * vec3(0, -1, 1);
         vec3 lookAt = cameraPosition + vec3(0, 0, -1);
         View = mat4::lookAt(cameraPosition, lookAt, vec3(0, -1, 0));
         View *= mat4::Rotation(cameraRotation.x(), cameraRotation.y(), cameraRotation.z());
@@ -433,10 +435,8 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, 1.0f);   // TODO: texture
-        objects[0]->M = mat4::Translation(10.0f, 0.0f, 0.0f);
-        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, 1.0f);
-        objects[1]->M = mat4::Translation(-10.0f, 0.0f, 0.0f);
+        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
+        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), 1.0f);
         
 
 		ant = new Ant;
