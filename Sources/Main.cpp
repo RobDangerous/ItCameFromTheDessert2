@@ -32,6 +32,9 @@
 
 #include "Ant.h"
 
+#include "Engine/CollLoader.h"
+#include <limits>
+
 using namespace Kore;
 
 // null terminated array of MeshObject pointers
@@ -438,6 +441,20 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
 	Mouse::the()->lock(0);
+
+	// BB import testcode remove later
+	{
+		int index = 0;
+
+		vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
+		vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
+		while (index >= 0) {
+			loadColl("Data/Meshes/chair_collider.obj", min, max, index);
+			vec3 center = min + (max - min) / 2;
+			vec3 extends = max - min;
+			BoxCollider b(center, extends);
+		}
+	}
 
 	Kore::System::start();
 
