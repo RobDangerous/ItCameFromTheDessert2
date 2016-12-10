@@ -35,8 +35,6 @@
 using namespace Kore;
 
 namespace {
-	Ant* ant;
-
 	const int width = 1024;
 	const int height = 768;
 	const int MAX_DESERTED = 5;
@@ -241,8 +239,8 @@ namespace {
 		Graphics::setMatrix(instancedPLocation, P);
 		Graphics::setMatrix(instancedVLocation, View);
 		
-		ant->move();
-		ant->render(instancedVLocation, instancedTex, View);
+		Ant::move();
+		Ant::render(instancedVLocation, instancedTex, View);
 
 		/*projectiles->render(vLocation, tex, View);
 		particleRenderer->render(tex, View, vLocation);
@@ -437,16 +435,16 @@ namespace {
         
         objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
         objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), 1.0f);
-        
 
-		ant = new Ant;
+		Random::init(System::time() * 100);
 
+		Ant::init();
+		
 		Graphics::setRenderState(DepthTest, true);
 		Graphics::setRenderState(DepthTestCompare, ZCompareLess);
 
 		Graphics::setTextureAddressing(tex, U, Repeat);
 		Graphics::setTextureAddressing(tex, V, Repeat);
-
 
         //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
 
@@ -454,7 +452,6 @@ namespace {
         cameraRotation = vec3(0, Kore::pi, 0);
 		cameraZoom = 0.5f;
 
-        Random::init(System::time() * 100);
 
 		//createLandscape(structures, MAP_SIZE_OUTER, stoneMesh, STONE_COUNT, ground);
 

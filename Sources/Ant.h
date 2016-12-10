@@ -8,15 +8,12 @@ class InstancedMeshObject;
 
 class Ant {
 public:
+	static void init();
 	Ant();
-	void move();
-	void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
+	static void move();
+	static void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
 
 	Kore::vec3 position;
 	Kore::vec4 forward, up, right;
 	Kore::mat4 rotation;
-
-	Kore::VertexBuffer** vertexBuffers;
-	InstancedMeshObject* body;
-	int maxAnts;
 };
