@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Ant.h"
 #include "Engine/InstancedMeshObject.h"
-
+#include <assert.h>
 #include <Kore/Math/Random.h>
 
 using namespace Kore;
@@ -22,19 +22,27 @@ namespace {
 		scent[z * scents * scents + y * scents + x] = value;
 	}
 
+	int gridPosition(float pos) {
+		return Kore::round(pos + scents / 2);
+	}
+
 	vec3i gridPosition(vec3 pos) {
 		vec3i gridPos;
-		gridPos.x() = 0;
-		gridPos.y() = 0;
-		gridPos.z() = 0;
+		gridPos.x() = gridPosition(pos.x());
+		gridPos.y() = gridPosition(pos.y());
+		gridPos.z() = gridPosition(pos.z());
 		return gridPos;
+	}
+
+	float realPosition(int grid) {
+		return grid - scents / 2;
 	}
 
 	vec3 realPosition(vec3i grid) {
 		vec3 pos;
-		pos.x() = 0;
-		pos.y() = 0;
-		pos.z() = 0;
+		pos.x() = realPosition(grid.x());
+		pos.y() = realPosition(grid.y());
+		pos.z() = realPosition(grid.z());
 		return pos;
 	}
 }
