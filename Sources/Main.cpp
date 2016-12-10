@@ -38,6 +38,7 @@ using namespace Kore;
 MeshObject* objects[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 
 namespace {
+	const char* title = "It Came from the Dessert";
 	const int width = 1024;
 	const int height = 768;
 	const float CAMERA_ROTATION_SPEED = 0.01f;
@@ -282,8 +283,6 @@ namespace {
 			right = false;
 		} else if (code == Key_Right) {
 			left = false;
-        } else if (code == Key_A) {
-            tankTics->setMultipleSelect(false);
         }
 	}
 
@@ -300,9 +299,6 @@ namespace {
 
 		if (button == 0) {
 			//tankTics->select(cameraPosition, pickDir);
-		}
-		else if (button == 1) {
-			//tankTics->issueCommand(cameraPosition, pickDir);
 		}
 	}
 
@@ -410,11 +406,11 @@ namespace {
 }
 
 int kore(int argc, char** argv) {
-    Kore::System::setName("Tank You!");
+    Kore::System::setName(title);
 	Kore::System::setup();
 
 	Kore::WindowOptions options;
-	options.title = "Tank You!";
+	options.title = title;
 	options.width = width;
 	options.height = height;
 	options.x = 100;
