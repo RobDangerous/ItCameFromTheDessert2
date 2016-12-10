@@ -406,10 +406,11 @@ namespace {
         
         table = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[6] = new KitchenObject(&table, 1, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
-        
-        MeshObject* stove = new MeshObject("Data/Meshes/stove.obj", "Data/Textures/map.png", structure, 1.0f);
-        oven[0] = cupboard;
-        oven[1] = stove;
+
+		MeshObject* stove_body = new MeshObject("Data/Meshes/stove_body.obj", "Data/Textures/map.png", structure, 1.0f);
+		MeshObject* stove_door = new MeshObject("Data/Meshes/stove_door.obj", "Data/Textures/map.png", structure, 1.0f);
+        oven[0] = stove_body;
+        oven[1] = stove_door;
         kitchenObjects[7] = new KitchenObject(oven, 2, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
         MeshObject* micro_body = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Textures/map.png", structure, 1.0f);
