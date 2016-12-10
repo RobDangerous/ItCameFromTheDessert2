@@ -457,7 +457,7 @@ namespace {
         //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
 
 		cameraPosition = vec3(0, 0, 20);
-        cameraRotation = vec3(0, 0, Kore::pi);
+        cameraRotation = vec3(0, 0, Kore::pi/2);
 		cameraZoom = 0.5f;
 
         Random::init(System::time() * 100);
