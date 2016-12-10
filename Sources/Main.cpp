@@ -37,6 +37,7 @@ namespace {
 	const int height = 768;
 	const int MAX_DESERTED = 5;
 	const int START_DELAY = 8;
+    const float CAMERA_ROTATION_SPEED = 0.001f;
 
 	int mouseX = width / 2;
 	int mouseY = height / 2;
@@ -63,14 +64,23 @@ namespace {
 	mat4 View;
 
 	vec3 cameraPosition;
+    vec3 cameraRotation;
 	vec3 lookAt;
 
 	float lightPosX;
 	float lightPosY;
 	float lightPosZ;
+    
+    bool rotate;
+    
+    float mousePressX;
+    float mousePressY;
 
 	InstancedMeshObject* stoneMesh;
 	MeshObject* projectileMesh;
+    
+    // null terminated array of MeshObject pointers
+    MeshObject* objects[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 
 	Projectiles* projectiles;
 
@@ -79,6 +89,7 @@ namespace {
 	TextureUnit tex;
 	ConstantLocation pLocation;
 	ConstantLocation vLocation;
+    ConstantLocation mLocation;
 	ConstantLocation lightPosLocation;
 
 	BoxCollider boxCollider(vec3(-46.0f, -4.0f, 44.0f), vec3(10.6f, 4.4f, 4.0f));
@@ -178,19 +189,17 @@ namespace {
 			cameraZoom = t / START_DELAY;
 		}
 
-		cameraPosition.y() = cameraZoom * 150 + (1 - cameraZoom) * 10;
-		vec3 off = vec3(0, -1, 0) * cameraZoom + (1 - cameraZoom) * vec3(0, -1, 1);
-		lookAt = cameraPosition + off;
-
-		// Follow the ball with the camera
-		P = mat4::Perspective(0.5f * pi, (float)width / (float)height, 0.1f, 1000);
-		View = mat4::lookAt(cameraPosition, lookAt, vec3(0, 0, 1));
+        P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
+        
+        vec3 lookAt = cameraPosition + vec3(0, 0, -1);
+        View = mat4::lookAt(cameraPosition, lookAt, vec3(0, -1, 0));
+        View *= mat4::Rotation(cameraRotation.x(), cameraRotation.y(), cameraRotation.z());
 
 		Graphics::setMatrix(pLocation, P);
 		Graphics::setMatrix(vLocation, View);
 
 		// update light pos
-		lightPosX = 100;
+		/*lightPosX = 100;
 		lightPosY = 100;
 		lightPosZ = 100;
 		Graphics::setFloat3(lightPosLocation, lightPosX, lightPosY, lightPosZ);
@@ -202,9 +211,19 @@ namespace {
 		}
 
 		renderLandscape(tex);
-		tankTics->render(tex, View, vLocation);
+		tankTics->render(tex, View, vLocation);*/
+        
+        // render the kitchen
+        MeshObject** current = &objects[0];
+        while (*current != nullptr) {
+            // set the model matrix
+            Graphics::setMatrix(mLocation, (*current)->M);
+            (*current)->render(tex);
+            
+            ++current;
+        }
 
-		projectiles->render(vLocation, tex, View);
+		/*projectiles->render(vLocation, tex, View);
 		particleRenderer->render(tex, View, vLocation);
 
 		textRenderer->start();
@@ -248,7 +267,7 @@ namespace {
 			textRenderer->setFont(font14);
 			renderCentered("Background music by Hong Linh Thai and Maria Rumjanzewa", height / 2 + 280);
 		}
-		textRenderer->end();
+		textRenderer->end();*/
 
 		Graphics::end();
 		Graphics::swapBuffers();
@@ -300,25 +319,37 @@ namespace {
 		vec3 pickDir = vec3(position.x(), position.y(), position.z()) - cameraPosition;
 		pickDir.normalize();
 
-		tankTics->hover(cameraPosition, pickDir);
+		//tankTics->hover(cameraPosition, pickDir);
+        
+        if (rotate) {
+            cameraRotation.x() += (float)((mousePressX - x) * CAMERA_ROTATION_SPEED);
+            cameraRotation.z() += (float)((mousePressY - y) * CAMERA_ROTATION_SPEED);
+            mousePressX = x;
+            mousePressY = y;
+        }
 	}
 
 	void mousePress(int windowId, int button, int x, int y) {
+        rotate = true;
+        
+        mousePressX = x;
+        mousePressY = y;
+        
 		vec3 position = screenToWorld(vec2(mouseX, mouseY));
 		vec3 pickDir = vec3(position.x(), position.y(), position.z()) - cameraPosition;
 		pickDir.normalize();
 
 		if (button == 0) {
 			skipIntro();
-			tankTics->select(cameraPosition, pickDir);
+			//tankTics->select(cameraPosition, pickDir);
 		}
 		else if (button == 1) {
-			tankTics->issueCommand(cameraPosition, pickDir);
+			//tankTics->issueCommand(cameraPosition, pickDir);
 		}
 	}
 
 	void mouseRelease(int windowId, int button, int x, int y) {
-
+        rotate = false;
 	}
 
 	void mouseScroll(int windowId, int delta) {
@@ -326,7 +357,7 @@ namespace {
 	}
 
 	void init() {
-		FileReader vs("shader.vert");
+		/*FileReader vs("shader.vert");
 		FileReader fs("shader.frag");
 		vertexShader = new Shader(vs.readAll(), vs.size(), VertexShader);
 		fragmentShader = new Shader(fs.readAll(), fs.size(), FragmentShader);
@@ -358,7 +389,36 @@ namespace {
 
         particleImage = new Texture("Data/Textures/particle.png", true);
         particleRenderer = new ParticleRenderer(structures);
-        projectiles = new Projectiles(1000, 20, particleImage, projectileMesh, structures, &physics);
+        projectiles = new Projectiles(1000, 20, particleImage, projectileMesh, structures, &physics);*/
+        
+        // New shaders
+        FileReader vs2("shader2.vert");
+        FileReader fs2("shader2.frag");
+        vertexShader = new Shader(vs2.readAll(), vs2.size(), VertexShader);
+        fragmentShader = new Shader(fs2.readAll(), fs2.size(), FragmentShader);
+        
+        // This defines the structure of your Vertex Buffer
+        VertexStructure structure;
+        structure.add("pos", Float3VertexData);
+        structure.add("tex", Float2VertexData);
+        structure.add("nor", Float3VertexData);
+        
+        program = new Program;
+        program->setVertexShader(vertexShader);
+        program->setFragmentShader(fragmentShader);
+        program->link(structure);
+        
+        tex = program->getTextureUnit("tex");
+        
+        pLocation = program->getConstantLocation("P");
+        vLocation = program->getConstantLocation("V");
+        mLocation = program->getConstantLocation("M");
+        
+        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, 1.0f);   // TODO: texture
+        objects[0]->M = mat4::Translation(10.0f, 0.0f, 0.0f);
+        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, 1.0f);
+        objects[1]->M = mat4::Translation(-10.0f, 0.0f, 0.0f);
+        
 
 		Graphics::setRenderState(DepthTest, true);
 		Graphics::setRenderState(DepthTestCompare, ZCompareLess);
@@ -367,14 +427,15 @@ namespace {
 		Graphics::setTextureAddressing(tex, V, Repeat);
 
 
-        explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
+        //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
 
-		cameraPosition = vec3(0, 0.5f, 0);
+		cameraPosition = vec3(0, 0, 20);
+        cameraRotation = vec3(0, Kore::pi, 0);
 		cameraZoom = 0.5f;
 
         Random::init(System::time() * 100);
 
-		createLandscape(structures, MAP_SIZE_OUTER, stoneMesh, STONE_COUNT, ground);
+		//createLandscape(structures, MAP_SIZE_OUTER, stoneMesh, STONE_COUNT, ground);
 
 		font14 = Kravur::load("Data/Fonts/arial", FontStyle(), 14);
 		font24 = Kravur::load("Data/Fonts/arial", FontStyle(), 24);
@@ -384,19 +445,19 @@ namespace {
 		textRenderer->setProjection(width, height);
 		textRenderer->setFont(font44);
 
-		tankTop = new InstancedMeshObject("Data/Meshes/tank_top.obj", "Data/Textures/tank_top.png", structures, MAX_TANKS, 8);
+		/*tankTop = new InstancedMeshObject("Data/Meshes/tank_top.obj", "Data/Textures/tank_top.png", structures, MAX_TANKS, 8);
 		tankBottom = new InstancedMeshObject("Data/Meshes/tank_bottom.obj", "Data/Textures/tank_bottom.png", structures, MAX_TANKS, 10);
 		tankFlag = new InstancedMeshObject("Data/Meshes/flag.obj", "Data/Textures/flag.png", structures, MAX_TANKS, 2);
 
 		tankTics = new TankSystem(&physics, particleRenderer, tankBottom, tankTop, tankFlag, vec3(-MAP_SIZE_INNER / 2, 6, -MAP_SIZE_INNER / 2), vec3(-MAP_SIZE_INNER / 2, 6, MAP_SIZE_INNER / 2), vec3(MAP_SIZE_INNER / 2, 6, -MAP_SIZE_INNER / 2), vec3(MAP_SIZE_INNER / 2, 6, MAP_SIZE_INNER / 2), 3, projectiles, structures, ground);
 
 		Sound *bgSound = new Sound("Data/Sounds/WarTheme.wav");
-        Mixer::play(bgSound);
+        Mixer::play(bgSound);*/
 	}
 }
 
 int kore(int argc, char** argv) {
-  Kore::System::setName("Tank You!");
+    Kore::System::setName("Tank You!");
 	Kore::System::setup();
 
 	Kore::WindowOptions options;
