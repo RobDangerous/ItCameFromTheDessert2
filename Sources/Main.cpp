@@ -51,6 +51,10 @@ namespace {
 	Shader* fragmentShader;
 	Program* program;
 
+	Shader* instancedVertexShader;
+	Shader* instancedFragmentShader;
+	Program* instancedProgram;
+
 	float cameraZoom = 0.5f;
 
 	bool left;
@@ -82,7 +86,10 @@ namespace {
 
 	InstancedMeshObject* stoneMesh;
 	MeshObject* projectileMesh;
-    
+	ConstantLocation instancedPLocation;
+	ConstantLocation instancedVLocation;
+	TextureUnit instancedTex;
+
     // null terminated array of MeshObject pointers
     MeshObject* objects[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 
@@ -192,9 +199,11 @@ namespace {
 		else {
 			cameraZoom = t / START_DELAY;
 		}
-
+        
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
         
+        cameraPosition.z() = cameraZoom * 150 + (1 - cameraZoom) * 10;
+        vec3 off = vec3(0, -1, 0) * cameraZoom + (1 - cameraZoom) * vec3(0, -1, 1);
         vec3 lookAt = cameraPosition + vec3(0, 0, -1);
         View = mat4::lookAt(cameraPosition, lookAt, vec3(0, -1, 0));
         View *= mat4::Rotation(cameraRotation.x(), cameraRotation.y(), cameraRotation.z());
@@ -227,8 +236,13 @@ namespace {
             ++current;
         }
 
+		instancedProgram->set();
+		
+		Graphics::setMatrix(instancedPLocation, P);
+		Graphics::setMatrix(instancedVLocation, View);
+		
 		ant->move();
-		ant->render(vLocation, tex, View);
+		ant->render(instancedVLocation, instancedTex, View);
 
 		/*projectiles->render(vLocation, tex, View);
 		particleRenderer->render(tex, View, vLocation);
@@ -364,10 +378,10 @@ namespace {
 	}
 
 	void init() {
-		/*FileReader vs("shader.vert");
+		FileReader vs("shader.vert");
 		FileReader fs("shader.frag");
-		vertexShader = new Shader(vs.readAll(), vs.size(), VertexShader);
-		fragmentShader = new Shader(fs.readAll(), fs.size(), FragmentShader);
+		instancedVertexShader = new Shader(vs.readAll(), vs.size(), VertexShader);
+		instancedFragmentShader = new Shader(fs.readAll(), fs.size(), FragmentShader);
 
 		// This defines the structure of your Vertex Buffer
 		VertexStructure** structures = new VertexStructure*[2];
@@ -381,17 +395,17 @@ namespace {
 		structures[1]->add("N", Float4x4VertexData);
 		structures[1]->add("tint", Float4VertexData);
 
-		program = new Program;
-		program->setVertexShader(vertexShader);
-		program->setFragmentShader(fragmentShader);
-		program->link(structures, 2);
+		instancedProgram = new Program;
+		instancedProgram->setVertexShader(instancedVertexShader);
+		instancedProgram->setFragmentShader(instancedFragmentShader);
+		instancedProgram->link(structures, 2);
 
-		tex = program->getTextureUnit("tex");
-		pLocation = program->getConstantLocation("P");
-		vLocation = program->getConstantLocation("V");
-		lightPosLocation = program->getConstantLocation("lightPos");
+		instancedTex = instancedProgram->getTextureUnit("tex");
+		instancedPLocation = instancedProgram->getConstantLocation("P");
+		instancedVLocation = instancedProgram->getConstantLocation("V");
+		lightPosLocation = instancedProgram->getConstantLocation("lightPos");
 
-		stoneMesh = new InstancedMeshObject("Data/Meshes/stone.obj", "Data/Textures/stone.png", structures, STONE_COUNT);
+		/*stoneMesh = new InstancedMeshObject("Data/Meshes/stone.obj", "Data/Textures/stone.png", structures, STONE_COUNT);
 		projectileMesh = new MeshObject("Data/Meshes/projectile.obj", "Data/Textures/projectile.png", structures, PROJECTILE_SIZE);
 
         particleImage = new Texture("Data/Textures/particle.png", true);
@@ -421,10 +435,8 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, 1.0f);   // TODO: texture
-        objects[0]->M = mat4::Translation(10.0f, 0.0f, 0.0f);
-        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, 1.0f);
-        objects[1]->M = mat4::Translation(-10.0f, 0.0f, 0.0f);
+        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
+        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), 1.0f);
         
 
 		ant = new Ant;
