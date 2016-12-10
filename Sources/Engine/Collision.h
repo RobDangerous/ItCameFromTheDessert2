@@ -2,6 +2,8 @@
 
 #include "Quat.h"
 
+#include <limits>
+
 class MeshObject;
 
 // A plane is defined as the plane's normal and the distance of the plane to the origin
@@ -36,6 +38,38 @@ public:
 		posZ.d *= -1.0f;
 		negZ.normal = Kore::vec3(0, 0, -1);
 		negZ.d = center.z() - fullExtents.z() * 0.5f;
+	}
+
+	bool IntersectsWith(Kore::vec3 orig, Kore::vec3 dir, float &dist) const {
+		double tmin = -std::numeric_limits<double>::infinity();
+		double tmax = std::numeric_limits<double>::infinity();
+		
+		if (dir.x() != 0.0) {
+			double tx1 = (negX.d - orig.x()) / dir.x();
+			double tx2 = (posX.d - orig.x()) / dir.x();
+
+			tmin = Kore::max(tmin, Kore::min(tx1, tx2));
+			tmax = Kore::min(tmax, Kore::max(tx1, tx2));
+		}
+
+		if (dir.y() != 0.0) {
+			double ty1 = (negY.d - orig.y()) / dir.y();
+			double ty2 = (posY.d - orig.y()) / dir.y();
+
+			tmin = Kore::max(tmin, Kore::min(ty1, ty2));
+			tmax = Kore::min(tmax, Kore::max(ty1, ty2));
+		}
+
+		if (dir.z() != 0.0) {
+			double tz1 = (negZ.d - orig.z()) / dir.z();
+			double tz2 = (posZ.d - orig.z()) / dir.z();
+
+			tmin = Kore::max(tmin, Kore::min(tz1, tz2));
+			tmax = Kore::min(tmax, Kore::max(tz1, tz2));
+		}
+
+		dist = tmin;
+		return tmax >= 0 && tmax >= tmin;
 	}
 };
 
