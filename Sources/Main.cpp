@@ -35,6 +35,8 @@
 
 using namespace Kore;
 
+KitchenObject* kitchenObjects[10];
+
 namespace {
 	const int width = 1024;
 	const int height = 768;
@@ -88,10 +90,6 @@ namespace {
 	ConstantLocation instancedPLocation;
 	ConstantLocation instancedVLocation;
 	TextureUnit instancedTex;
-
-    // null terminated array of MeshObject pointers
-    MeshObject* objects[10];// = { nullptr, nullptr, nullptr, nullptr, nullptr };
-    KitchenObject* kitchenObjects[10];
     
     MeshObject* fridgeObjects[2];
     MeshObject* cakeOnTheCupboard[2];
@@ -101,7 +99,7 @@ namespace {
     MeshObject* table;
     MeshObject* oven[2];
     MeshObject* microwave[2];
-
+    
 	Projectiles* projectiles;
 
 	PhysicsWorld physics;

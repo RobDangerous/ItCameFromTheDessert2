@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 #include <Kore/IO/FileReader.h>
 #include <Kore/Math/Core.h>
 #include <Kore/Math/Random.h>
@@ -13,8 +11,11 @@
 #include <Kore/Graphics/Graphics.h>
 #include <Kore/Log.h>
 
+#include "Collision.h"
 #include "ObjLoader.h"
 #include "Rendering.h"
+
+class SphereCollider;
 
 class MeshObject {
 public:
@@ -45,6 +46,9 @@ public:
 			indices[i] = mesh->indices[i];
 		}
 		indexBuffer->unlock();
+
+		Collider.center = Kore::vec3(0, 0, 0);
+		Collider.radius = 1;
 	}
     
     MeshObject(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, float scale) {
@@ -73,6 +77,10 @@ public:
             indices[i] = mesh->indices[i];
         }
         indexBuffer->unlock();
+        
+        Kore::vec3 position = Kore::vec3(0,0,0); // TODO
+		Collider.center = Kore::vec3(position.x(), position.y(), position.z());
+		Collider.radius = 1;
     }
 
 	void render(Kore::TextureUnit tex, int instances) {
@@ -95,5 +103,6 @@ public:
 
 	Mesh* mesh;
 	Kore::Texture* image;
-    
+
+	SphereCollider Collider;
 };

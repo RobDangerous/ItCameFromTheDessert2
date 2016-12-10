@@ -12,9 +12,8 @@ public:
 
     void render(TextureUnit tex, ConstantLocation mLocation);
     
-private:
-    int count;
     MeshObject** objects;
+    int count;
     
     mat4 M;
 };
