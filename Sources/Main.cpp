@@ -394,7 +394,7 @@ namespace {
         kitchenObjects[0] = new KitchenObject(fridgeObjects, 2, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f));
         
         log(Info, "Load cupboard");
-        cupboard = new MeshObject("Data/Meshes/cupboard.obj", "", "Data/Textures/white.png", structure, 1.0f);
+        cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         cake = new MeshObject("Data/Meshes/cake.obj", "Data/Meshes/cake_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         cakeOnTheCupboard[0] = cupboard;
         cakeOnTheCupboard[1] = cake;
@@ -408,13 +408,14 @@ namespace {
         kitchenObjects[5] = new KitchenObject(&chair, 1, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
         
         log(Info, "Load table");
-        table = new MeshObject("Data/Meshes/table.obj", "", "Data/Textures/map.png", structure, 1.0f);
+        table = new MeshObject("Data/Meshes/table.obj", "Data/Meshes/table_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[6] = new KitchenObject(&table, 1, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
         
         log(Info, "Load fridge");
-        MeshObject* stove = new MeshObject("Data/Meshes/stove.obj", "", "Data/Textures/map.png", structure, 1.0f);
-        oven[0] = cupboard;
-        oven[1] = stove;
+		MeshObject* stove_body = new MeshObject("Data/Meshes/stove_body.obj", "", "Data/Textures/map.png", structure, 1.0f);
+		MeshObject* stove_door = new MeshObject("Data/Meshes/stove_door.obj", "", "Data/Textures/map.png", structure, 1.0f);
+        oven[0] = stove_body;
+        oven[1] = stove_door;
         kitchenObjects[7] = new KitchenObject(oven, 2, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
         log(Info, "Load microwave");
