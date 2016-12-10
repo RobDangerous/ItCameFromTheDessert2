@@ -25,7 +25,7 @@ void Ant::init() {
 	structures[1]->add("N", Float4x4VertexData);
 	structures[1]->add("tint", Float4VertexData);
 
-	body = new InstancedMeshObject("Data/Meshes/tank_bottom.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
+	body = new InstancedMeshObject("Data/Meshes/ant_body.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
 
 	vertexBuffers = new VertexBuffer*[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
@@ -42,17 +42,21 @@ Ant::Ant() {
 	right = vec4(1, 0, 0, 0);
 }
 
+extern MeshObject* objects[];
+
 void Ant::move() {
 	for (int i = 0; i < maxAnts; ++i) {
-		//	for (unsigned i = 0; i < objects.size(); ++i) {
-		//		if (objects[i]->Collider.IntersectsWith(position, forward)) {
-		ants[i].rotation = Quaternion(ants[i].right, 0.1f).matrix() * ants[i].rotation;
+		for (unsigned oi = 0; objects[oi] != nullptr; ++oi) {
+			if (objects[oi]->Collider.IntersectsWith(ants[i].position, ants[i].forward)) {
+				ants[i].rotation = Quaternion(ants[i].right, 0.1f).matrix() * ants[i].rotation;
 
-		ants[i].forward = ants[i].rotation * vec4(0, 0, 1, 0);
-		ants[i].up = ants[i].rotation * vec4(0, 1, 0, 0);
-		ants[i].right = ants[i].rotation * vec4(1, 0, 0, 0);
-		//		}
-		//	}
+				ants[i].forward = ants[i].rotation * vec4(0, 0, 1, 0);
+				ants[i].up = ants[i].rotation * vec4(0, 1, 0, 0);
+				ants[i].right = ants[i].rotation * vec4(1, 0, 0, 0);
+
+				break;
+			}
+		}
 	}
 }
 

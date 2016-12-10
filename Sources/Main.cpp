@@ -34,6 +34,9 @@
 
 using namespace Kore;
 
+// null terminated array of MeshObject pointers
+MeshObject* objects[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+
 namespace {
 	const int width = 1024;
 	const int height = 768;
@@ -87,9 +90,6 @@ namespace {
 	ConstantLocation instancedPLocation;
 	ConstantLocation instancedVLocation;
 	TextureUnit instancedTex;
-
-    // null terminated array of MeshObject pointers
-    MeshObject* objects[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 
 	Projectiles* projectiles;
 

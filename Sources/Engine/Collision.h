@@ -1,7 +1,8 @@
 #pragma once
-#include "pch.h"
-#include "MeshObject.h"
+
 #include "Quat.h"
+
+class MeshObject;
 
 // A plane is defined as the plane's normal and the distance of the plane to the origin
 class PlaneCollider {
@@ -203,40 +204,11 @@ public:
 		return 0.0f;
 	}
 
-	bool IntersectsWith(TriangleMeshCollider& other) {
-		TriangleCollider coll;
-		int* current = other.mesh->mesh->indices;
-		float* currentVertex = other.mesh->mesh->vertices;
-		for (int i = 0; i < other.mesh->mesh->numFaces; i++) {
-			coll.LoadFromBuffers(i, current, currentVertex);
-			if (coll.Area() < 0.1f) continue;
-			if (IntersectsWith(coll)) {
-				other.lastCollision = i;
-				Kore::vec3 normal;
-				if (coll.GetNormal().x() < -0.8f)
-					normal = coll.GetNormal();
-				// Kore::log(Warning, "Intersected with triangle: %f, %f, %f", coll.GetNormal().x(), coll.GetNormal().y(), coll.GetNormal().z());
-				return true;
-			}
-		}
-		return false;
-	}
+	bool IntersectsWith(TriangleMeshCollider& other);
 
-	Kore::vec3 GetCollisionNormal(const TriangleMeshCollider& other) {
-		TriangleCollider coll;
-		coll.LoadFromBuffers(other.lastCollision, other.mesh->mesh->indices, other.mesh->mesh->vertices);
-		return coll.GetNormal();
-	}
+	Kore::vec3 GetCollisionNormal(const TriangleMeshCollider& other);
 
-	float PenetrationDepth(const TriangleMeshCollider& other) {
-		// Get a collider for the plane of the triangle
-		TriangleCollider coll;
-		coll.LoadFromBuffers(other.lastCollision, other.mesh->mesh->indices, other.mesh->mesh->vertices);
-		PlaneCollider plane = coll.GetPlane();
-
-
-		return PenetrationDepth(plane);		
-	}
+	float PenetrationDepth(const TriangleMeshCollider& other);
 	
 	// Find the point where the sphere collided with the triangle mesh
 	Kore::vec3 GetCollisionPoint(const TriangleMeshCollider& other) {

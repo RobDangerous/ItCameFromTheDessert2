@@ -1,7 +1,6 @@
 #pragma once
 
-#include "pch.h"
-#include "MeshObject.h"
+#include <Kore/Math/Matrix.h>
 
 class Quat
 {
