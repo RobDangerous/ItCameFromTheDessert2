@@ -37,9 +37,6 @@ using namespace Kore;
 
 KitchenObject* kitchenObjects[10];
 
-MeshObject* object1;
-MeshObject* object2;
-
 namespace {
     const int width = 1024;
     const int height = 768;
