@@ -206,7 +206,7 @@ namespace {
         vec3 off = vec3(0, -1, 0) * cameraZoom + (1 - cameraZoom) * vec3(0, -1, 1);
         vec3 lookAt = cameraPosition + vec3(0, 0, -1);
         
-        View = mat4::lookAt(cameraPosition, lookAt, vec3(0, -1, 0));
+        View = mat4::lookAt(cameraPosition, lookAt, vec3(0, 1, 0));
         View *= mat4::Rotation(cameraRotation.x(), cameraRotation.y(), cameraRotation.z());
 
 		Graphics::setMatrix(pLocation, P);
@@ -243,7 +243,7 @@ namespace {
 		Graphics::setMatrix(instancedVLocation, View);
 		
 		ant->move();
-		ant->render(instancedVLocation, instancedTex, View);
+		//ant->render(instancedVLocation, instancedTex, View);
 
 		/*projectiles->render(vLocation, tex, View);
 		particleRenderer->render(tex, View, vLocation);
@@ -439,7 +439,11 @@ namespace {
         objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
         objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 1.0f);
         objects[2] = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
-        objects[3] = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
+        objects[3] = new MeshObject("Data/Meshes/cake.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
+        objects[4] = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
+        objects[5] = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
+        objects[6] = new MeshObject("Data/Meshes/stove.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
+        //objects[7] = new MeshObject("Data/Meshes/stove.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
 
 		ant = new Ant;
 
@@ -453,7 +457,7 @@ namespace {
         //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
 
 		cameraPosition = vec3(0, 0, 20);
-        cameraRotation = vec3(0, Kore::pi, 0);
+        cameraRotation = vec3(0, 0, Kore::pi);
 		cameraZoom = 0.5f;
 
         Random::init(System::time() * 100);
