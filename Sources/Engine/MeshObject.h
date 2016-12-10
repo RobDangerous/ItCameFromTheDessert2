@@ -47,7 +47,7 @@ public:
 		indexBuffer->unlock();
 	}
     
-    MeshObject(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, Kore::vec3 position, float scale) {
+    MeshObject(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, Kore::vec3 position, Kore::vec3 rotation, float scale) {
         mesh = loadObj(meshFile);
         image = new Kore::Texture(textureFile, true);
         
@@ -75,6 +75,7 @@ public:
         indexBuffer->unlock();
         
         M = Kore::mat4::Translation(position.x(), position.y(), position.z());
+        M *= Kore::mat4::Rotation(rotation.x(), rotation.y(), rotation.z());
     }
 
 	void render(Kore::TextureUnit tex, int instances) {

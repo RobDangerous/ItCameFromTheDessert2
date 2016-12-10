@@ -84,7 +84,7 @@ namespace {
 	MeshObject* projectileMesh;
     
     // null terminated array of MeshObject pointers
-    MeshObject* objects[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+    MeshObject* objects[10];// = { nullptr, nullptr, nullptr, nullptr, nullptr };
 
 	Projectiles* projectiles;
 
@@ -163,7 +163,7 @@ namespace {
 		Graphics::setRenderState(DepthTest, true);
 
 		if (t >= START_DELAY) {
-			const float cameraSpeed = 1.5f;
+			const float cameraSpeed = 1.0f;
 			if (mouseY < 50) {
 				cameraPosition.z() += cameraSpeed * clamp01(1 - mouseY / 50.0f);
 			}
@@ -190,7 +190,7 @@ namespace {
 			}
 		}
 		else {
-			cameraZoom = t / START_DELAY;
+			//cameraZoom = t / START_DELAY;
 		}
         
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
@@ -198,6 +198,7 @@ namespace {
         cameraPosition.z() = cameraZoom * 150 + (1 - cameraZoom) * 10;
         vec3 off = vec3(0, -1, 0) * cameraZoom + (1 - cameraZoom) * vec3(0, -1, 1);
         vec3 lookAt = cameraPosition + vec3(0, 0, -1);
+        
         View = mat4::lookAt(cameraPosition, lookAt, vec3(0, -1, 0));
         View *= mat4::Rotation(cameraRotation.x(), cameraRotation.y(), cameraRotation.z());
 
@@ -423,9 +424,10 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
-        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), 1.0f);
-        
+        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
+        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 1.0f);
+        objects[2] = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
+        objects[3] = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
 
 		ant = new Ant;
 
