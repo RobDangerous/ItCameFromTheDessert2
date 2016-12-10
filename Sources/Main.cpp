@@ -31,12 +31,11 @@
 #include "Tank.h"
 
 #include "Ant.h"
+#include "KitchenObject.h"
 
 using namespace Kore;
 
 namespace {
-	Ant* ant;
-
 	const int width = 1024;
 	const int height = 768;
 	const int MAX_DESERTED = 5;
@@ -92,6 +91,16 @@ namespace {
 
     // null terminated array of MeshObject pointers
     MeshObject* objects[10];// = { nullptr, nullptr, nullptr, nullptr, nullptr };
+    KitchenObject* kitchenObjects[10];
+    
+    MeshObject* fridgeObjects[2];
+    MeshObject* cakeOnTheCupboard[2];
+    MeshObject* cupboard;
+    MeshObject* cake;
+    MeshObject* chair;
+    MeshObject* table;
+    MeshObject* oven[2];
+    MeshObject* microwave[2];
 
 	Projectiles* projectiles;
 
@@ -197,12 +206,12 @@ namespace {
 			}
 		}
 		else {
-			//cameraZoom = t / START_DELAY;
+			cameraZoom = t / START_DELAY;
 		}
         
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
         
-        cameraPosition.z() = cameraZoom * 150 + (1 - cameraZoom) * 10;
+        cameraPosition.z() = cameraZoom * 25 + (1 - cameraZoom) * 10;
         vec3 off = vec3(0, -1, 0) * cameraZoom + (1 - cameraZoom) * vec3(0, -1, 1);
         vec3 lookAt = cameraPosition + vec3(0, 0, -1);
         
@@ -228,13 +237,19 @@ namespace {
 		tankTics->render(tex, View, vLocation);*/
         
         // render the kitchen
-        MeshObject** current = &objects[0];
-        while (*current != nullptr) {
+        /*int i = 0;
+        while (objects[i] != nullptr) {
             // set the model matrix
-            Graphics::setMatrix(mLocation, (*current)->M);
-            (*current)->render(tex);
+            Graphics::setMatrix(mLocation, objects[i]->M);
+            objects[i]->render(tex);
             
-            ++current;
+            ++i;
+        }*/
+        
+        int i = 0;
+        while (kitchenObjects[i] != nullptr) {
+            kitchenObjects[i]->render(tex, mLocation);
+            ++i;
         }
 
 		instancedProgram->set();
@@ -242,7 +257,7 @@ namespace {
 		Graphics::setMatrix(instancedPLocation, P);
 		Graphics::setMatrix(instancedVLocation, View);
 		
-		ant->move();
+		//ant->move();
 		//ant->render(instancedVLocation, instancedTex, View);
 
 		/*projectiles->render(vLocation, tex, View);
@@ -316,6 +331,8 @@ namespace {
         } else if (code == Key_A) {
             log(Info,"CONTROLL");
             tankTics->setMultipleSelect(true);
+        } else if (code == Key_L) {
+            Kore::log(Kore::LogLevel::Info, "Position: (%.2f, %.2f, %.2f) - Rotation: (%.2f, %.2f, %.2f)", cameraPosition.x(), cameraPosition.y(), cameraPosition.z(), cameraRotation.x(), cameraRotation.y(), cameraRotation.z());
         }
 	}
 
@@ -436,31 +453,55 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        objects[0] = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 1.0f);   // TODO: texture
-        objects[1] = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 1.0f);
-        objects[2] = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Textures/map.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
-        objects[3] = new MeshObject("Data/Meshes/cake.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
-        objects[4] = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
-        objects[5] = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 0.0f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
-        objects[6] = new MeshObject("Data/Meshes/stove.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
-        //objects[7] = new MeshObject("Data/Meshes/stove.obj", "Data/Textures/white.png", structure, vec3(-10.0f, 1.2f, 0.0f), vec3(-90.0f, 0.0f, 0.0f), 1.0f);
+        
+        MeshObject* fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Textures/map.png", structure, 1.0f);
+        MeshObject* fridgeDoor = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Textures/white.png", structure, 1.0f);
+        fridgeObjects[0] = fridgeBody;
+        fridgeObjects[1] = fridgeDoor;
+        kitchenObjects[0] = new KitchenObject(fridgeObjects, 2, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f));
+        
+        cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Textures/white.png", structure, 1.0f);
+        cake = new MeshObject("Data/Meshes/cake.obj", "Data/Textures/white.png", structure, 1.0f);
+        cakeOnTheCupboard[0] = cupboard;
+        cakeOnTheCupboard[1] = cake;
+        kitchenObjects[1] = new KitchenObject(cakeOnTheCupboard, 2, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        chair = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, 1.0f);
+        kitchenObjects[2] = new KitchenObject(&chair, 1, vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[3] = new KitchenObject(&chair, 1, vec3(5.0f, 0.0f, 8.0f), vec3(pi, 0.0f, 0.0f));
+        kitchenObjects[4] = new KitchenObject(&chair, 1, vec3(7.0f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
+        kitchenObjects[5] = new KitchenObject(&chair, 1, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
+        
+        table = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, 1.0f);
+        kitchenObjects[6] = new KitchenObject(&table, 1, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
+        
+        MeshObject* stove = new MeshObject("Data/Meshes/stove.obj", "Data/Textures/map.png", structure, 1.0f);
+        oven[0] = cupboard;
+        oven[1] = stove;
+        kitchenObjects[7] = new KitchenObject(oven, 2, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        MeshObject* micro_body = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Textures/map.png", structure, 1.0f);
+        MeshObject* micro_door = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Textures/white.png", structure, 1.0f);
+        microwave[0] = micro_body;
+        microwave[1] = micro_door;
+        kitchenObjects[8] = new KitchenObject(microwave, 2, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
 
-		ant = new Ant;
+		Random::init(System::time() * 100);
 
+		Ant::init();
+		
 		Graphics::setRenderState(DepthTest, true);
 		Graphics::setRenderState(DepthTestCompare, ZCompareLess);
 
 		Graphics::setTextureAddressing(tex, U, Repeat);
 		Graphics::setTextureAddressing(tex, V, Repeat);
 
-
         //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
 
-		cameraPosition = vec3(0, 0, 20);
-        cameraRotation = vec3(0, 0, Kore::pi/2);
+		cameraPosition = vec3(0, 0, 0);
+        cameraRotation = vec3(0, 0, pi/2);
 		cameraZoom = 0.5f;
 
-        Random::init(System::time() * 100);
 
 		//createLandscape(structures, MAP_SIZE_OUTER, stoneMesh, STONE_COUNT, ground);
 
