@@ -33,11 +33,15 @@
 
 #include "Ant.h"
 
+#include "Engine/CollLoader.h"
+#include <limits>
+
 using namespace Kore;
 
 KitchenObject* kitchenObjects[10];
 
 namespace {
+	const char* title = "It Came from the Dessert";
     const int width = 1024;
     const int height = 768;
     const float CAMERA_ROTATION_SPEED = 0.01f;
@@ -453,40 +457,54 @@ namespace {
 }
 
 int kore(int argc, char** argv) {
-    Kore::System::setName("Tank You!");
-    Kore::System::setup();
-    
-    Kore::WindowOptions options;
-    options.title = "Tank You!";
-    options.width = width;
-    options.height = height;
-    options.x = 100;
-    options.y = 0;
-    options.targetDisplay = -1;
-    options.mode = WindowModeWindow;
-    options.rendererOptions.depthBufferBits = 16;
-    options.rendererOptions.stencilBufferBits = 8;
-    options.rendererOptions.textureFormat = 0;
-    options.rendererOptions.antialiasing = 0;
-    Kore::System::initWindow(options);
-    
-    Kore::Mixer::init();
-    Kore::Audio::init();
-    
-    init();
-    
-    Kore::System::setCallback(update);
-    
-    startTime = System::time();
-    
-    Keyboard::the()->KeyDown = keyDown;
-    Keyboard::the()->KeyUp = keyUp;
-    Mouse::the()->Move = mouseMove;
-    Mouse::the()->Press = mousePress;
-    Mouse::the()->Scroll = mouseScroll;
-    Mouse::the()->lock(0);
-    
-    Kore::System::start();
-    
-    return 0;
+    Kore::System::setName(title);
+	Kore::System::setup();
+
+	Kore::WindowOptions options;
+	options.title = title;
+	options.width = width;
+	options.height = height;
+	options.x = 100;
+	options.y = 0;
+	options.targetDisplay = -1;
+	options.mode = WindowModeWindow;
+	options.rendererOptions.depthBufferBits = 16;
+	options.rendererOptions.stencilBufferBits = 8;
+	options.rendererOptions.textureFormat = 0;
+	options.rendererOptions.antialiasing = 0;
+	Kore::System::initWindow(options);
+
+	Kore::Mixer::init();
+	Kore::Audio::init();
+
+	init();
+
+	Kore::System::setCallback(update);
+
+	startTime = System::time();
+
+	Keyboard::the()->KeyDown = keyDown;
+	Keyboard::the()->KeyUp = keyUp;
+	Mouse::the()->Move = mouseMove;
+	Mouse::the()->Press = mousePress;
+	Mouse::the()->Scroll = mouseScroll;
+	Mouse::the()->lock(0);
+
+	// BB import testcode remove later
+	{
+		int index = 0;
+
+		vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
+		vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
+		while (index >= 0) {
+			loadColl("Data/Meshes/chair_collider.obj", min, max, index);
+			vec3 center = min + (max - min) / 2;
+			vec3 extends = max - min;
+			BoxCollider b(center, extends);
+		}
+	}
+
+	Kore::System::start();
+
+	return 0;
 }
