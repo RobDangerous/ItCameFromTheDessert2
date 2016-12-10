@@ -386,34 +386,40 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        MeshObject* fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Textures/map.png", structure, 1.0f);
-        MeshObject* fridgeDoor = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Textures/white.png", structure, 1.0f);
+        log(Info, "Load fridge");
+        MeshObject* fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "", "Data/Textures/map.png", structure, 1.0f);
+        MeshObject* fridgeDoor = new MeshObject("Data/Meshes/fridge_door.obj", "", "Data/Textures/white.png", structure, 1.0f);
         fridgeObjects[0] = fridgeBody;
         fridgeObjects[1] = fridgeDoor;
         kitchenObjects[0] = new KitchenObject(fridgeObjects, 2, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f));
         
-        cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Textures/white.png", structure, 1.0f);
-        cake = new MeshObject("Data/Meshes/cake.obj", "Data/Textures/white.png", structure, 1.0f);
+        log(Info, "Load cupboard");
+        cupboard = new MeshObject("Data/Meshes/cupboard.obj", "", "Data/Textures/white.png", structure, 1.0f);
+        cake = new MeshObject("Data/Meshes/cake.obj", "Data/Meshes/cake_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         cakeOnTheCupboard[0] = cupboard;
         cakeOnTheCupboard[1] = cake;
         kitchenObjects[1] = new KitchenObject(cakeOnTheCupboard, 2, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        chair = new MeshObject("Data/Meshes/chair.obj", "Data/Textures/map.png", structure, 1.0f);
+        log(Info, "Load chair");
+        chair = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[2] = new KitchenObject(&chair, 1, vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
         kitchenObjects[3] = new KitchenObject(&chair, 1, vec3(5.0f, 0.0f, 8.0f), vec3(pi, 0.0f, 0.0f));
         kitchenObjects[4] = new KitchenObject(&chair, 1, vec3(7.0f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
         kitchenObjects[5] = new KitchenObject(&chair, 1, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
         
-        table = new MeshObject("Data/Meshes/table.obj", "Data/Textures/map.png", structure, 1.0f);
+        log(Info, "Load table");
+        table = new MeshObject("Data/Meshes/table.obj", "", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[6] = new KitchenObject(&table, 1, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
         
-        MeshObject* stove = new MeshObject("Data/Meshes/stove.obj", "Data/Textures/map.png", structure, 1.0f);
+        log(Info, "Load fridge");
+        MeshObject* stove = new MeshObject("Data/Meshes/stove.obj", "", "Data/Textures/map.png", structure, 1.0f);
         oven[0] = cupboard;
         oven[1] = stove;
         kitchenObjects[7] = new KitchenObject(oven, 2, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        MeshObject* micro_body = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Textures/map.png", structure, 1.0f);
-        MeshObject* micro_door = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Textures/white.png", structure, 1.0f);
+        log(Info, "Load microwave");
+        MeshObject* micro_body = new MeshObject("Data/Meshes/microwave_body.obj", "", "Data/Textures/map.png", structure, 1.0f);
+        MeshObject* micro_door = new MeshObject("Data/Meshes/microwave_door.obj", "", "Data/Textures/white.png", structure, 1.0f);
         microwave[0] = micro_body;
         microwave[1] = micro_door;
         kitchenObjects[8] = new KitchenObject(microwave, 2, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
@@ -489,20 +495,6 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
 	Mouse::the()->lock(0);
-
-	// BB import testcode remove later
-	{
-		int index = 0;
-
-		vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
-		vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
-		while (index >= 0) {
-			loadColl("Data/Meshes/chair_collider.obj", min, max, index);
-			vec3 center = min + (max - min) / 2;
-			vec3 extends = max - min;
-			BoxCollider b(center, extends);
-		}
-	}
 
 	Kore::System::start();
 

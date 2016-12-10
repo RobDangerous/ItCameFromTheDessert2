@@ -14,6 +14,8 @@
 #include "Collision.h"
 #include "ObjLoader.h"
 #include "Rendering.h"
+#include "CollLoader.h"
+#include "assert.h"
 
 class SphereCollider;
 
@@ -51,7 +53,7 @@ public:
 		Collider.radius = 1;
 	}
     
-    MeshObject(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, float scale) {
+    MeshObject(const char* meshFile, const char* colliderFile, const char* textureFile, const Kore::VertexStructure& structure, float scale) {
         mesh = loadObj(meshFile);
         image = new Kore::Texture(textureFile, true);
         
@@ -78,6 +80,26 @@ public:
         }
         indexBuffer->unlock();
         
+        // BB import testcode remove later
+        {
+            int index = 0;
+            int count = 0;
+            
+            Kore::vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
+            Kore::vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
+            while (index >= 0) {
+                loadColl(colliderFile, min, max, index);
+                Kore::vec3 center = min + (max - min) / 2;
+                Kore::vec3 extends = max - min;
+                BoxCollider b(center, extends);
+                collider[count] = &b;
+                
+                assert(colliderCount > count);
+                ++count;
+            }
+            Kore::log(Kore::Info, "Object has %i collider", count);
+        }
+        
         Kore::vec3 position = Kore::vec3(0,0,0); // TODO
 		Collider.center = Kore::vec3(position.x(), position.y(), position.z());
 		Collider.radius = 1;
@@ -100,6 +122,9 @@ public:
 	Kore::VertexBuffer** vertexBuffers;
     Kore::VertexBuffer* vertexBuffer;
 	Kore::IndexBuffer* indexBuffer;
+    
+    static const int colliderCount = 10;
+    BoxCollider* collider[colliderCount];
 
 	Mesh* mesh;
 	Kore::Texture* image;
