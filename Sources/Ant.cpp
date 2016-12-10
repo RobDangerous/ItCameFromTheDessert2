@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Ant.h"
 #include "Engine/InstancedMeshObject.h"
+#include "KitchenObject.h"
+
 #include <assert.h>
 #include <Kore/Math/Random.h>
 
@@ -115,19 +117,23 @@ void Ant::chooseScent() {
 	}
 }
 
+extern KitchenObject* kitchenObjects[];
+
 void Ant::move() {
 	for (int i = 0; i < maxAnts; ++i) {
-		ants[i].position += ants[i].forward * 0.05f;
-		for (unsigned oi = 0; objects[oi] != nullptr; ++oi) {
-			if (objects[oi]->Collider.IntersectsWith(ants[i].position, ants[i].forward)) {
-				ants[i].rotation = Quaternion(ants[i].right, 0.1f).matrix() * ants[i].rotation;
+		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+            MeshObject** objects = kitchenObjects[oi]->objects;
+            for (int j = 0; j < kitchenObjects[oi]->count; j++) {
+                if (objects[j]->Collider.IntersectsWith(ants[i].position, ants[i].forward)) {
+                    ants[i].rotation = Quaternion(ants[i].right, 0.1f).matrix() * ants[i].rotation;
 
-				ants[i].forward = ants[i].rotation * vec4(0, 0, 1, 0);
-				ants[i].up = ants[i].rotation * vec4(0, 1, 0, 0);
-				ants[i].right = ants[i].rotation * vec4(1, 0, 0, 0);
+                    ants[i].forward = ants[i].rotation * vec4(0, 0, 1, 0);
+                    ants[i].up = ants[i].rotation * vec4(0, 1, 0, 0);
+                    ants[i].right = ants[i].rotation * vec4(1, 0, 0, 0);
 
-				break;
-			}
+                    break;
+                }
+            }
 		}
 	}
 }

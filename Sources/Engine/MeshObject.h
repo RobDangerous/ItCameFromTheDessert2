@@ -51,7 +51,7 @@ public:
 		Collider.radius = 1;
 	}
     
-    MeshObject(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, Kore::vec3 position, float scale) {
+    MeshObject(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, float scale) {
         mesh = loadObj(meshFile);
         image = new Kore::Texture(textureFile, true);
         
@@ -78,8 +78,7 @@ public:
         }
         indexBuffer->unlock();
         
-        M = Kore::mat4::Translation(position.x(), position.y(), position.z());
-
+        Kore::vec3 position = Kore::vec3(0,0,0); // TODO
 		Collider.center = Kore::vec3(position.x(), position.y(), position.z());
 		Collider.radius = 1;
     }
@@ -104,8 +103,6 @@ public:
 
 	Mesh* mesh;
 	Kore::Texture* image;
-    
-    Kore::mat4 M;
 
 	SphereCollider Collider;
 };
