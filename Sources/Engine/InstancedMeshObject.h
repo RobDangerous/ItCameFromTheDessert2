@@ -14,7 +14,6 @@ public:
 	Kore::VertexBuffer** vertexBuffers;
 	void render(Kore::TextureUnit tex, int instances);
 
-private:
 	Kore::IndexBuffer* indexBuffer;
 
 	Mesh* mesh;
