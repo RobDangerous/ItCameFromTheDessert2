@@ -38,14 +38,11 @@ using namespace Kore;
 MeshObject* objects[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 
 namespace {
+	const char* title = "It Came from the Dessert";
 	const int width = 1024;
 	const int height = 768;
-	const int MAX_DESERTED = 5;
-	const int START_DELAY = 8;
-    const float CAMERA_ROTATION_SPEED = 0.001f;
-
-	int mouseX = width / 2;
-	int mouseY = height / 2;
+	const float CAMERA_ROTATION_SPEED = 0.01f;
+	const float CAMERA_ZOOM_SPEED = 1.f;
 
 	double startTime;
 	Shader* vertexShader;
@@ -55,9 +52,7 @@ namespace {
 	Shader* instancedVertexShader;
 	Shader* instancedFragmentShader;
 	Program* instancedProgram;
-
-	float cameraZoom = 0.5f;
-
+	
 	bool left;
 	bool right;
 	bool up;
@@ -72,18 +67,15 @@ namespace {
 	mat4 P;
 	mat4 View;
 
-	vec3 cameraPosition;
-    vec3 cameraRotation;
-	vec3 lookAt;
+	float horizontalAngle = 0.0;
+	float verticalAngle = 0.0;
+	vec3 cameraPos;
+	vec3 cameraDir;
+	vec3 cameraUp;
 
 	float lightPosX;
 	float lightPosY;
 	float lightPosZ;
-    
-    bool rotate;
-    
-    float mousePressX;
-    float mousePressY;
 
 	InstancedMeshObject* stoneMesh;
 	MeshObject* projectileMesh;
@@ -167,44 +159,20 @@ namespace {
 		Graphics::setRenderState(BlendingState, true);
 		Graphics::setRenderState(DepthTest, true);
 
-		if (t >= START_DELAY) {
-			const float cameraSpeed = 1.5f;
-			if (mouseY < 50) {
-				cameraPosition.z() += cameraSpeed * clamp01(1 - mouseY / 50.0f);
-			}
-			if (up) {
-				cameraPosition.z() += cameraSpeed;
-			}
-			if (mouseY > height - 50) {
-				cameraPosition.z() -= cameraSpeed * clamp01((mouseY - height + 50) / 50.0f);
-			}
-			if (down) {
-				cameraPosition.z() -= cameraSpeed;
-			}
-			if (mouseX < 50) {
-				cameraPosition.x() -= cameraSpeed * clamp01(1 - mouseX / 50.0f);
-			}
-			if (right) {
-				cameraPosition.x() -= cameraSpeed;
-			}
-			if (mouseX > width - 50) {
-				cameraPosition.x() += cameraSpeed * clamp01((mouseX - width + 50) / 50.0f);
-			}
-			if (left) {
-				cameraPosition.x() += cameraSpeed;
-			}
-		}
-		else {
-			cameraZoom = t / START_DELAY;
-		}
-        
-        P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
-        
-        cameraPosition.z() = cameraZoom * 150 + (1 - cameraZoom) * 10;
-        vec3 off = vec3(0, -1, 0) * cameraZoom + (1 - cameraZoom) * vec3(0, -1, 1);
-        vec3 lookAt = cameraPosition + vec3(0, 0, -1);
-        View = mat4::lookAt(cameraPosition, lookAt, vec3(0, -1, 0));
-        View *= mat4::Rotation(cameraRotation.x(), cameraRotation.y(), cameraRotation.z());
+		// Direction: Spherical coordinates to Cartesian coordinates conversion
+		cameraDir = vec3(
+			Kore::cos(verticalAngle) * Kore::sin(horizontalAngle),
+			Kore::sin(verticalAngle),
+			Kore::cos(verticalAngle) * Kore::cos(horizontalAngle)
+		);
+		vec3 right = vec3(
+			Kore::sin(horizontalAngle - pi / 2.0),
+			0,
+			Kore::cos(horizontalAngle - pi / 2.0)
+		);
+		cameraUp = right.cross(cameraDir);
+
+        View = mat4::lookAlong(cameraDir, cameraPos, cameraUp);
 
 		Graphics::setMatrix(pLocation, P);
 		Graphics::setMatrix(vLocation, View);
@@ -292,15 +260,6 @@ namespace {
 		Graphics::swapBuffers();
 	}
 
-	void skipIntro() {
-		if (System::time() - startTime < START_DELAY) {
-			float diff = START_DELAY - (System::time() - startTime);
-			startTime -= diff;
-			lastTime += diff;
-			cameraZoom = 1;
-		}
-	}
-
 	void keyDown(KeyCode code, wchar_t character) {
 		if (code == Key_Up) {
 			up = true;
@@ -310,9 +269,8 @@ namespace {
 			right = true;
 		} else if (code == Key_Right) {
 			left = true;
-        } else if (code == Key_A) {
-            log(Info,"CONTROLL");
-            tankTics->setMultipleSelect(true);
+        } else if (code == Key_Escape) {
+			Kore::System::stop();
         }
 	}
 
@@ -325,54 +283,27 @@ namespace {
 			right = false;
 		} else if (code == Key_Right) {
 			left = false;
-        } else if (code == Key_A) {
-            tankTics->setMultipleSelect(false);
         }
 	}
 
 	void mouseMove(int windowId, int x, int y, int movementX, int movementY) {
-		mouseX = x;
-		mouseY = y;
-
-		vec3 position = screenToWorld(vec2(mouseX, mouseY));
-		vec3 pickDir = vec3(position.x(), position.y(), position.z()) - cameraPosition;
-		pickDir.normalize();
-
-		//tankTics->hover(cameraPosition, pickDir);
-        
-        if (rotate) {
-            cameraRotation.x() += (float)((mousePressX - x) * CAMERA_ROTATION_SPEED);
-            cameraRotation.z() += (float)((mousePressY - y) * CAMERA_ROTATION_SPEED);
-            mousePressX = x;
-            mousePressY = y;
-        }
+		horizontalAngle += CAMERA_ROTATION_SPEED * movementX;
+		verticalAngle -= CAMERA_ROTATION_SPEED * movementY;
 	}
 
 	void mousePress(int windowId, int button, int x, int y) {
-        rotate = true;
         
-        mousePressX = x;
-        mousePressY = y;
-        
-		vec3 position = screenToWorld(vec2(mouseX, mouseY));
-		vec3 pickDir = vec3(position.x(), position.y(), position.z()) - cameraPosition;
+		vec3 position = screenToWorld(vec2(x, y));
+		vec3 pickDir = vec3(position.x(), position.y(), position.z()) - cameraPos;
 		pickDir.normalize();
 
 		if (button == 0) {
-			skipIntro();
 			//tankTics->select(cameraPosition, pickDir);
 		}
-		else if (button == 1) {
-			//tankTics->issueCommand(cameraPosition, pickDir);
-		}
-	}
-
-	void mouseRelease(int windowId, int button, int x, int y) {
-        rotate = false;
 	}
 
 	void mouseScroll(int windowId, int delta) {
-		cameraZoom = clamp(0.0f, 1.0f, cameraZoom + delta * 0.05f);
+		cameraPos -= cameraDir * (CAMERA_ZOOM_SPEED * delta);
 	}
 
 	void init() {
@@ -448,10 +379,10 @@ namespace {
 
         //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
 
-		cameraPosition = vec3(0, 0, 20);
-        cameraRotation = vec3(0, Kore::pi, 0);
-		cameraZoom = 0.5f;
-
+		cameraPos = vec3(0, 0, 20);
+		cameraDir = vec3(0, 0, -20);
+		cameraUp = vec3(0, 0, -1);
+		P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
 
 		//createLandscape(structures, MAP_SIZE_OUTER, stoneMesh, STONE_COUNT, ground);
 
@@ -475,11 +406,11 @@ namespace {
 }
 
 int kore(int argc, char** argv) {
-    Kore::System::setName("Tank You!");
+    Kore::System::setName(title);
 	Kore::System::setup();
 
 	Kore::WindowOptions options;
-	options.title = "Tank You!";
+	options.title = title;
 	options.width = width;
 	options.height = height;
 	options.x = 100;
@@ -505,8 +436,8 @@ int kore(int argc, char** argv) {
 	Keyboard::the()->KeyUp = keyUp;
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
-	Mouse::the()->Release = mouseRelease;
 	Mouse::the()->Scroll = mouseScroll;
+	Mouse::the()->lock(0);
 
 	Kore::System::start();
 
