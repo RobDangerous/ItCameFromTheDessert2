@@ -19,7 +19,7 @@ KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObje
     M *= mat4::Rotation(rotation.x(), rotation.y(), rotation.z());
 
 	setM(body, M);
-	setM(door, M);
+	setM(door_closed, M);
 }
 
 void KitchenObject::render(TextureUnit tex, ConstantLocation mLocation) {
