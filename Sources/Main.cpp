@@ -79,16 +79,13 @@ namespace {
     float lightPosX;
     float lightPosY;
     float lightPosZ;
-    
-    InstancedMeshObject* stoneMesh;
-    MeshObject* projectileMesh;
+
+
     ConstantLocation instancedPLocation;
     ConstantLocation instancedVLocation;
     TextureUnit instancedTex;
-    
-    Projectiles* projectiles;
-    
-    PhysicsWorld physics;
+	
+	PhysicsWorld physics;
     
     TextureUnit tex;
     ConstantLocation pLocation;
@@ -99,20 +96,13 @@ namespace {
     BoxCollider boxCollider(vec3(-46.0f, -4.0f, 44.0f), vec3(10.6f, 4.4f, 4.0f));
     
     Texture* particleImage;
-    Explosion* explosionSystem;
     
     double lastTime;
     double gameOverTime = 0;
     bool gameOver = false;
     int gameOverKills = 0;
     
-    InstancedMeshObject* tankTop;
-    InstancedMeshObject* tankBottom;
-    InstancedMeshObject* tankFlag;
-    TankSystem* tankTics;
     ParticleRenderer* particleRenderer;
-    
-    Ground* ground;
     
     MeshObject* fridgeBody;
     MeshObject* fridgeDoor;
@@ -120,9 +110,11 @@ namespace {
     MeshObject* cupboard;
     MeshObject* chair;
     MeshObject* table;
-    MeshObject* stove;
     MeshObject* microwaveBody;
     MeshObject* microwaveDoor;
+    MeshObject* ovenBody;
+    MeshObject* ovenDoor;
+    MeshObject* stove;
     
     vec3 screenToWorld(vec2 screenPos) {
         vec4 pos((2 * screenPos.x()) / width - 1.0f, -((2 * screenPos.y()) / height - 1.0f), 0.0f, 1.0f);
@@ -301,8 +293,6 @@ namespace {
             right = false;
         } else if (code == Key_Right) {
             left = false;
-        } else if (code == Key_A) {
-            tankTics->setMultipleSelect(false);
         }
     }
     
@@ -388,8 +378,8 @@ namespace {
         mLocation = program->getConstantLocation("M");
         
         log(Info, "Load fridge");
-        fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "", "Data/Textures/map.png", structure, 1.0f);
-        fridgeDoor = new MeshObject("Data/Meshes/fridge_door.obj", "", "Data/Textures/white.png", structure, 1.0f);
+        fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+        fridgeDoor = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Meshes/fridge_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoor, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f));
         
         log(Info, "Load cupboard");
@@ -409,14 +399,16 @@ namespace {
         table = new MeshObject("Data/Meshes/table.obj", "Data/Meshes/table_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[7] = new KitchenObject(table, nullptr, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
         
-        log(Info, "Load stove");
-		stove = new MeshObject("Data/Meshes/stove.obj", "", "Data/Textures/map.png", structure, 1.0f);
-        kitchenObjects[8] = new KitchenObject(cupboard, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
-        kitchenObjects[9] = new KitchenObject(stove, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
-        
+        log(Info, "Load oven");
+		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+		ovenDoor = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+        stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+        kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoor, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+		kitchenObjects[9] = new KitchenObject(stove, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+
         log(Info, "Load microwave");
-        microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "", "Data/Textures/map.png", structure, 1.0f);
-        microwaveDoor = new MeshObject("Data/Meshes/microwave_door.obj", "", "Data/Textures/white.png", structure, 1.0f);
+        microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+        microwaveDoor = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoor, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
         Random::init(System::time() * 100);
