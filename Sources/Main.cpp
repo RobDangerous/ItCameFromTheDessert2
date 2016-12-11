@@ -546,7 +546,7 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
-	Mouse::the()->lock(0);
+	//Mouse::the()->lock(0);
 
 	Kore::System::start();
 

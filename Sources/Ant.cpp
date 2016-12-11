@@ -163,6 +163,18 @@ void Ant::move() {
 		}
 	}
 	*/
+	if (legRotationUp) {
+		legRotation += 0.05f;
+		if (legRotation > pi / 4.0f) {
+			legRotationUp = false;
+		}
+	}
+	else {
+		legRotation -= 0.05f;
+		if (legRotation < -pi / 4.0f) {
+			legRotationUp = true;
+		}
+	}
 
 	chooseScent();
 	
@@ -243,7 +255,7 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 		c = 0;
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.15f) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.15f) * mat4::RotationX(-ants[i].legRotation) * ants[i].rotation * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -262,7 +274,7 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 		c = 0;
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.25f) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.25f) * mat4::RotationX(ants[i].legRotation) * ants[i].rotation * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -281,7 +293,7 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 		c = 0;
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z()) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z()) * mat4::RotationX(-ants[i].legRotation) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -300,7 +312,7 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 		c = 0;
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.15f) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.15f) * mat4::RotationX(ants[i].legRotation) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -319,7 +331,7 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 		c = 0;
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.25f) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.25f) * mat4::RotationX(-ants[i].legRotation) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
