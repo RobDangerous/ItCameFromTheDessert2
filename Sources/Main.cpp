@@ -419,7 +419,7 @@ namespace {
         log(Info, "Load oven");
 		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
 		ovenDoorClosed = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
+        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", "Data/Meshes/oven_door_open.obj", "Data/Textures/white.png", structure, 1.0f);
         stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
@@ -427,7 +427,7 @@ namespace {
         log(Info, "Load microwave");
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         microwaveDoorClosed = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
+        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", "Data/Meshes/microwave_door_open.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[11] = new KitchenObject(cupboard, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
