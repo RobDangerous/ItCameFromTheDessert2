@@ -428,7 +428,7 @@ namespace {
         chair = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[3] = new KitchenObject(chair, nullptr, nullptr, vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
         kitchenObjects[4] = new KitchenObject(chair, nullptr, nullptr, vec3(5.0f, 0.0f, 8.0f), vec3(pi, 0.0f, 0.0f));
-        kitchenObjects[5] = new KitchenObject(chair, nullptr, nullptr, vec3(7.0f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
+        kitchenObjects[5] = new KitchenObject(chair, nullptr, nullptr, vec3(6.5f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
         kitchenObjects[6] = new KitchenObject(chair, nullptr, nullptr, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
         
         log(Info, "Load table");
