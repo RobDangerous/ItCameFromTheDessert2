@@ -89,16 +89,19 @@ public:
             int index = 0;
             int count = 0;
             
-            Kore::vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
-            Kore::vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
             while (index >= 0 && strcmp(colliderFile, "") != 0) {
+				Kore::vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
+				Kore::vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
 				loadColl(colliderFile, min, max, index);
-                Kore::vec3 center = min + (max - min) / 2;
-                Kore::vec3 extends = max - min;
-                collider[count] = new BoxCollider(center, extends);
                 
-                assert(colliderCount > count);
-                ++count;
+				if (min.x() != std::numeric_limits<double>::infinity()) {
+					Kore::vec3 center = min + (max - min) / 2;
+					Kore::vec3 extends = max - min;
+					collider[count] = new BoxCollider(center, extends);
+
+					assert(colliderCount > count);
+					++count;
+				}
             }
             Kore::log(Kore::Info, "Object has %i collider", count);
         }
