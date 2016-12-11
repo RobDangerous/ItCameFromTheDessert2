@@ -163,7 +163,7 @@ namespace {
         Kore::Audio::update();
         
         Graphics::begin();
-        Graphics::clear(Graphics::ClearColorFlag | Graphics::ClearDepthFlag | Graphics::ClearStencilFlag, 0xFF000000, 1.0f, 0);
+        Graphics::clear(Graphics::ClearColorFlag | Graphics::ClearDepthFlag | Graphics::ClearStencilFlag, 0xFF0000FF, 1.0f, 0);
         
         // Important: We need to set the program before we set a uniform
         program->set();
@@ -224,7 +224,7 @@ namespace {
         Graphics::setMatrix(instancedPLocation, P);
         Graphics::setMatrix(instancedVLocation, View);
         
-        Ant::move();
+        Ant::moveEverybody();
         Ant::render(instancedVLocation, instancedTex, View);
         
         /*projectiles->render(vLocation, tex, View);

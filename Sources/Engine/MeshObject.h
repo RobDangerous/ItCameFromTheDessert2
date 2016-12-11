@@ -22,6 +22,7 @@ class SphereCollider;
 class MeshObject {
 public:
 	MeshObject(const char* meshFile, const char* textureFile, Kore::VertexStructure** structures, float scale = 1.0f) {
+		for (int i = 0; i < colliderCount; ++i) collider[i] = nullptr;
 		mesh = loadObj(meshFile);
 		image = new Kore::Texture(textureFile, true);
 		
@@ -54,8 +55,10 @@ public:
 	}
     
     MeshObject(const char* meshFile, const char* colliderFile, const char* textureFile, const Kore::VertexStructure& structure, float scale) {
+		for (int i = 0; i < colliderCount; ++i) collider[i] = nullptr;
         mesh = loadObj(meshFile);
         image = new Kore::Texture(textureFile, true);
+		vertexBuffers = nullptr;
         
         // Mesh Vertex Buffer
         vertexBuffer = new Kore::VertexBuffer(mesh->numVertices, structure, 0);
@@ -87,8 +90,8 @@ public:
             
             Kore::vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
             Kore::vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
-            while (index >= 0) {
-                loadColl(colliderFile, min, max, index);
+            while (index >= 0 && strcmp(colliderFile, "") != 0) {
+				loadColl(colliderFile, min, max, index);
                 Kore::vec3 center = min + (max - min) / 2;
                 Kore::vec3 extends = max - min;
                 BoxCollider b(center, extends);
