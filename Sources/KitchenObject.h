@@ -11,20 +11,12 @@ public:
     KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObject* door_open, vec3 position, vec3 rotation);
 
     void render(TextureUnit tex, ConstantLocation mLocation);
-    void open();
-    void close();
+    void openOrClose();
     
     MeshObject* body;
     MeshObject* door_closed;
     MeshObject* door_open;
     
-private:
-    //vec3 position;
-    //vec3 rotation;
-    
     bool closed;
-    vec3 offset;
-    
     mat4 M;
-    
 };
