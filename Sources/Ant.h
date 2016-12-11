@@ -24,6 +24,8 @@ public:
     
 	bool goingup;
 	Kore::vec3i lastGrid;
+	float legRotation;
+	bool legRotationUp;
 private:
     bool intersectsWith(MeshObject* obj, Kore::vec3 dir);
 	bool intersects(Kore::vec3 dir);
