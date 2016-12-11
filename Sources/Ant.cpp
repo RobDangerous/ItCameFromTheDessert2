@@ -119,29 +119,6 @@ extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
-	//for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-        //if (intersectsWith(kitchenObjects[oi]->body) || intersectsWith(kitchenObjects[oi]->door)) {
-        //    return;
-        //}
-        
-		/*MeshObject** objects = kitchenObjects[oi]->objects;
-		for (int j = 0; j < kitchenObjects[oi]->count; j++) {
-			for (int k = 0; k < objects[j]->colliderCount; ++k) {
-				float distance;
-				if (objects[j]->collider[k] != nullptr &&
-					objects[j]->collider[k]->IntersectsWith(position, forward, distance)) {
-					rotation = Quaternion(right, 0.1f).matrix() * rotation;
-
-					forward = rotation * vec4(0, 0, 1, 0);
-					up = rotation * vec4(0, 1, 0, 0);
-					right = rotation * vec4(1, 0, 0, 0);
-
-					return;
-				}
-			}
-		}*/
-	//}
-
 	if (goingup) {
 		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
 			rotation = mat4::Identity();
@@ -182,14 +159,6 @@ bool Ant::intersects(vec3 dir) {
 		}
 	}
 	return false;
-	/*for (int k = 0; k < obj->colliderCount; ++k) {
-		float distance;
-		if (obj->collider[k] != nullptr) {
-			if (!obj->collider[k]->IntersectsWith(position, vec4(0, 0, -1, 0), distance)) {
-
-			}
-		}
-	}*/
 }
 
 bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
@@ -199,32 +168,6 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
 		if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < 1.5f) {
 			return true;
 		}
-        /*if (obj->collider[k] != nullptr) {
-			if (goingup) {
-				if (!obj->collider[k]->IntersectsWith(position, vec4(0, 0, -1, 0), distance)) {
-					rotation = mat4::Identity();
-
-					forward = vec4(0, 0, -1, 0);
-					//forward = rotation * vec4(0, 0, 1, 0);
-					//up = rotation * vec4(0, 1, 0, 0);
-					//right = rotation * vec4(1, 0, 0, 0);
-
-					goingup = false;
-				}
-			}
-			else {
-				if (obj->collider[k]->IntersectsWith(position, forward, distance) && distance < 5.5f) {
-					rotation = Quaternion(right, pi / 2).matrix();
-
-					forward = rotation * vec4(0, 0, 1, 0);
-					//up = rotation * vec4(0, 1, 0, 0);
-					//right = rotation * vec4(1, 0, 0, 0);
-
-					goingup = true;
-				}
-			}
-            //return true;
-        }*/
     }
     return false;
 }
