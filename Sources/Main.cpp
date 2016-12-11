@@ -80,7 +80,6 @@ namespace {
     float lightPosY;
     float lightPosZ;
 
-
     ConstantLocation instancedPLocation;
     ConstantLocation instancedVLocation;
     TextureUnit instancedTex;
