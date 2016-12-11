@@ -49,7 +49,7 @@ namespace {
 	}
 }
 
-Ant::Ant() {
+Ant::Ant() : goingup(false) {
 	rotation = mat4::Identity();
 	forward = vec4(0, 0, -1, 0);
 	right = vec4(1, 0, 0, 0);
@@ -119,29 +119,30 @@ extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
-	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-        if (intersectsWith(kitchenObjects[oi]->body) || intersectsWith(kitchenObjects[oi]->door)) {
-            return;
-        }
-        
-		/*MeshObject** objects = kitchenObjects[oi]->objects;
-		for (int j = 0; j < kitchenObjects[oi]->count; j++) {
-			for (int k = 0; k < objects[j]->colliderCount; ++k) {
-				float distance;
-				if (objects[j]->collider[k] != nullptr &&
-					objects[j]->collider[k]->IntersectsWith(position, forward, distance)) {
-					rotation = Quaternion(right, 0.1f).matrix() * rotation;
+	if (goingup) {
+		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
+			rotation = mat4::Identity();
 
-					forward = rotation * vec4(0, 0, 1, 0);
-					up = rotation * vec4(0, 1, 0, 0);
-					right = rotation * vec4(1, 0, 0, 0);
+			forward = vec4(0, 0, -1, 0);
+			//forward = rotation * vec4(0, 0, 1, 0);
+			//up = rotation * vec4(0, 1, 0, 0);
+			//right = rotation * vec4(1, 0, 0, 0);
 
-					return;
-				}
-			}
-		}*/
+			goingup = false;
+		}
 	}
+	else {
+		if (intersects(vec4(0, 0, -1, 0))) {
+			rotation = Quaternion(right, pi / 2).matrix();
 
+			forward = rotation * vec4(0, 0, 1, 0);
+			//up = rotation * vec4(0, 1, 0, 0);
+			//right = rotation * vec4(1, 0, 0, 0);
+
+			goingup = true;
+		}
+	}
+	
 	position += forward * 0.05f;
 }
 
@@ -151,23 +152,24 @@ void Ant::moveEverybody() {
 	}
 }
 
-bool Ant::intersectsWith(MeshObject* obj) {
+bool Ant::intersects(vec3 dir) {
+	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door, dir)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
     if (obj == nullptr) return false;
     for (int k = 0; k < obj->colliderCount; ++k) {
         float distance;
-        if (obj->collider[k] != nullptr &&
-            obj->collider[k]->IntersectsWith(position, forward, distance) && distance < 0.5f) {
-            rotation = Quaternion(right, pi / 2).matrix() * rotation;
-            
-            forward = rotation * vec4(0, 0, 1, 0);
-            up = rotation * vec4(0, 1, 0, 0);
-            right = rotation * vec4(1, 0, 0, 0);
-            
-            return true;
-        }
+		if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < 1.5f) {
+			return true;
+		}
     }
     return false;
-
 }
 
 void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
