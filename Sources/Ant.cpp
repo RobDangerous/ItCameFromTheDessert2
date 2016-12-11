@@ -81,8 +81,6 @@ void Ant::init() {
 	}
 }
 
-extern MeshObject* objects[];
-
 void Ant::chooseScent() {
 	vec3i grid = gridPosition(position);
 	vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 0.5f);
@@ -117,42 +115,59 @@ void Ant::chooseScent() {
 	}
 }
 
+extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
+	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+        if (intersectsWith(kitchenObjects[oi]->body) || intersectsWith(kitchenObjects[oi]->door)) {
+            break;
+        }
+        
+		/*MeshObject** objects = kitchenObjects[oi]->objects;
+		for (int j = 0; j < kitchenObjects[oi]->count; j++) {
+			for (int k = 0; k < objects[j]->colliderCount; ++k) {
+				float distance;
+				if (objects[j]->collider[k] != nullptr &&
+					objects[j]->collider[k]->IntersectsWith(position, forward, distance)) {
+					rotation = Quaternion(right, 0.1f).matrix() * rotation;
+
+					forward = rotation * vec4(0, 0, 1, 0);
+					up = rotation * vec4(0, 1, 0, 0);
+					right = rotation * vec4(1, 0, 0, 0);
+
+					return;
+				}
+			}
+		}*/
+	}
+
+	position += forward * 0.1f;
+}
+
+void Ant::moveEverybody() {
 	for (int i = 0; i < maxAnts; ++i) {
-		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-            if (intersectsWith(kitchenObjects[oi]->body, ants[i]) || intersectsWith(kitchenObjects[oi]->door, ants[i])) {
-                break;
-            }
-            /*MeshObject** objects = kitchenObjects[oi]->objects;
-            for (int j = 0; j < kitchenObjects[oi]->count; j++) {
-                if (objects[j]->Collider.IntersectsWith(ants[i].position, ants[i].forward)) {
-                    ants[i].rotation = Quaternion(ants[i].right, 0.1f).matrix() * ants[i].rotation;
-
-                    ants[i].forward = ants[i].rotation * vec4(0, 0, 1, 0);
-                    ants[i].up = ants[i].rotation * vec4(0, 1, 0, 0);
-                    ants[i].right = ants[i].rotation * vec4(1, 0, 0, 0);
-
-                    break;
-                }
-            }*/
-		}
+		ants[i].move();
 	}
 }
 
-bool Ant::intersectsWith(MeshObject* obj, Ant ant) {
+bool Ant::intersectsWith(MeshObject* obj) {
     if (obj == nullptr) return false;
-    if (obj->Collider.IntersectsWith(ant.position, ant.forward)) {
-        ant.rotation = Quaternion(ant.right, 0.1f).matrix() * ant.rotation;
-        
-        ant.forward = ant.rotation * vec4(0, 0, 1, 0);
-        ant.up = ant.rotation * vec4(0, 1, 0, 0);
-        ant.right = ant.rotation * vec4(1, 0, 0, 0);
-        
-        return true;
+    for (int k = 0; k < obj->colliderCount; ++k) {
+        float distance;
+        if (obj->collider[k] != nullptr &&
+            obj->collider[k]->IntersectsWith(position, forward, distance)) {
+            rotation = Quaternion(right, 0.1f).matrix() * rotation;
+            
+            forward = rotation * vec4(0, 0, 1, 0);
+            up = rotation * vec4(0, 1, 0, 0);
+            right = rotation * vec4(1, 0, 0, 0);
+            
+            return true;
+        }
     }
     return false;
+
 }
 
 void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
