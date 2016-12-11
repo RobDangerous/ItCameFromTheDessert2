@@ -81,8 +81,6 @@ void Ant::init() {
 	}
 }
 
-extern MeshObject* objects[];
-
 void Ant::chooseScent() {
 	vec3i grid = gridPosition(position);
 	vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 0.5f);
@@ -117,24 +115,35 @@ void Ant::chooseScent() {
 	}
 }
 
+extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
-	for (int i = 0; i < maxAnts; ++i) {
-		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-            MeshObject** objects = kitchenObjects[oi]->objects;
-            for (int j = 0; j < kitchenObjects[oi]->count; j++) {
-                if (objects[j]->Collider.IntersectsWith(ants[i].position, ants[i].forward)) {
-                    ants[i].rotation = Quaternion(ants[i].right, 0.1f).matrix() * ants[i].rotation;
+	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+		MeshObject** objects = kitchenObjects[oi]->objects;
+		for (int j = 0; j < kitchenObjects[oi]->count; j++) {
+			for (int k = 0; k < objects[j]->colliderCount; ++k) {
+				float distance;
+				if (objects[j]->collider[k] != nullptr &&
+					objects[j]->collider[k]->IntersectsWith(position, forward, distance)) {
+					rotation = Quaternion(right, 0.1f).matrix() * rotation;
 
-                    ants[i].forward = ants[i].rotation * vec4(0, 0, 1, 0);
-                    ants[i].up = ants[i].rotation * vec4(0, 1, 0, 0);
-                    ants[i].right = ants[i].rotation * vec4(1, 0, 0, 0);
+					forward = rotation * vec4(0, 0, 1, 0);
+					up = rotation * vec4(0, 1, 0, 0);
+					right = rotation * vec4(1, 0, 0, 0);
 
-                    break;
-                }
-            }
+					return;
+				}
+			}
 		}
+	}
+
+	position += forward * 0.1f;
+}
+
+void Ant::moveEverybody() {
+	for (int i = 0; i < maxAnts; ++i) {
+		ants[i].move();
 	}
 }
 
