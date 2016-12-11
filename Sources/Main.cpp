@@ -70,8 +70,8 @@ namespace {
     mat4 P;
     mat4 View;
     
-    float horizontalAngle = pi;
-    float verticalAngle = 0.0;
+    float horizontalAngle = 0.0;
+    float verticalAngle = -pi/2;
     vec3 cameraPos;
     vec3 cameraDir;
     vec3 cameraUp;
@@ -104,7 +104,8 @@ namespace {
     ParticleRenderer* particleRenderer;
     
     MeshObject* fridgeBody;
-    MeshObject* fridgeDoor;
+    MeshObject* fridgeDoorOpen;
+    MeshObject* fridgeDoorClose;
     MeshObject* cake;
     MeshObject* cupboard;
     MeshObject* chair;
@@ -277,6 +278,10 @@ namespace {
             left = true;
         } else if (code == Key_Escape) {
             Kore::System::stop();
+        } else if (code == Key_L) {
+            Kore::log(Kore::Info, "Camera pos %f %f %f", cameraPos.x(), cameraPos.y(), cameraPos.z());
+        } else if (code == Key_O) {
+            open = !open;
         }
     }
     
@@ -289,8 +294,6 @@ namespace {
             right = false;
         } else if (code == Key_Right) {
             left = false;
-        } else if (code == Key_O) {
-            open = !open;
         }
     }
     
@@ -377,37 +380,38 @@ namespace {
         
         log(Info, "Load fridge");
         fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        fridgeDoor = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Meshes/fridge_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoor, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f));
+        fridgeDoorClose = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Meshes/fridge_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
+        fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", "Data/Meshes/fridge_door_collider.obj", "Data/Textures/white.png", structure, 1.0f); // todo collider
+        kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoorClose, fridgeDoorOpen, vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f));
         
         log(Info, "Load cupboard");
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         cake = new MeshObject("Data/Meshes/cake.obj", "Data/Meshes/cake_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        kitchenObjects[1] = new KitchenObject(cupboard, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
-        kitchenObjects[2] = new KitchenObject(cake, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        kitchenObjects[1] = new KitchenObject(cupboard, nullptr, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        kitchenObjects[2] = new KitchenObject(cake, nullptr, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
         log(Info, "Load chair");
         chair = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        kitchenObjects[3] = new KitchenObject(chair, nullptr, vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
-        kitchenObjects[4] = new KitchenObject(chair, nullptr, vec3(5.0f, 0.0f, 8.0f), vec3(pi, 0.0f, 0.0f));
-        kitchenObjects[5] = new KitchenObject(chair, nullptr, vec3(7.0f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
-        kitchenObjects[6] = new KitchenObject(chair, nullptr, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
+        kitchenObjects[3] = new KitchenObject(chair, nullptr, nullptr, vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[4] = new KitchenObject(chair, nullptr, nullptr, vec3(5.0f, 0.0f, 8.0f), vec3(pi, 0.0f, 0.0f));
+        kitchenObjects[5] = new KitchenObject(chair, nullptr, nullptr, vec3(7.0f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
+        kitchenObjects[6] = new KitchenObject(chair, nullptr, nullptr, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
         
         log(Info, "Load table");
         table = new MeshObject("Data/Meshes/table.obj", "Data/Meshes/table_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        kitchenObjects[7] = new KitchenObject(table, nullptr, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[7] = new KitchenObject(table, nullptr, nullptr, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
         
         log(Info, "Load oven");
 		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-		ovenDoor = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+		ovenDoor = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoor, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
-		kitchenObjects[9] = new KitchenObject(stove, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoor, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 
         log(Info, "Load microwave");
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         microwaveDoor = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoor, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f), vec3(1.1f, 0.0f, 0.0f));
+        kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoor, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
         Random::init(System::time() * 100);
         
@@ -421,8 +425,8 @@ namespace {
         
         //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
         
-        cameraPos = vec3(0, 0, 20);
-        cameraDir = vec3(0, 0, -20);
+        cameraPos = vec3(0, 30, 2.5f);
+        cameraDir = vec3(0, 0, -2.5f);
         cameraUp = vec3(0, 0, -1);
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
         

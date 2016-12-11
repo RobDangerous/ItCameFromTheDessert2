@@ -120,7 +120,7 @@ extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
 	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-        if (intersectsWith(kitchenObjects[oi]->body) || intersectsWith(kitchenObjects[oi]->door)) {
+        if (intersectsWith(kitchenObjects[oi]->body) || intersectsWith(kitchenObjects[oi]->door_open) || intersectsWith(kitchenObjects[oi]->door_closed)) {
             return;
         }
         
