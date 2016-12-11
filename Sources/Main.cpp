@@ -13,6 +13,7 @@
 #include <Kore/Audio/Mixer.h>
 #include <Kore/Graphics/Image.h>
 #include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics/Graphics2.h>
 #include <Kore/Log.h>
 
 #include "Engine/Collision.h"
@@ -24,7 +25,6 @@
 #include "Engine/Rendering.h"
 #include "Engine/Explosion.h"
 #include "Landscape.h"
-#include "Text.h"
 
 #include "Projectiles.h"
 #include "TankSystem.h"
@@ -51,6 +51,8 @@ namespace {
     Shader* vertexShader;
     Shader* fragmentShader;
     Program* program;
+
+	Graphics2* g2;
     
     Shader* instancedVertexShader;
     Shader* instancedFragmentShader;
@@ -65,7 +67,6 @@ namespace {
     Kravur* font24;
     Kravur* font34;
     Kravur* font44;
-    Text* textRenderer;
     
     mat4 P;
     mat4 View;
@@ -115,6 +116,8 @@ namespace {
     MeshObject* ovenBody;
     MeshObject* ovenDoor;
     MeshObject* stove;
+
+	KitchenObject* hovered;
     
     vec3 screenToWorld(vec2 screenPos) {
         vec4 pos((2 * screenPos.x()) / width - 1.0f, -((2 * screenPos.y()) / height - 1.0f), 0.0f, 1.0f);
@@ -138,15 +141,26 @@ namespace {
     }
     
     void renderShadowText(char* s,  float w, float h) {
-        int offset = textRenderer->font->size / 12;
+        /*int offset = textRenderer->font->size / 12;
         textRenderer->drawString(s, 0x000000aa, w + offset, h + offset, mat3::Identity());
-        textRenderer->drawString(s, 0xffffffff, w, h, mat3::Identity());
+        textRenderer->drawString(s, 0xffffffff, w, h, mat3::Identity());*/
     }
     
     void renderCentered(char* s, float h, float w = width / 2) {
-        float l = textRenderer->font->stringWidth(s);
-        renderShadowText(s, w - l / 2, h);
+        /*float l = textRenderer->font->stringWidth(s);
+        renderShadowText(s, w - l / 2, h);*/
     }
+
+	bool rayIntersectsWithMesh(vec3 pos, vec3 dir, MeshObject* obj) {
+		if (obj == nullptr) return false;
+		for (int k = 0; k < obj->colliderCount; ++k) {
+			float distance;
+			if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(pos, dir, distance)) {
+				return true;
+			}
+		}
+		return false;
+	}
     
     void update() {
         double t = System::time() - startTime;
@@ -176,6 +190,17 @@ namespace {
                           Kore::cos(horizontalAngle - pi / 2.0)
                           );
         cameraUp = right.cross(cameraDir);
+
+		hovered = nullptr;
+		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+			if (kitchenObjects[oi]->door_closed != nullptr
+				&& (rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->body)
+					|| rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->door_closed))) {
+				hovered = kitchenObjects[oi];
+
+				break;
+			}
+		}
         
         View = mat4::lookAlong(cameraDir, cameraPos, cameraUp);
         
@@ -257,9 +282,23 @@ namespace {
          renderCentered("Background music by Hong Linh Thai and Maria Rumjanzewa", height / 2 + 280);
          }
          textRenderer->end();*/
+
+		g2->begin(false);
+		if (hovered == nullptr) {
+			g2->setColor(0xFFFFFFFF);
+		}
+		else {
+			g2->setColor(0xFFFFFF00);
+		}
+		g2->drawRect(width / 2 -  1, height / 2 -  1, 2, 2, 1);
+		g2->drawRect(width / 2 +  8, height / 2 -  1, 8, 2, 1);
+		g2->drawRect(width / 2 - 16, height / 2 -  1, 8, 2, 1);
+		g2->drawRect(width / 2 -  1, height / 2 +  8, 2, 8, 1);
+		g2->drawRect(width / 2 -  1, height / 2 - 16, 2, 8, 1);
+		g2->end();
         
         Graphics::end();
-        Graphics::swapBuffers();
+		Graphics::swapBuffers();
     }
     
     void keyDown(KeyCode code, wchar_t character) {
@@ -298,30 +337,11 @@ namespace {
         horizontalAngle += CAMERA_ROTATION_SPEED * movementX;
         verticalAngle -= CAMERA_ROTATION_SPEED * movementY;
     }
-
-	bool rayIntersectsWithMesh(vec3 pos, vec3 dir, MeshObject* obj) {
-		if (obj == nullptr) return false;
-		for (int k = 0; k < obj->colliderCount; ++k) {
-			float distance;
-			if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(pos, dir, distance)) {
-				return true;
-			}
-		}
-		return false;
-	}
     
     void mousePress(int windowId, int button, int x, int y) {
-		vec3 position = cameraPos; // screenToWorld(vec2(x, y));
-		vec3 pickDir = cameraDir; // vec3(position.x(), position.y(), position.z()) - cameraPos;
-        pickDir.normalize();
-        
         if (button == 0) {
-			for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-				if (rayIntersectsWithMesh(position, pickDir, kitchenObjects[oi]->body) || rayIntersectsWithMesh(position, pickDir, kitchenObjects[oi]->door_open) || rayIntersectsWithMesh(position, pickDir, kitchenObjects[oi]->door_closed)) {
-					kitchenObjects[oi]->open();
-
-					return;
-				}
+			if (hovered != nullptr) {
+				hovered->open();
 			}
         }
     }
@@ -423,6 +443,8 @@ namespace {
         microwaveDoor = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoor, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
+		hovered = nullptr;
+
         Random::init(System::time() * 100);
         
         Ant::init();
@@ -442,13 +464,12 @@ namespace {
         
         //createLandscape(structures, MAP_SIZE_OUTER, stoneMesh, STONE_COUNT, ground);
         
+		g2 = new Graphics2(width, height);
+
         font14 = Kravur::load("Data/Fonts/arial", FontStyle(), 14);
         font24 = Kravur::load("Data/Fonts/arial", FontStyle(), 24);
         font34 = Kravur::load("Data/Fonts/arial", FontStyle(), 34);
         font44 = Kravur::load("Data/Fonts/arial", FontStyle(), 44);
-        textRenderer = new Text;
-        textRenderer->setProjection(width, height);
-        textRenderer->setFont(font44);
         
         /*tankTop = new InstancedMeshObject("Data/Meshes/tank_top.obj", "Data/Textures/tank_top.png", structures, MAX_TANKS, 8);
          tankBottom = new InstancedMeshObject("Data/Meshes/tank_bottom.obj", "Data/Textures/tank_bottom.png", structures, MAX_TANKS, 10);
