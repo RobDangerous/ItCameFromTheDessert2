@@ -22,6 +22,8 @@ public:
 	Kore::vec3 dir;
 	Kore::mat4 rotation;
     
+	bool goingup;
 private:
-    bool intersectsWith(MeshObject* obj);
+    bool intersectsWith(MeshObject* obj, Kore::vec3 dir);
+	bool intersects(Kore::vec3 dir);
 };
