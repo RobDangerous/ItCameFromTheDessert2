@@ -299,18 +299,31 @@ namespace {
         horizontalAngle += CAMERA_ROTATION_SPEED * movementX;
         verticalAngle -= CAMERA_ROTATION_SPEED * movementY;
     }
+
+	bool rayIntersectsWithMesh(vec3 pos, vec3 dir, MeshObject* obj) {
+		if (obj == nullptr) return false;
+		for (int k = 0; k < obj->colliderCount; ++k) {
+			float distance;
+			if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(pos, dir, distance)) {
+				return true;
+			}
+		}
+		return false;
+	}
     
     void mousePress(int windowId, int button, int x, int y) {
-        
-        vec3 position = screenToWorld(vec2(x, y));
-        vec3 pickDir = vec3(position.x(), position.y(), position.z()) - cameraPos;
+		vec3 position = cameraPos; // screenToWorld(vec2(x, y));
+		vec3 pickDir = cameraDir; // vec3(position.x(), position.y(), position.z()) - cameraPos;
         pickDir.normalize();
         
         if (button == 0) {
-            //tankTics->select(cameraPosition, pickDir);
-        }
-        else if (button == 1) {
-            //tankTics->issueCommand(cameraPosition, pickDir);
+			for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+				if (rayIntersectsWithMesh(position, pickDir, kitchenObjects[oi]->body) || rayIntersectsWithMesh(position, pickDir, kitchenObjects[oi]->door)) {
+					kitchenObjects[oi]->open();
+
+					return;
+				}
+			}
         }
     }
     
@@ -407,7 +420,7 @@ namespace {
 
         log(Info, "Load microwave");
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        microwaveDoor = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/white.png", structure, 1.0f);
+        microwaveDoor = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoor, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
         Random::init(System::time() * 100);
