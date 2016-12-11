@@ -148,7 +148,6 @@ namespace {
         renderShadowText(s, w - l / 2, h);
     }
     
-    bool open = false;
     void update() {
         double t = System::time() - startTime;
         double deltaT = t - lastTime;
@@ -201,10 +200,6 @@ namespace {
         // render the kitchen
         int i = 0;
         while (kitchenObjects[i] != nullptr) {
-            if(open)
-                kitchenObjects[i]->open();
-            else
-                kitchenObjects[i]->close();
             kitchenObjects[i]->render(tex, mLocation);
             ++i;
         }
@@ -281,7 +276,9 @@ namespace {
         } else if (code == Key_L) {
             Kore::log(Kore::Info, "Camera pos %f %f %f", cameraPos.x(), cameraPos.y(), cameraPos.z());
         } else if (code == Key_O) {
-            open = !open;
+            kitchenObjects[0]->open();
+        } else if (code == Key_C) {
+            kitchenObjects[0]->close();
         }
     }
     
