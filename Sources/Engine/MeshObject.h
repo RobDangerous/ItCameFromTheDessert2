@@ -85,7 +85,7 @@ public:
         indexBuffer->unlock();
         
         // BB import testcode remove later
-        {
+        if (colliderFile != nullptr) {
             int index = 0;
             int count = 0;
             
