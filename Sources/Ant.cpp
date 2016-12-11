@@ -17,10 +17,14 @@ namespace {
 	const int scents = 100;
 	
 	float scentAt(int x, int y, int z) {
+		if (z >= scents || y >= scents || z >= scents) return 0;
+		if (z < 0 || y < 0 || x < 0) return 0;
 		return scent[z * scents * scents + y * scents + x];
 	}
 
 	void setScent(int x, int y, int z, float value) {
+		if (z >= scents || y >= scents || z >= scents) return;
+		if (z < 0 || y < 0 || x < 0) return;
 		scent[z * scents * scents + y * scents + x] = value;
 	}
 
@@ -49,7 +53,7 @@ namespace {
 	}
 }
 
-Ant::Ant() {
+Ant::Ant() : goingup(false) {
 	rotation = mat4::Identity();
 	forward = vec4(0, 0, -1, 0);
 	right = vec4(1, 0, 0, 0);
@@ -57,6 +61,9 @@ Ant::Ant() {
 
 void Ant::init() {
 	scent = new float[scents * scents * scents];
+	for (int i = 0; i < scents * scents * scents; ++i) {
+		scent[i] = Random::get(100) / 100.0f;
+	}
 
 	VertexStructure** structures = new VertexStructure*[2];
 	structures[0] = new VertexStructure();
@@ -83,34 +90,42 @@ void Ant::init() {
 
 void Ant::chooseScent() {
 	vec3i grid = gridPosition(position);
-	vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 0.5f);
-	vec3i neighbours[8];
-	for (int i = 0; i < 8; ++i) neighbours[i] = grid;
-	neighbours[0].x() -= 1;
-	neighbours[0].z() += 1;
-	neighbours[1].x() += 0;
-	neighbours[1].z() += 1;
-	neighbours[2].x() += 1;
-	neighbours[2].z() += 1;
-	neighbours[3].x() += 1;
-	neighbours[3].z() += 0;
-	neighbours[4].x() += 1;
-	neighbours[4].z() -= 1;
-	neighbours[5].x() += 0;
-	neighbours[5].z() -= 1;
-	neighbours[6].x() -= 1;
-	neighbours[6].z() -= 1;
-	neighbours[7].x() -= 1;
-	neighbours[7].z() += 0;
+	if (grid != lastGrid) {
+		lastGrid = grid;
+		vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 0.5f);
+		vec3i neighbours[8];
+		for (int i = 0; i < 8; ++i) neighbours[i] = grid;
+		neighbours[0].x() -= 1;
+		neighbours[0].z() += 1;
+		neighbours[1].x() += 0;
+		neighbours[1].z() += 1;
+		neighbours[2].x() += 1;
+		neighbours[2].z() += 1;
+		neighbours[3].x() += 1;
+		neighbours[3].z() += 0;
+		neighbours[4].x() += 1;
+		neighbours[4].z() -= 1;
+		neighbours[5].x() += 0;
+		neighbours[5].z() -= 1;
+		neighbours[6].x() -= 1;
+		neighbours[6].z() -= 1;
+		neighbours[7].x() -= 1;
+		neighbours[7].z() += 0;
 
-	float maxScent = 0;
-	for (int i = 0; i < 8; ++i) {
-		float scent = scentAt(neighbours[i].x(), neighbours[i].y(), neighbours[i].z());
-		if (scent > maxScent) {
-			maxScent = scent;
-			vec3 pos = realPosition(neighbours[i]);
-			vec3 forward = pos - position;
-			this->forward = vec4(forward.x(), forward.y(), forward.z(), 0);
+		float maxScent = 0;
+		for (int i = 0; i < 8; ++i) {
+			float scent = scentAt(neighbours[i].x(), neighbours[i].y(), neighbours[i].z());
+			if (scent > maxScent) {
+				if (nextGrid == neighbours[i] || (i > 0 && nextGrid == neighbours[i - 1]) || (i < 7 && nextGrid == neighbours[i + 1])) {
+					maxScent = scent;
+					vec3 pos = realPosition(neighbours[i]);
+					vec3 forward = pos - position;
+					forward = forward.normalize();
+					this->forward = vec4(forward.x(), forward.y(), forward.z(), 0);
+					float angle = Kore::atan2(forward.z(), forward.x());
+					rotation = Quaternion(vec3(0, 1, 0), angle + pi / 2.0f).matrix();
+				}
+			}
 		}
 	}
 }
@@ -119,29 +134,8 @@ extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
-	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-        if (intersectsWith(kitchenObjects[oi]->body) || intersectsWith(kitchenObjects[oi]->door_open) || intersectsWith(kitchenObjects[oi]->door_closed)) {
-            return;
-        }
-        
-		/*MeshObject** objects = kitchenObjects[oi]->objects;
-		for (int j = 0; j < kitchenObjects[oi]->count; j++) {
-			for (int k = 0; k < objects[j]->colliderCount; ++k) {
-				float distance;
-				if (objects[j]->collider[k] != nullptr &&
-					objects[j]->collider[k]->IntersectsWith(position, forward, distance)) {
-					rotation = Quaternion(right, 0.1f).matrix() * rotation;
-
-					forward = rotation * vec4(0, 0, 1, 0);
-					up = rotation * vec4(0, 1, 0, 0);
-					right = rotation * vec4(1, 0, 0, 0);
-
-					return;
-				}
-			}
-		}*/
-	}
-
+	chooseScent();
+	
 	position += forward * 0.05f;
 }
 
@@ -151,23 +145,24 @@ void Ant::moveEverybody() {
 	}
 }
 
-bool Ant::intersectsWith(MeshObject* obj) {
+bool Ant::intersects(vec3 dir) {
+	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_open, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
     if (obj == nullptr) return false;
     for (int k = 0; k < obj->colliderCount; ++k) {
         float distance;
-        if (obj->collider[k] != nullptr &&
-            obj->collider[k]->IntersectsWith(position, forward, distance) && distance < 0.5f) {
-            rotation = Quaternion(right, pi / 2).matrix() * rotation;
-            
-            forward = rotation * vec4(0, 0, 1, 0);
-            up = rotation * vec4(0, 1, 0, 0);
-            right = rotation * vec4(1, 0, 0, 0);
-            
-            return true;
-        }
+		if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < 1.5f) {
+			return true;
+		}
     }
     return false;
-
 }
 
 void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {

@@ -95,8 +95,7 @@ public:
 				loadColl(colliderFile, min, max, index);
                 Kore::vec3 center = min + (max - min) / 2;
                 Kore::vec3 extends = max - min;
-                BoxCollider b(center, extends);
-                collider[count] = &b;
+                collider[count] = new BoxCollider(center, extends);
                 
                 assert(colliderCount > count);
                 ++count;
