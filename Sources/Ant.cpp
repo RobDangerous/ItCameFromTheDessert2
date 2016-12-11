@@ -147,7 +147,7 @@ void Ant::moveEverybody() {
 
 bool Ant::intersects(vec3 dir) {
 	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_open, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
+		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
 			return true;
 		}
 	}
