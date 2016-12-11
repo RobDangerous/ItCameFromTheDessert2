@@ -109,8 +109,6 @@ public:
         Kore::vec3 position = Kore::vec3(0,0,0); // TODO
 		Collider.center = Kore::vec3(position.x(), position.y(), position.z());
 		Collider.radius = 1;
-        
-        M = Kore::mat4::Identity();
     }
 
 	void render(Kore::TextureUnit tex, int instances) {
@@ -121,7 +119,6 @@ public:
 	}
     
     void render(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {
-        Kore::Graphics::setMatrix(mLocation, M);
         Kore::Graphics::setTexture(tex, image);
         Kore::Graphics::setVertexBuffer(*vertexBuffer);
         Kore::Graphics::setIndexBuffer(*indexBuffer);
@@ -139,6 +136,4 @@ public:
 	Kore::Texture* image;
 
 	SphereCollider Collider;
-    
-    Kore::mat4 M;
 };

@@ -134,30 +134,6 @@ extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
-	/*if (goingup) {
-		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
-			rotation = mat4::Identity();
-
-			forward = vec4(0, 0, -1, 0);
-			//forward = rotation * vec4(0, 0, 1, 0);
-			//up = rotation * vec4(0, 1, 0, 0);
-			//right = rotation * vec4(1, 0, 0, 0);
-
-			goingup = false;
-		}
-	}
-	else {
-		if (intersects(vec4(0, 0, -1, 0))) {
-			rotation = Quaternion(right, pi / 2).matrix();
-
-			forward = rotation * vec4(0, 0, 1, 0);
-			//up = rotation * vec4(0, 1, 0, 0);
-			//right = rotation * vec4(1, 0, 0, 0);
-
-			goingup = true;
-		}
-	}*/
-
 	chooseScent();
 	
 	position += forward * 0.05f;
@@ -171,7 +147,7 @@ void Ant::moveEverybody() {
 
 bool Ant::intersects(vec3 dir) {
 	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door, dir)) {
+		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_open, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
 			return true;
 		}
 	}
