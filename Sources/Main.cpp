@@ -153,15 +153,20 @@ namespace {
         renderShadowText(s, w - l / 2, h);*/
     }
 
-	bool rayIntersectsWithMesh(vec3 pos, vec3 dir, MeshObject* obj) {
-		if (obj == nullptr) return false;
+	float rayIntersectsWithMesh(vec3 pos, vec3 dir, MeshObject* obj) {
+		float distance = std::numeric_limits<float>::infinity();
+
+		if (obj == nullptr) return distance;
+
 		for (int k = 0; k < obj->colliderCount; ++k) {
-			float distance;
-			if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(pos, dir, distance)) {
-				return true;
+			if (obj->collider[k] != nullptr) {
+				float dist;
+				if (obj->collider[k]->IntersectsWith(pos, dir, dist)) {
+					distance = Kore::min(dist, distance);
+				}
 			}
 		}
-		return false;
+		return distance;
 	}
     
     void update() {
@@ -194,13 +199,24 @@ namespace {
         cameraUp = right.cross(cameraDir);
 
 		hovered = nullptr;
+		float distMin = std::numeric_limits<float>::infinity();
 		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-			if (kitchenObjects[oi]->door_closed != nullptr
-				&& (rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->body)
-					|| rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->door_closed))) {
-				hovered = kitchenObjects[oi];
-
-				break;
+			float dist = rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->body);
+			if (dist < distMin) {
+				distMin = dist;
+				if (kitchenObjects[oi]->door_closed != nullptr) {
+					hovered = kitchenObjects[oi];
+				}
+				else {
+					hovered = nullptr;
+				}
+			}
+			if (kitchenObjects[oi]->door_closed != nullptr && kitchenObjects[oi]->closed) {
+				dist = rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->door_closed);
+				if (dist < distMin) {
+					distMin = dist;
+					hovered = kitchenObjects[oi];
+				}
 			}
 		}
         
@@ -459,8 +475,6 @@ namespace {
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[13] = new KitchenObject(cupboard, nullptr, nullptr, vec3(-4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 
-
-        
 		hovered = nullptr;
 
         Random::init(System::time() * 100);
