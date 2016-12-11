@@ -121,7 +121,7 @@ extern KitchenObject* kitchenObjects[];
 void Ant::move() {
 	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
         if (intersectsWith(kitchenObjects[oi]->body) || intersectsWith(kitchenObjects[oi]->door)) {
-            break;
+            return;
         }
         
 		/*MeshObject** objects = kitchenObjects[oi]->objects;
