@@ -111,7 +111,8 @@ namespace {
     MeshObject* chair;
     MeshObject* table;
     MeshObject* microwaveBody;
-    MeshObject* microwaveDoor;
+    MeshObject* microwaveDoorOpen;
+    MeshObject* microwaveDoorClose;
     MeshObject* ovenBody;
     MeshObject* ovenDoor;
     MeshObject* stove;
@@ -276,9 +277,17 @@ namespace {
         } else if (code == Key_L) {
             Kore::log(Kore::Info, "Camera pos %f %f %f", cameraPos.x(), cameraPos.y(), cameraPos.z());
         } else if (code == Key_O) {
-            kitchenObjects[0]->open();
+            int i = 0;
+            while (kitchenObjects[i] != nullptr) {
+                kitchenObjects[i]->open();
+                ++i;
+            }
         } else if (code == Key_C) {
-            kitchenObjects[0]->close();
+            int i = 0;
+            while (kitchenObjects[i] != nullptr) {
+                kitchenObjects[i]->close();
+                ++i;
+            }
         }
     }
     
@@ -420,8 +429,9 @@ namespace {
 
         log(Info, "Load microwave");
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        microwaveDoor = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoor, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
+        microwaveDoorClose = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
+        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
+        kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClose, microwaveDoorOpen, vec3(4.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
         Random::init(System::time() * 100);
         
