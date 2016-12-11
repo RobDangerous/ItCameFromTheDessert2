@@ -8,18 +8,20 @@ using namespace Kore;
 class KitchenObject {
     
 public:
-    //KitchenObject(MeshObject** objects, int count, vec3 position, vec3 rotation);
-    KitchenObject(MeshObject* body, MeshObject* door, vec3 position, vec3 rotation);
+    KitchenObject(MeshObject* body, MeshObject* door, vec3 position, vec3 rotation, vec3 offset = vec3(0.0f, 0.0f, 0.0f));
 
     void render(TextureUnit tex, ConstantLocation mLocation);
     void open();
-    
-    //MeshObject** objects;
-    //int count;
+    void close();
     
     MeshObject* body;
     MeshObject* door;
     
-    mat4 M;
+private:
+    vec3 position;
+    vec3 rotation;
+    
+    bool closed;
+    vec3 offset;
     
 };
