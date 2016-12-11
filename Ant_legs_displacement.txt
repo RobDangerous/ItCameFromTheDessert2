@@ -1,0 +1,11 @@
+In Kopfrichtung:
+linkes vordere Bein: x = 0.4593 , y = -0.211, z = 0.4662
+linkes mittlere Bein: x = 0.4373 , y = 0.0097, z = 0.4104
+linkes hintere Bein: x = 0.407, y = 0.2428 , z = 0.3838
+
+rechtes vordere Bein: x = -0.456, y = -0.211, z = 0.467
+rechtes mittlere Bein: x = -0.426, y = 0.0126, z = 0.4107
+rechtes hintere Bein: x = -0.405, y = 0.2428, z = 0.3796
+
+linker Fühler: x = 0.0444, y = -0.809, z = 0.6956
+rechter Fühler: x = -0.044, y = -0.809, z = 0.6956

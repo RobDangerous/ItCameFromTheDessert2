@@ -11,6 +11,8 @@ using namespace Kore;
 namespace {
 	Kore::VertexBuffer** vertexBuffers;
 	InstancedMeshObject* body;
+	InstancedMeshObject* leg;
+
 	const int maxAnts = 500;
 	Ant ants[maxAnts];
 	float* scent;
@@ -77,6 +79,7 @@ void Ant::init() {
 	structures[1]->add("tint", Float4VertexData);
 
 	body = new InstancedMeshObject("Data/Meshes/ant_body.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
+	leg = new InstancedMeshObject("Data/Meshes/ant_leg.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
 
 	vertexBuffers = new VertexBuffer*[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
@@ -91,6 +94,7 @@ void Ant::init() {
 void Ant::chooseScent() {
 	vec3i grid = gridPosition(position);
 	if (grid != lastGrid) {
+		setScent(grid.x(), grid.y(), grid.z(), scentAt(grid.x(), grid.y(), grid.z()) + 100.5f);
 		lastGrid = grid;
 		vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 0.5f);
 		vec3i neighbours[8];
@@ -134,9 +138,35 @@ extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
+	/*
+	if (goingup) {
+		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
+			rotation = mat4::Identity();
+
+			forward = vec4(0, 0, -1, 0);
+			//forward = rotation * vec4(0, 0, 1, 0);
+			//up = rotation * vec4(0, 1, 0, 0);
+			//right = rotation * vec4(1, 0, 0, 0);
+
+			goingup = false;
+		}
+	}
+	else {
+		if (intersects(vec4(0, 0, -1, 0))) {
+			rotation = Quaternion(right, pi / 2).matrix();
+
+			forward = rotation * vec4(0, 0, 1, 0);
+			//up = rotation * vec4(0, 1, 0, 0);
+			//right = rotation * vec4(1, 0, 0, 0);
+
+			goingup = true;
+		}
+	}
+	*/
+
 	chooseScent();
 	
-	position += forward * 0.05f;
+	//position += forward * 0.05f;
 }
 
 void Ant::moveEverybody() {
@@ -147,7 +177,7 @@ void Ant::moveEverybody() {
 
 bool Ant::intersects(vec3 dir) {
 	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_open, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
+		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
 			return true;
 		}
 	}
@@ -158,7 +188,7 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
     if (obj == nullptr) return false;
     for (int k = 0; k < obj->colliderCount; ++k) {
         float distance;
-		if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < 1.5f) {
+		if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < .5f) {
 			return true;
 		}
     }
@@ -166,20 +196,140 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
 }
 
 void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
-	float* data = vertexBuffers[1]->lock();
 	int c = 0;
-	for (int i = 0; i < maxAnts; i++) {
-		const float scale = 0.02f;
-		mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Scale(scale, scale, scale);
-		setMatrix(data, i, 0, 36, M);
-		setMatrix(data, i, 16, 36, calculateN(M));
-		setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
-		c++;
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
 	}
-	vertexBuffers[1]->unlock();
 
 	Graphics::setTexture(tex, body->image);
+	VertexBuffer* vertexBuffers[2];
+	vertexBuffers[0] = body->vertexBuffers[0];
+	vertexBuffers[1] = ::vertexBuffers[1];
 	Graphics::setVertexBuffers(vertexBuffers, 2);
 	Graphics::setIndexBuffer(*body->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z()) * mat4::RotationX(ants[i].legRotation) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.15f) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.25f) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z()) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.15f) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y() + 0.05f, ants[i].position.z() - 0.25f) * mat4::RotationY(pi) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
 	Graphics::drawIndexedVerticesInstanced(c);
 }
