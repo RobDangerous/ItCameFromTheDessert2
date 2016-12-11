@@ -142,7 +142,7 @@ void Ant::move() {
 		}*/
 	}
 
-	position += forward * 0.1f;
+	position += forward * 0.05f;
 }
 
 void Ant::moveEverybody() {
@@ -156,8 +156,8 @@ bool Ant::intersectsWith(MeshObject* obj) {
     for (int k = 0; k < obj->colliderCount; ++k) {
         float distance;
         if (obj->collider[k] != nullptr &&
-            obj->collider[k]->IntersectsWith(position, forward, distance)) {
-            rotation = Quaternion(right, 0.1f).matrix() * rotation;
+            obj->collider[k]->IntersectsWith(position, forward, distance) && distance < 0.5f) {
+            rotation = Quaternion(right, pi / 2).matrix() * rotation;
             
             forward = rotation * vec4(0, 0, 1, 0);
             up = rotation * vec4(0, 1, 0, 0);
