@@ -70,7 +70,7 @@ namespace {
     mat4 P;
     mat4 View;
     
-    float horizontalAngle = 0.0;
+    float horizontalAngle = pi;
     float verticalAngle = 0.0;
     vec3 cameraPos;
     vec3 cameraDir;
