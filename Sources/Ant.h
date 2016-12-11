@@ -4,6 +4,8 @@
 #include <Kore/Math/Quaternion.h>
 #include <Kore/Graphics/Graphics.h>
 
+#include "Engine/MeshObject.h"
+
 class InstancedMeshObject;
 
 class Ant {
@@ -18,4 +20,7 @@ public:
 	Kore::vec4 forward, up, right;
 	Kore::vec3 dir;
 	Kore::mat4 rotation;
+    
+private:
+    static bool intersectsWith(MeshObject* obj, Ant ant);
 };

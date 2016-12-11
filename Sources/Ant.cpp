@@ -122,7 +122,10 @@ extern KitchenObject* kitchenObjects[];
 void Ant::move() {
 	for (int i = 0; i < maxAnts; ++i) {
 		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-            MeshObject** objects = kitchenObjects[oi]->objects;
+            if (intersectsWith(kitchenObjects[oi]->body, ants[i]) || intersectsWith(kitchenObjects[oi]->door, ants[i])) {
+                break;
+            }
+            /*MeshObject** objects = kitchenObjects[oi]->objects;
             for (int j = 0; j < kitchenObjects[oi]->count; j++) {
                 if (objects[j]->Collider.IntersectsWith(ants[i].position, ants[i].forward)) {
                     ants[i].rotation = Quaternion(ants[i].right, 0.1f).matrix() * ants[i].rotation;
@@ -133,9 +136,23 @@ void Ant::move() {
 
                     break;
                 }
-            }
+            }*/
 		}
 	}
+}
+
+bool Ant::intersectsWith(MeshObject* obj, Ant ant) {
+    if (obj == nullptr) return false;
+    if (obj->Collider.IntersectsWith(ant.position, ant.forward)) {
+        ant.rotation = Quaternion(ant.right, 0.1f).matrix() * ant.rotation;
+        
+        ant.forward = ant.rotation * vec4(0, 0, 1, 0);
+        ant.up = ant.rotation * vec4(0, 1, 0, 0);
+        ant.right = ant.rotation * vec4(1, 0, 0, 0);
+        
+        return true;
+    }
+    return false;
 }
 
 void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
