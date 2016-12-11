@@ -14,6 +14,7 @@
 #include <Kore/Graphics/Image.h>
 #include <Kore/Graphics/Graphics.h>
 #include <Kore/Graphics/Graphics2.h>
+#include <Kore/Graphics/Color.h>
 #include <Kore/Log.h>
 
 #include "Engine/Collision.h"
@@ -103,6 +104,8 @@ namespace {
     int gameOverKills = 0;
     
     ParticleRenderer* particleRenderer;
+    
+    MeshObject* room;
     
     MeshObject* fridgeBody;
     MeshObject* fridgeDoorOpen;
@@ -231,6 +234,13 @@ namespace {
             ++i;
         }
         
+        // render the room
+        /*
+        vec3 pos = vec3(0, -1.0f, 3.8f);
+        mat4 M = mat4::Translation(pos.x(), pos.y(), pos.z());
+        Kore::Graphics::setMatrix(mLocation, M);
+        room->render(tex, mLocation);*/
+        
         instancedProgram->set();
         
         Graphics::setMatrix(instancedPLocation, P);
@@ -285,13 +295,17 @@ namespace {
          }
          textRenderer->end();*/
 
+        
 		g2->begin(false);
+        
 		if (hovered == nullptr) {
-			g2->setColor(0xFFFFFFFF);
-		}
+            g2->setColor(Color::White);
+        }
 		else {
-			g2->setColor(0xFFFFFF00);
+            g2->setColor(Color::Yellow);
 		}
+        g2->drawRect(0, 0, width / 2, height / 2, 2);
+        
 		g2->drawRect(width / 2 -  1, height / 2 -  1, 2, 2, 1);
 		g2->drawRect(width / 2 +  8, height / 2 -  1, 8, 2, 1);
 		g2->drawRect(width / 2 - 16, height / 2 -  1, 8, 2, 1);
@@ -412,10 +426,12 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
+        room = new MeshObject("Data/Meshes/room.obj", nullptr, "Data/Textures/marble_tile.png", structure, 1.0f);
+        
         log(Info, "Load fridge");
         fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         fridgeDoorClosed = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Meshes/fridge_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", "Data/Meshes/fridge_door_open.obj", "Data/Textures/white.png", structure, 1.0f);
+        fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", nullptr, "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoorClosed, fridgeDoorOpen, vec3(6.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
         log(Info, "Load cupboard and cake");
@@ -438,7 +454,7 @@ namespace {
         log(Info, "Load oven");
 		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
 		ovenDoorClosed = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", "Data/Meshes/oven_door_open.obj", "Data/Textures/white.png", structure, 1.0f);
+        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", nullptr, "Data/Textures/white.png", structure, 1.0f);
         stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
@@ -446,7 +462,7 @@ namespace {
         log(Info, "Load microwave");
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         microwaveDoorClosed = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", "Data/Meshes/microwave_door_open.obj", "Data/Textures/white.png", structure, 1.0f);
+        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", nullptr, "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[11] = new KitchenObject(cupboard, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
@@ -458,8 +474,6 @@ namespace {
         log(Info, "Load cupboard");
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[13] = new KitchenObject(cupboard, nullptr, nullptr, vec3(-4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
-
-
         
 		hovered = nullptr;
 
@@ -473,14 +487,10 @@ namespace {
         Graphics::setTextureAddressing(tex, U, Repeat);
         Graphics::setTextureAddressing(tex, V, Repeat);
         
-        //explosionSystem = new Explosion(vec3(2,6,0), 2.f, 10.f, 300, structures, particleImage);
-        
         cameraPos = vec3(0, 30, 2.5f);
         cameraDir = vec3(0, 0, -2.5f);
         cameraUp = vec3(0, 0, -1);
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
-        
-        //createLandscape(structures, MAP_SIZE_OUTER, stoneMesh, STONE_COUNT, ground);
         
 		g2 = new Graphics2(width, height);
 
@@ -488,15 +498,6 @@ namespace {
         font24 = Kravur::load("Data/Fonts/arial", FontStyle(), 24);
         font34 = Kravur::load("Data/Fonts/arial", FontStyle(), 34);
         font44 = Kravur::load("Data/Fonts/arial", FontStyle(), 44);
-        
-        /*tankTop = new InstancedMeshObject("Data/Meshes/tank_top.obj", "Data/Textures/tank_top.png", structures, MAX_TANKS, 8);
-         tankBottom = new InstancedMeshObject("Data/Meshes/tank_bottom.obj", "Data/Textures/tank_bottom.png", structures, MAX_TANKS, 10);
-         tankFlag = new InstancedMeshObject("Data/Meshes/flag.obj", "Data/Textures/flag.png", structures, MAX_TANKS, 2);
-         
-         tankTics = new TankSystem(&physics, particleRenderer, tankBottom, tankTop, tankFlag, vec3(-MAP_SIZE_INNER / 2, 6, -MAP_SIZE_INNER / 2), vec3(-MAP_SIZE_INNER / 2, 6, MAP_SIZE_INNER / 2), vec3(MAP_SIZE_INNER / 2, 6, -MAP_SIZE_INNER / 2), vec3(MAP_SIZE_INNER / 2, 6, MAP_SIZE_INNER / 2), 3, projectiles, structures, ground);
-         
-         Sound *bgSound = new Sound("Data/Sounds/WarTheme.wav");
-         Mixer::play(bgSound);*/
     }
 }
 
