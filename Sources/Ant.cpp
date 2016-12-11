@@ -164,13 +164,13 @@ void Ant::move() {
 	}
 	*/
 	if (legRotationUp) {
-		legRotation += 0.05f;
+		legRotation += 0.15f;
 		if (legRotation > pi / 4.0f) {
 			legRotationUp = false;
 		}
 	}
 	else {
-		legRotation -= 0.05f;
+		legRotation -= 0.15f;
 		if (legRotation < -pi / 4.0f) {
 			legRotationUp = true;
 		}
@@ -178,7 +178,7 @@ void Ant::move() {
 
 	chooseScent();
 	
-	//position += forward * 0.05f;
+	position += forward * 0.05f;
 }
 
 void Ant::moveEverybody() {
