@@ -26,10 +26,11 @@ namespace {
 		return vec3((float)strtod(strtok(nullptr, " "), nullptr), (float)strtod(strtok(nullptr, " "), nullptr), (float)strtod(strtok(nullptr, " "), nullptr));
 	}
 
-	bool parseLine(char* line, vec3 &v) {
+	bool parseLine(char* line, vec3 &v, bool &isSet) {
 		char* token = strtok(line, " ");
 		if (strcmp(token, "v") == 0) {
 			v = parseVertex(line);
+			isSet = true;
 			return false;
 		}
 		else if (strcmp(token, "s") == 0) {
@@ -48,19 +49,23 @@ void loadColl(const char* filename, vec3 &min, vec3 &max, int &index) {
 	source[length] = 0;
 	
 	vec3 v;
+	bool isSet = false;
 	char* line = tokenize(source, '\n', index);
 	while (line != nullptr) {
-		if (parseLine(line, v)) {
+		if (parseLine(line, v, isSet)) {
 			return;
 		}
 		else {
-			min.set(Kore::min(min.x(), v.x()),
-				Kore::min(min.y(), v.y()),
-				Kore::min(min.z(), v.z()));
+			if (isSet) {
+				min.set(Kore::min(min.x(), v.x()),
+					Kore::min(min.y(), v.y()),
+					Kore::min(min.z(), v.z()));
 
-			max.set(Kore::max(max.x(), v.x()),
-				Kore::max(max.y(), v.y()),
-				Kore::max(max.z(), v.z()));
+				max.set(Kore::max(max.x(), v.x()),
+					Kore::max(max.y(), v.y()),
+					Kore::max(max.z(), v.z()));
+				isSet = false;
+			}
 		}
 
 		delete[] line;

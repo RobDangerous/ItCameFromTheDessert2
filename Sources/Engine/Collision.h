@@ -22,7 +22,16 @@ public:
 	PlaneCollider posZ;
 	PlaneCollider negZ;
 
+	Kore::vec3 pos;
+	Kore::vec3 ext;
+
 	BoxCollider(Kore::vec3 center, Kore::vec3 fullExtents) {
+		pos = center;
+		ext = fullExtents;
+		recalc(pos, ext);
+	}
+
+	void recalc(Kore::vec3 center, Kore::vec3 fullExtents) {
 		posX.normal = Kore::vec3(1, 0, 0);
 		posX.d = center.x() + fullExtents.x() * 0.5f;
 		posX.d *= -1.0f;
@@ -40,29 +49,34 @@ public:
 		negZ.d = center.z() - fullExtents.z() * 0.5f;
 	}
 
+	void setPos(Kore::vec3 center) {
+		pos = center;
+		recalc(pos, ext);
+	}
+
 	bool IntersectsWith(Kore::vec3 orig, Kore::vec3 dir, float &dist) const {
 		double tmin = -std::numeric_limits<double>::infinity();
 		double tmax = std::numeric_limits<double>::infinity();
 		
 		if (dir.x() != 0.0) {
-			double tx1 = (negX.d - orig.x()) / dir.x();
-			double tx2 = (posX.d - orig.x()) / dir.x();
+			double tx1 = (-negX.d * negX.normal.x() - orig.x()) / dir.x();
+			double tx2 = (-posX.d * posX.normal.x() - orig.x()) / dir.x();
 
 			tmin = Kore::max(tmin, Kore::min(tx1, tx2));
 			tmax = Kore::min(tmax, Kore::max(tx1, tx2));
 		}
 
 		if (dir.y() != 0.0) {
-			double ty1 = (negY.d - orig.y()) / dir.y();
-			double ty2 = (posY.d - orig.y()) / dir.y();
+			double ty1 = (-negY.d * negY.normal.y() - orig.y()) / dir.y();
+			double ty2 = (-posY.d * posY.normal.y() - orig.y()) / dir.y();
 
 			tmin = Kore::max(tmin, Kore::min(ty1, ty2));
 			tmax = Kore::min(tmax, Kore::max(ty1, ty2));
 		}
 
 		if (dir.z() != 0.0) {
-			double tz1 = (negZ.d - orig.z()) / dir.z();
-			double tz2 = (posZ.d - orig.z()) / dir.z();
+			double tz1 = (-negZ.d * negZ.normal.z() - orig.z()) / dir.z();
+			double tz2 = (-posZ.d * posZ.normal.z() - orig.z()) / dir.z();
 
 			tmin = Kore::max(tmin, Kore::min(tz1, tz2));
 			tmax = Kore::min(tmax, Kore::max(tz1, tz2));
