@@ -16,6 +16,7 @@
 #include "Rendering.h"
 #include "CollLoader.h"
 #include "assert.h"
+#include "string.h"
 
 class SphereCollider;
 
