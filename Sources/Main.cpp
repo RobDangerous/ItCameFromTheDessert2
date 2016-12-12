@@ -593,7 +593,7 @@ namespace {
 		kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         kitchenObjects[11] = new KitchenObject(cupboard2, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        microwaveTrigger = new TriggerCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->M);
+        microwaveTrigger = new TriggerCollider("Data/Meshes/microwave_trigger.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->M);
         kitchenObjects[10]->setTriggerCollider(microwaveTrigger);
         //triggerCollider[3] = microwaveTrigger;
         
