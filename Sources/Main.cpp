@@ -105,6 +105,7 @@ namespace {
     Texture* particleImage;
     
     double lastTime;
+    const int maxPizza = 5;
 	int pizzaCount = 0;
 
     ParticleRenderer* particleRenderer;
@@ -287,9 +288,9 @@ namespace {
             kitchenObjects[i]->render(tex, mLocation);
             
             // test: render trigger collider
-            /*if (kitchenObjects[i]->triggerCollider != nullptr) {
+            if (kitchenObjects[i]->triggerCollider != nullptr) {
                 kitchenObjects[i]->triggerCollider->renderTest(tex, mLocation);
-            }*/
+            }
             ++i;
         }
         
@@ -307,9 +308,8 @@ namespace {
         Ant::moveEverybody(deltaT);
         Ant::render(instancedVLocation, instancedTex, View);
         
-        /*projectiles->render(vLocation, tex, View);
-         particleRenderer->render(tex, View, vLocation);
-         
+        
+        /*
          textRenderer->start();
          gameOver = gameOver || tankTics->deserted >= MAX_DESERTED;
          if (t < START_DELAY) {
@@ -374,6 +374,13 @@ namespace {
 		g2->drawRect(width / 2 -  1, height / 2 +  8, 2, 8, 1);
 		g2->drawRect(width / 2 -  1, height / 2 - 16, 2, 8, 1);
 		g2->end();
+        
+        g2->setFont(font24);
+        g2->setFontColor(Color::Black);
+        g2->setFontSize(24);
+        char pizza_text[42];
+        sprintf(pizza_text, "You have %i pizza", maxPizza-pizzaCount);
+        g2->drawString(pizza_text, 10, 10);
         
         Graphics::end();
 		Graphics::swapBuffers();
@@ -473,7 +480,7 @@ namespace {
 					}
 				}
 			}
-			else if (dist < std::numeric_limits<float>::infinity() && pizzaCount < 6) {
+			else if (dist < std::numeric_limits<float>::infinity() && pizzaCount < maxPizza) {
 				vec3 pos = cameraPos + cameraDir * dist;
 
 				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/pizza.png", structure, 1.0f);
