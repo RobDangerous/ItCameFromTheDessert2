@@ -118,7 +118,7 @@ public:
     Kore::VertexBuffer* vertexBuffer;
 	Kore::IndexBuffer* indexBuffer;
     
-    static const int colliderCount = 10;
+    static const int colliderCount = 15;
     BoxCollider* collider[colliderCount];
 
 	Mesh* mesh;
