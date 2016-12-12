@@ -234,6 +234,14 @@ void Ant::chooseScent(bool force) {
 	}
 }
 
+void Ant::morePizze(Kore::vec3 position) {
+
+}
+
+void Ant::lessPizza(Kore::vec3 position) {
+
+}
+
 extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 //extern TriggerCollider* triggerCollider[];
@@ -320,7 +328,7 @@ void Ant::move(float deltaTime) {
 
 	chooseScent(false);
 	
-	//**position += forward * 0.05f;
+	position += forward * 0.03f;
 }
 
 void Ant::moveEverybody(float deltaTime) {
@@ -330,6 +338,9 @@ void Ant::moveEverybody(float deltaTime) {
 }
 
 bool Ant::intersects(vec3 dir) {
+	if ((position + dir * 0.5f).y() <= -1) {
+		return true;
+	}
 	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
 		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
 			return true;
