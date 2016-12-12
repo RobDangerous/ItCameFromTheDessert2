@@ -497,7 +497,7 @@ namespace {
 				vec3 pos = cameraPos + cameraDir * dist;
 
 				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/pizza.png", structure, 1.0f);
-				kitchenObjects[14 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(0.0f, 0.0f, 0.0f), true);
+				kitchenObjects[19 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(0.0f, 0.0f, 0.0f), true);
 
 				++pizzaCount;
 			}
