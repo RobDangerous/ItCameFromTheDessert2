@@ -235,11 +235,25 @@ void Ant::chooseScent(bool force) {
 }
 
 void Ant::morePizze(Kore::vec3 position) {
-
+	vec3i pos = gridPosition(position);
+	for (int x = pos.x() - 5; x <= pos.x() + 5; ++x) {
+		for (int y = pos.y() - 5; y <= pos.y() + 5; ++y) {
+			for (int z = pos.z() - 5; z <= pos.z() + 5; ++z) {
+				setScent(x, y, z, scentAt(x, y, z) + 5.0f);
+			}
+		}
+	}
 }
 
 void Ant::lessPizza(Kore::vec3 position) {
-
+	vec3i pos = gridPosition(position);
+	for (int x = pos.x() - 5; x <= pos.x() + 5; ++x) {
+		for (int y = pos.y() - 5; y <= pos.y() + 5; ++y) {
+			for (int z = pos.z() - 5; z <= pos.z() + 5; ++z) {
+				setScent(x, y, z, scentAt(x, y, z) - 5.0f);
+			}
+		}
+	}
 }
 
 extern MeshObject* objects[];
