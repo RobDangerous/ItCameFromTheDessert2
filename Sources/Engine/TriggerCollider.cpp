@@ -3,7 +3,7 @@
 #include "TriggerCollider.h"
 #include "Collision.h"
 
-TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale) : M(M) {
+TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale) {
     mesh = loadObj(meshFile);
     image = new Kore::Texture(textureFile, true);
     
@@ -35,10 +35,11 @@ TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, 
     int index = 0;
     loadColl(meshFile, min, max, index);
     collider = new BoxCollider(min, max);
+    collider->trans(M);
 }
 
 void TriggerCollider::renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {
-    Kore::Graphics::setMatrix(mLocation, M);
+    Kore::Graphics::setMatrix(mLocation, collider->M);
     Kore::Graphics::setTexture(tex, image);
     Kore::Graphics::setVertexBuffer(*vertexBuffer);
     Kore::Graphics::setIndexBuffer(*indexBuffer);

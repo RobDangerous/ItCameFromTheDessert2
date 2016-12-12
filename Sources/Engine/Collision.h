@@ -17,6 +17,8 @@ class BoxCollider {
 public:
 	Kore::vec4 min;
 	Kore::vec4 max;
+    
+    Kore::mat4 M;
 
 	BoxCollider(Kore::vec4 min, Kore::vec4 max) : min(min), max(max) { }
 
@@ -32,6 +34,7 @@ public:
 
 		min.z() = Kore::min(mmin.z(), mmax.z());
 		max.z() = Kore::max(mmin.z(), mmax.z());
+        M = m;
 	}
 
 	void swap(float &a, float &b) const {
