@@ -3,7 +3,7 @@
 #include "TriggerCollider.h"
 #include "Collision.h"
 
-TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale) : M(M) {
+TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale) {
     mesh = loadObj(meshFile);
     image = new Kore::Texture(textureFile, true);
     
@@ -30,18 +30,16 @@ TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, 
     }
     indexBuffer->unlock();
     
-    Kore::vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
-    Kore::vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
+    Kore::vec4 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), 1);
+    Kore::vec4 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), 1);
     int index = 0;
     loadColl(meshFile, min, max, index);
-    Kore::vec3 center = min + (max - min) / 2;
-    Kore::vec3 extends = max - min;
-    collider = new BoxCollider(center, extends);
-    collider->setPos(M * vec4(0, 0, 0, 1));
+    collider = new BoxCollider(min, max);
+    collider->trans(M);
 }
 
 void TriggerCollider::renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {
-    Kore::Graphics::setMatrix(mLocation, M);
+    Kore::Graphics::setMatrix(mLocation, collider->M);
     Kore::Graphics::setTexture(tex, image);
     Kore::Graphics::setVertexBuffer(*vertexBuffer);
     Kore::Graphics::setIndexBuffer(*indexBuffer);

@@ -100,7 +100,7 @@ namespace {
     ConstantLocation lightPosLocation;
 	VertexStructure structure;
     
-    BoxCollider boxCollider(vec3(-46.0f, -4.0f, 44.0f), vec3(10.6f, 4.4f, 4.0f));
+    //BoxCollider boxCollider(vec3(-46.0f, -4.0f, 44.0f), vec3(10.6f, 4.4f, 4.0f));
     
     Texture* particleImage;
     
@@ -359,11 +359,14 @@ namespace {
 		if (hovered == nullptr) {
             g2->setColor(Color::White);
         }
-		else if (hovered->door_closed == nullptr) {
+		else if (hovered->pizza) {
             g2->setColor(Color::Red);
 		}
-		else {
+		else if (hovered->door_closed == nullptr) {
 			g2->setColor(Color::Green);
+		}
+		else {
+			g2->setColor(Color::Blue);
 		}
 		g2->drawRect(width / 2 -  1, height / 2 -  1, 2, 2, 1);
 		g2->drawRect(width / 2 +  8, height / 2 -  1, 8, 2, 1);
@@ -457,13 +460,24 @@ namespace {
 			hovered = getIntersectingMesh(cameraPos, cameraDir, dist);
 
 			if (hovered != nullptr && hovered->pizza) {
-				hovered->visible = false;
+				for (int i = 0; i < pizzaCount; ++i) {
+					if (kitchenObjects[14 + i] == hovered) {
+						kitchenObjects[14 + i] = kitchenObjects[14 + pizzaCount - 1];
+						kitchenObjects[14 + pizzaCount - 1] = nullptr;
+
+						delete hovered->body;
+						delete hovered;
+						hovered = nullptr;
+
+						--pizzaCount;
+					}
+				}
 			}
-			else if (pizzaCount < 6 && dist < std::numeric_limits<float>::infinity()) {
+			else if (dist < std::numeric_limits<float>::infinity() && pizzaCount < 6) {
 				vec3 pos = cameraPos + cameraDir * dist;
 
 				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/pizza.png", structure, 1.0f);
-				kitchenObjects[14 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(pi, 0.0f, 0.0f), true);
+				kitchenObjects[14 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(0.0f, 0.0f, 0.0f), true);
 
 				++pizzaCount;
 			}
@@ -581,7 +595,7 @@ namespace {
         kitchenObjects[8]->setTriggerCollider(ovenTrigger);
         //triggerCollider[1] = ovenTrigger;
         
-        stoveTrigger = new TriggerCollider("Data/Meshes/stove_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[9]->M);
+        stoveTrigger = new TriggerCollider("Data/Meshes/stove_trigger.obj", "Data/Textures/black.png", structure, kitchenObjects[9]->M);
         kitchenObjects[9]->setTriggerCollider(stoveTrigger);
         //triggerCollider[2] = stoveTrigger;
 
@@ -601,7 +615,7 @@ namespace {
         wash = new MeshObject("Data/Meshes/wash.obj", "Data/Meshes/wash_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[12] = new KitchenObject(wash, nullptr, nullptr, vec3(-2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        washTrigger = new TriggerCollider("Data/Meshes/wash_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[12]->M);
+        washTrigger = new TriggerCollider("Data/Meshes/wash_trigger.obj", "Data/Textures/black.png", structure, kitchenObjects[12]->M);
         kitchenObjects[12]->setTriggerCollider(washTrigger);
         //triggerCollider[4] = washTrigger;
         

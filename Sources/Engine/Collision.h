@@ -15,70 +15,17 @@ public:
 
 class BoxCollider {
 public:
-	PlaneCollider posX;
-	PlaneCollider negX;
-	PlaneCollider posY;
-	PlaneCollider negY;
-	PlaneCollider posZ;
-	PlaneCollider negZ;
+	Kore::vec4 min;
+	Kore::vec4 max;
+    
+    Kore::mat4 M;
 
-	Kore::vec3 pos;
-	Kore::vec3 ext;
-
-	BoxCollider(Kore::vec3 center, Kore::vec3 fullExtents) {
-		pos = center;
-		ext = fullExtents;
-		recalc(pos, ext);
-	}
-
-	void recalc(Kore::vec3 center, Kore::vec3 fullExtents) {
-		posX.normal = Kore::vec3(1, 0, 0);
-		posX.d = center.x() + fullExtents.x() * 0.5f;
-		posX.d *= -1.0f;
-		negX.normal = Kore::vec3(-1, 0, 0);
-		negX.d = center.x() - fullExtents.x() * 0.5f;
-		posY.normal = Kore::vec3(0, 1, 0);
-		posY.d = center.y() + fullExtents.y() * 0.5f;
-		posY.d *= -1.0f;
-		negY.normal = Kore::vec3(0, -1, 0);
-		negY.d = center.y() - fullExtents.y() * 0.5f;
-		posZ.normal = Kore::vec3(0, 0, 1);
-		posZ.d = center.z() + fullExtents.z() * 0.5f;
-		posZ.d *= -1.0f;
-		negZ.normal = Kore::vec3(0, 0, -1);
-		negZ.d = center.z() - fullExtents.z() * 0.5f;
-	}
-
-	void setPos(Kore::vec3 center) {
-		pos = center;
-		recalc(pos, ext);
-	}
+	BoxCollider(Kore::vec4 min, Kore::vec4 max) : min(min), max(max) { }
 
 	void trans(Kore::mat4 m) {
-		setMinMax(m * getMin(), m * getMax());
-	}
-
-	void setMinMax(Kore::vec4 min, Kore::vec4 max) {
-		negX.d = -min.x() / negX.normal.x();
-		posX.d = -max.x() / posX.normal.x();
-		negY.d = -min.y() / negY.normal.y();
-		posY.d = -max.y() / posY.normal.y();
-		negZ.d = -min.z() / negZ.normal.z();
-		posZ.d = -max.z() / posZ.normal.z();
-	}
-
-	Kore::vec4 getMin() {
-		return Kore::vec4(-negX.d * negX.normal.x(),
-			-negY.d * negY.normal.y(),
-			-negZ.d * negZ.normal.z(),
-			1);
-	}
-
-	Kore::vec4 getMax() {
-		return Kore::vec4(-posX.d * posX.normal.x(),
-			-posY.d * posY.normal.y(),
-			-posZ.d * posZ.normal.z(),
-			1);
+		min = m * min;
+		max = m * max;
+        M = m;
 	}
 
 	void swap(float &a, float &b) const {
@@ -92,24 +39,24 @@ public:
 		double tmax = std::numeric_limits<double>::infinity();
 		
 		if (dir.x() != 0.0) {
-			double tx1 = (-negX.d * negX.normal.x() - orig.x()) / dir.x();
-			double tx2 = (-posX.d * posX.normal.x() - orig.x()) / dir.x();
+			double tx1 = (min.x() - orig.x()) / dir.x();
+			double tx2 = (max.x() - orig.x()) / dir.x();
 
 			tmin = Kore::max(tmin, Kore::min(tx1, tx2));
 			tmax = Kore::min(tmax, Kore::max(tx1, tx2));
 		}
 
 		if (dir.y() != 0.0) {
-			double ty1 = (-negY.d * negY.normal.y() - orig.y()) / dir.y();
-			double ty2 = (-posY.d * posY.normal.y() - orig.y()) / dir.y();
+			double ty1 = (min.y() - orig.y()) / dir.y();
+			double ty2 = (max.y() - orig.y()) / dir.y();
 
 			tmin = Kore::max(tmin, Kore::min(ty1, ty2));
 			tmax = Kore::min(tmax, Kore::max(ty1, ty2));
 		}
 
 		if (dir.z() != 0.0) {
-			double tz1 = (negZ.d * negZ.normal.z() - orig.z()) / dir.z();
-			double tz2 = (posZ.d * posZ.normal.z() - orig.z()) / dir.z();
+			double tz1 = (min.z() - orig.z()) / dir.z();
+			double tz2 = (max.z() - orig.z()) / dir.z();
 
 			tmin = Kore::max(tmin, Kore::min(tz1, tz2));
 			tmax = Kore::min(tmax, Kore::max(tz1, tz2));
@@ -120,9 +67,9 @@ public:
 	}
 
 	bool IsInside(Kore::vec3 point) {
-		return point.x() <= pos.x() + ext.x() / 2.0f && point.x() >= pos.x() - ext.x() / 2.0f
-			&& point.y() <= pos.y() + ext.y() / 2.0f && point.y() >= pos.y() - ext.y() / 2.0f
-			&& point.z() <= pos.z() + ext.z() / 2.0f && point.z() >= pos.z() - ext.z() / 2.0f;
+		return point.x() <= max.x() && point.x() >= min.x()
+			&& point.y() <= max.y() && point.y() >= min.y()
+			&& point.z() <= max.z() && point.z() >= min.z();
 	}
 };
 
@@ -221,6 +168,7 @@ public:
 		return Distance(other) > radius;
 	}
 
+	/*
 	bool IsInside(const BoxCollider& other) {
 		if (!IsInside(other.posX))  { return false; }
 		if (!IsInside(other.negX))  { return false; }
@@ -276,7 +224,7 @@ public:
 	bool IntersectsWith(const BoxCollider& other) {
 		return IsInside(other) || IntersectsWithSides(other);
 	}
-
+	*/
 	Kore::vec3 GetCollisionNormal(const TriangleCollider& other) {
 		// Use the normal of the triangle plane
 		Kore::vec3 n = (other.B - other.A).cross(other.C - other.A);

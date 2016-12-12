@@ -19,8 +19,6 @@ class TriggerCollider {
     
     Mesh* mesh;
     Kore::Texture* image;
-
-    mat4 M;
     
     BoxCollider* collider;
     
