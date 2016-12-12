@@ -138,7 +138,7 @@ extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
-	/*
+	
 	if (goingup) {
 		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
 			rotation = mat4::Identity();
@@ -162,7 +162,7 @@ void Ant::move() {
 			goingup = true;
 		}
 	}
-	*/
+	
 	if (legRotationUp) {
 		legRotation += 0.15f;
 		if (legRotation > pi / 4.0f) {
@@ -176,7 +176,7 @@ void Ant::move() {
 		}
 	}
 
-	chooseScent();
+	//chooseScent();
 	
 	position += forward * 0.05f;
 }
@@ -199,8 +199,9 @@ bool Ant::intersects(vec3 dir) {
 bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
     if (obj == nullptr) return false;
     for (int k = 0; k < obj->colliderCount; ++k) {
-        float distance;
-		if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < .5f) {
+        //float distance;
+		//if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < .1f) {
+		if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * 0.5f)) {
 			return true;
 		}
     }

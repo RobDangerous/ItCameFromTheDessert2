@@ -85,6 +85,12 @@ public:
 		dist = tmin;
 		return tmax >= 0 && tmax >= tmin;
 	}
+
+	bool IsInside(Kore::vec3 point) {
+		return point.x() <= pos.x() + ext.x() / 2.0f && point.x() >= pos.x() - ext.x() / 2.0f
+			&& point.y() <= pos.y() + ext.y() / 2.0f && point.y() >= pos.y() - ext.y() / 2.0f
+			&& point.z() <= pos.z() + ext.z() / 2.0f && point.z() >= pos.z() - ext.z() / 2.0f;
+	}
 };
 
 class TriangleCollider {
