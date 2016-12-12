@@ -25,6 +25,9 @@ public:
 	Kore::vec3 dir;
 	Kore::mat4 rotation;
     
+    float energy;
+    bool dead;
+    
 	Kore::vec3i lastGrid;
 	float legRotation;
 	bool legRotationUp;
