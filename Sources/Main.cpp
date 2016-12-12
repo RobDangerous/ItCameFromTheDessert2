@@ -40,7 +40,7 @@
 
 using namespace Kore;
 
-KitchenObject* kitchenObjects[21];
+KitchenObject* kitchenObjects[30];
 //TriggerCollider* triggerCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
@@ -123,6 +123,11 @@ namespace {
 	MeshObject* cupboard1;
 	MeshObject* cupboard2;
 	MeshObject* cupboard3;
+    MeshObject* cupboard4;
+    MeshObject* cupboard5;
+    MeshObject* cupboard6;
+    MeshObject* cupboard7;
+    MeshObject* cupboard8;
 	MeshObject* chair1;
 	MeshObject* chair2;
 	MeshObject* chair3;
@@ -476,9 +481,9 @@ namespace {
 
 			if (hovered != nullptr && hovered->pizza) {
 				for (int i = 0; i < pizzaCount; ++i) {
-					if (kitchenObjects[14 + i] == hovered) {
-						kitchenObjects[14 + i] = kitchenObjects[14 + pizzaCount - 1];
-						kitchenObjects[14 + pizzaCount - 1] = nullptr;
+					if (kitchenObjects[19 + i] == hovered) {
+						kitchenObjects[19 + i] = kitchenObjects[19 + pizzaCount - 1];
+						kitchenObjects[19 + pizzaCount - 1] = nullptr;
 
 						delete hovered->body;
 						delete hovered;
@@ -641,6 +646,18 @@ namespace {
         log(Info, "Load cupboard");
 		cupboard3 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
 		kitchenObjects[13] = new KitchenObject(cupboard3, nullptr, nullptr, vec3(-4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        
+        cupboard4 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+        cupboard5 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+        cupboard6 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+        cupboard7 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+        cupboard8 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+        kitchenObjects[14] = new KitchenObject(cupboard4, nullptr, nullptr, vec3(4.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[15] = new KitchenObject(cupboard5, nullptr, nullptr, vec3(2.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[16] = new KitchenObject(cupboard6, nullptr, nullptr, vec3(0.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[17] = new KitchenObject(cupboard7, nullptr, nullptr, vec3(-2.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[18] = new KitchenObject(cupboard8, nullptr, nullptr, vec3(-4.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
         
 		hovered = nullptr;
 
