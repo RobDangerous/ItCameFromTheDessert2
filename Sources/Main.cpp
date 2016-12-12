@@ -577,7 +577,7 @@ namespace {
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        ovenTrigger = new TriggerCollider("Data/Meshes/oven_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[8]->M);
+        ovenTrigger = new TriggerCollider("Data/Meshes/oven_trigger.obj", "Data/Textures/black.png", structure, kitchenObjects[8]->M);
         kitchenObjects[8]->setTriggerCollider(ovenTrigger);
         //triggerCollider[1] = ovenTrigger;
         
