@@ -288,9 +288,9 @@ namespace {
             kitchenObjects[i]->render(tex, mLocation);
             
             // test: render trigger collider
-            if (kitchenObjects[i]->triggerCollider != nullptr) {
+            /*if (kitchenObjects[i]->triggerCollider != nullptr) {
                 kitchenObjects[i]->triggerCollider->renderTest(tex, mLocation);
-            }
+            }*/
             ++i;
         }
         
