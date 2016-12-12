@@ -89,7 +89,7 @@ void Ant::init() {
 	vertexBuffers[1] = new VertexBuffer(maxAnts, *structures[1], 1);
 
 	for (int i = 0; i < maxAnts; ++i) {
-		ants[i].position = vec3(Random::get(-100, 100) / 10.0f, 0, Random::get(-100, 100) / 10.0f);
+		ants[i].position = vec3(Random::get(-100, 100) / 10.0f, -1, Random::get(-100, 100) / 10.0f);
 		//ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
         
         ants[i].energy = 0;
@@ -262,6 +262,15 @@ void Ant::move(float deltaTime) {
 			mode = Floor;
 			chooseScent(true);
 		}
+		else if (intersects(vec4(0, -1, 0, 0))) {
+			forward = vec4(0, 0, -1, 0);
+			up = vec4(0, 1, 0, 0);
+			right = vec4(-1, 0, 0, 0);
+			rotation = Quaternion(vec4(0, 1, 0, 0), -pi / 2).matrix();
+
+			mode = Floor;
+			chooseScent(true);
+		}
 	}
 	else if (mode == BackWall) {
 		if (intersects(forward)) {
@@ -333,6 +342,12 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
     for (int k = 0; k < obj->colliderCount; ++k) {
         //float distance;
 		//if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < .1f) {
+		/*for (float offset = 0.0f; offset < 10.0f; offset += 0.1f) {
+			if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * offset) && dir.y() == -1) {
+				return true;
+			}
+		}*/
+
 		if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * 0.5f)) {
 			return true;
 		}
