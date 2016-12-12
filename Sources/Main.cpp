@@ -81,6 +81,7 @@ namespace {
     
     mat4 P;
     mat4 View;
+	mat4 rooM;
     
     float horizontalAngle = -1.24f * pi;
     float verticalAngle = -0.5f;
@@ -212,6 +213,14 @@ namespace {
 				}
 			}
 		}
+
+		for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
+			float d = rayIntersectsWithMesh(pos, dir, roomObjects[oi]);
+			if (d < distMin) {
+				distMin = d;
+				result = nullptr;
+			}
+		}
 		return result;
 	}
     
@@ -299,9 +308,7 @@ namespace {
         }
         
         // render the room
-        vec3 pos = vec3(0, -1.0f, 6.5f);
-        mat4 M = mat4::Translation(pos.x(), pos.y(), pos.z());
-        Kore::Graphics::setMatrix(mLocation, M);
+        Kore::Graphics::setMatrix(mLocation, rooM);
 
 		for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
 			roomObjects[oi]->render(tex, mLocation);
@@ -414,6 +421,19 @@ namespace {
 			crouch = true;
 		} else if (code == Key_Space) {
 			jump = true;
+		} else if (code == Key_R) {
+			for (int i = 0; i < maxPizza; ++i) {
+				if (kitchenObjects[19 + i] != nullptr) {
+					if (kitchenObjects[19 + i] == hovered) hovered = nullptr;
+
+					delete kitchenObjects[19 + i]->body;
+					delete kitchenObjects[19 + i];
+
+					kitchenObjects[19 + i] = nullptr;
+
+				}
+			}
+			pizzaCount = 0;
 		} else if (code == Key_Escape) {
             Kore::System::stop();
         } else if (code == Key_L) {
@@ -472,15 +492,6 @@ namespace {
 		if (button == 0) {
 			float dist = std::numeric_limits<float>::infinity();
 			hovered = getIntersectingMesh(cameraPos, cameraDir, dist);
-
-			for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
-				roomObjects[oi]->render(tex, mLocation);
-				float d = rayIntersectsWithMesh(cameraPos, cameraDir, roomObjects[oi]);
-				if (d < dist) {
-					dist = d;
-					hovered = nullptr;
-				}
-			}
 
 			if (hovered != nullptr && hovered->pizza) {
 				for (int i = 0; i < pizzaCount; ++i) {
@@ -574,12 +585,18 @@ namespace {
         pLocation = program->getConstantLocation("P");
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
-        
+
+		rooM = mat4::Translation(0, -1.0f, 6.5f);
         roomObjects[0] = new MeshObject("Data/Meshes/room_floor.obj", "Data/Meshes/room_floor_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+		roomObjects[0]->collider[0]->trans(rooM);
 		roomObjects[1] = new MeshObject("Data/Meshes/room_wall1.obj", "Data/Meshes/room_wall1_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[1]->collider[0]->trans(rooM);
 		roomObjects[2] = new MeshObject("Data/Meshes/room_wall2.obj", "Data/Meshes/room_wall2_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[2]->collider[0]->trans(rooM);
 		roomObjects[3] = new MeshObject("Data/Meshes/room_wall3.obj", "Data/Meshes/room_wall3_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[3]->collider[0]->trans(rooM);
 		roomObjects[4] = new MeshObject("Data/Meshes/room_wall4.obj", "Data/Meshes/room_wall4_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[4]->collider[0]->trans(rooM);
 		roomObjects[5] = nullptr;
 
         log(Info, "Load fridge");
