@@ -317,10 +317,8 @@ namespace {
             g2->setColor(Color::White);
         }
 		else {
-            g2->setColor(Color::Yellow);
+            g2->setColor(Color::Cyan);
 		}
-        g2->drawRect(0, 0, width / 2, height / 2, 2);
-        
 		g2->drawRect(width / 2 -  1, height / 2 -  1, 2, 2, 1);
 		g2->drawRect(width / 2 +  8, height / 2 -  1, 8, 2, 1);
 		g2->drawRect(width / 2 - 16, height / 2 -  1, 8, 2, 1);
@@ -546,7 +544,7 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
-	//Mouse::the()->lock(0);
+	Mouse::the()->lock(0);
 
 	Kore::System::start();
 
