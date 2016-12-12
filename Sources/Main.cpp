@@ -41,7 +41,7 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[15];
-DeathCollider* deathCollider[5];
+DeathCollider* deathCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
 	const char* title = "It Came from the Dessert";
@@ -594,6 +594,10 @@ namespace {
     }
 }
 
+#ifdef SYS_WINDOWS
+#include <Windows.h>
+#endif
+
 int kore(int argc, char** argv) {
     Kore::System::setName(title);
 	Kore::System::setup();
@@ -626,7 +630,16 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
+#ifdef SYS_WINDOWS
+	char name[256];
+	DWORD size = 255;
+	GetUserNameA(name, &size);
+	if (strcmp(name, "Robert") != 0) {
+		Mouse::the()->lock(0);
+	}
+#else
 	Mouse::the()->lock(0);
+#endif
 
 	Kore::System::start();
 
