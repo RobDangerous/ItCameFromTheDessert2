@@ -545,7 +545,7 @@ namespace {
         fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", nullptr, "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoorClosed, fridgeDoorOpen, vec3(6.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
-        fridgeTrigger = new TriggerCollider("Data/Meshes/fridge_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[0]->M);
+        fridgeTrigger = new TriggerCollider("Data/Meshes/fridge_trigger.obj", "Data/Textures/black.png", structure, kitchenObjects[0]->M);
         kitchenObjects[0]->setTriggerCollider(fridgeTrigger);
         //triggerCollider[0] = fridgeTrigger;
         
