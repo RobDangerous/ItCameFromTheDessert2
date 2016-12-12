@@ -5,6 +5,7 @@
 #include <Kore/Graphics/Graphics.h>
 
 #include "Engine/MeshObject.h"
+#include "Engine/DeathCollider.h"
 
 class InstancedMeshObject;
 
@@ -13,8 +14,8 @@ public:
 	static void init();
 	Ant();
 	void chooseScent();
-	static void moveEverybody();
-	void move();
+	static void moveEverybody(float deltaTime);
+	void move(float deltaTime);
 	static void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
 
 	Kore::vec3 position;
@@ -29,4 +30,6 @@ public:
 private:
     bool intersectsWith(MeshObject* obj, Kore::vec3 dir);
 	bool intersects(Kore::vec3 dir);
+    
+    bool isDying();
 };

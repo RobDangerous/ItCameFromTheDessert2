@@ -19,6 +19,7 @@
 
 #include "Engine/Collision.h"
 #include "Engine/InstancedMeshObject.h"
+#include "Engine/DeathCollider.h"
 #include "Engine/ObjLoader.h"
 #include "Engine/Particles.h"
 #include "Engine/PhysicsObject.h"
@@ -40,6 +41,7 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[15];
+DeathCollider* deathCollider[5];
 
 namespace {
 	const char* title = "It Came from the Dessert";
@@ -123,6 +125,11 @@ namespace {
     MeshObject* stove;
     MeshObject* wash;
 	KitchenObject* hovered;
+    
+    // Death collider
+    DeathCollider* microwaveBodyDeathCollider;
+    DeathCollider* fridgeDeathCollider;
+    DeathCollider* ovenDeathCollider;
     
     vec3 screenToWorld(vec2 screenPos) {
         vec4 pos((2 * screenPos.x()) / width - 1.0f, -((2 * screenPos.y()) / height - 1.0f), 0.0f, 1.0f);
@@ -274,12 +281,19 @@ namespace {
         Kore::Graphics::setMatrix(mLocation, M);
         room->render(tex, mLocation);*/
         
+        // remove later
+        /*i = 0;
+        while (deathCollider[i] != nullptr) {
+            deathCollider[i]->renderTest(tex, mLocation);
+            ++i;
+        }*/
+        
         instancedProgram->set();
         
         Graphics::setMatrix(instancedPLocation, P);
         Graphics::setMatrix(instancedVLocation, View);
         
-        Ant::moveEverybody();
+        Ant::moveEverybody(deltaT);
         Ant::render(instancedVLocation, instancedTex, View);
         
         /*projectiles->render(vLocation, tex, View);
@@ -499,6 +513,9 @@ namespace {
         fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", nullptr, "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoorClosed, fridgeDoorOpen, vec3(6.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
+        fridgeDeathCollider = new DeathCollider("Data/Meshes/fridge_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[0]->getM());
+        deathCollider[0] = fridgeDeathCollider;
+        
         log(Info, "Load cupboard and cake");
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         cake = new MeshObject("Data/Meshes/cake.obj", "Data/Meshes/cake_collider.obj", "Data/Textures/CakeTexture.png", structure, 1.0f);
@@ -523,13 +540,19 @@ namespace {
         stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        ovenDeathCollider = new DeathCollider("Data/Meshes/oven_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[8]->getM());
+        deathCollider[1] = ovenDeathCollider;
 
         log(Info, "Load microwave");
-        microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        microwaveDoorClosed = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", nullptr, "Data/Textures/white.png", structure, 1.0f);
+        microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
+        microwaveDoorClosed = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
+        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", nullptr, "Data/Textures/microwaveTexture.png", structure, 1.0f);
         kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         kitchenObjects[11] = new KitchenObject(cupboard, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        microwaveBodyDeathCollider = new DeathCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->getM(), 1.0f);
+        deathCollider[2] = microwaveBodyDeathCollider;
         
         log(Info, "Load wash");
         wash = new MeshObject("Data/Meshes/wash.obj", "Data/Meshes/wash_collider.obj", "Data/Textures/white.png", structure, 1.0f);

@@ -46,3 +46,7 @@ void KitchenObject::openOrClose() {
         closed = true;
     }
 }
+
+mat4 KitchenObject::getM() {
+    return M;
+}
