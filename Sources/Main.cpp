@@ -128,6 +128,7 @@ namespace {
     
     // Death collider
     DeathCollider* microwaveBodyDeathCollider;
+    DeathCollider* fridgeDeathCollider;
     
     vec3 screenToWorld(vec2 screenPos) {
         vec4 pos((2 * screenPos.x()) / width - 1.0f, -((2 * screenPos.y()) / height - 1.0f), 0.0f, 1.0f);
@@ -291,7 +292,7 @@ namespace {
         Graphics::setMatrix(instancedPLocation, P);
         Graphics::setMatrix(instancedVLocation, View);
         
-        Ant::moveEverybody();
+        Ant::moveEverybody(deltaT);
         Ant::render(instancedVLocation, instancedTex, View);
         
         /*projectiles->render(vLocation, tex, View);
@@ -511,6 +512,9 @@ namespace {
         fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", nullptr, "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoorClosed, fridgeDoorOpen, vec3(6.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
+        fridgeDeathCollider = new DeathCollider("Data/Meshes/fridge_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[0]->getM(), 1.0f);
+        deathCollider[0] = fridgeDeathCollider;
+        
         log(Info, "Load cupboard and cake");
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         cake = new MeshObject("Data/Meshes/cake.obj", "Data/Meshes/cake_collider.obj", "Data/Textures/CakeTexture.png", structure, 1.0f);
@@ -544,7 +548,7 @@ namespace {
         kitchenObjects[11] = new KitchenObject(cupboard, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
         microwaveBodyDeathCollider = new DeathCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->getM(), 1.0f);
-        deathCollider[0] = microwaveBodyDeathCollider;
+        deathCollider[1] = microwaveBodyDeathCollider;
         
         log(Info, "Load wash");
         wash = new MeshObject("Data/Meshes/wash.obj", "Data/Meshes/wash_collider.obj", "Data/Textures/white.png", structure, 1.0f);

@@ -14,8 +14,8 @@ public:
 	static void init();
 	Ant();
 	void chooseScent();
-	static void moveEverybody();
-	void move();
+	static void moveEverybody(float deltaTime);
+	void move(float deltaTime);
 	static void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
 
 	Kore::vec3 position;
