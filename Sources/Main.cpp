@@ -72,9 +72,9 @@ namespace {
     mat4 P;
     mat4 View;
     
-    float horizontalAngle = 0.0;
-    float verticalAngle = -pi/2;
-    vec3 cameraPos;
+    float horizontalAngle = 0.85f * pi;
+    float verticalAngle = 0.f;
+    vec3 cameraPos = vec3(-5, 3, 15);
     vec3 cameraDir;
     vec3 cameraUp;
     
@@ -367,6 +367,7 @@ namespace {
     void mouseMove(int windowId, int x, int y, int movementX, int movementY) {
         horizontalAngle += CAMERA_ROTATION_SPEED * movementX;
         verticalAngle -= CAMERA_ROTATION_SPEED * movementY;
+		verticalAngle = Kore::min(Kore::max(verticalAngle, -0.49f * pi), 0.49f * pi);
     }
     
     void mousePress(int windowId, int button, int x, int y) {
@@ -498,9 +499,6 @@ namespace {
         Graphics::setTextureAddressing(tex, U, Repeat);
         Graphics::setTextureAddressing(tex, V, Repeat);
         
-        cameraPos = vec3(0, 30, 2.5f);
-        cameraDir = vec3(0, 0, -2.5f);
-        cameraUp = vec3(0, 0, -1);
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
         
 		g2 = new Graphics2(width, height);
