@@ -41,7 +41,7 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[30];
-MeshObject* roomObjects[7];
+MeshObject* roomObjects[8];
 //TriggerCollider* triggerCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
@@ -597,7 +597,9 @@ namespace {
 		roomObjects[3]->collider[0]->trans(rooM);
 		roomObjects[4] = new MeshObject("Data/Meshes/room_wall4.obj", "Data/Meshes/room_wall4_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
 		roomObjects[4]->collider[0]->trans(rooM);
-		roomObjects[5] = nullptr;
+		roomObjects[5] = new MeshObject("Data/Meshes/room_ceiling.obj", "Data/Meshes/room_ceiling_collider.obj", "Data/Textures/ceilingTexture.png", structure, 1.0f);
+		roomObjects[5]->collider[0]->trans(rooM);
+		roomObjects[6] = nullptr;
 
         log(Info, "Load fridge");
         fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
