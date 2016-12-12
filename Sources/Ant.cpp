@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Ant.h"
 #include "Engine/InstancedMeshObject.h"
+#include "Engine/DeathCollider.h"
 #include "KitchenObject.h"
 
 #include <assert.h>
@@ -17,6 +18,8 @@ namespace {
 	Ant ants[maxAnts];
 	float* scent;
 	const int scents = 100;
+    
+    float energy;
 	
 	float scentAt(int x, int y, int z) {
 		if (z >= scents || y >= scents || z >= scents) return 0;
@@ -89,6 +92,8 @@ void Ant::init() {
 		ants[i].position = vec3(Random::get(-1000, 1000) / 10.0f, 0, Random::get(-1000, 1000) / 10.0f);
 		//ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
 	}
+    
+    energy = 0;
 }
 
 void Ant::chooseScent() {
@@ -136,8 +141,19 @@ void Ant::chooseScent() {
 
 extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
+extern DeathCollider* deathCollider[];
 
-void Ant::move() {
+void Ant::move(float deltaTime) {
+    
+    //position = vec3(4.0f, 1.5f, 0.0f);// all ants in the microwave
+    if (isDying()) {
+        energy += deltaTime;
+        log(Info, "Ant dying %f", energy);
+        if (energy > 0.5f) {
+            log(Info, "Ant dead");
+            return;
+        }
+    }
 	
 	if (goingup) {
 		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
@@ -181,9 +197,9 @@ void Ant::move() {
 	position += forward * 0.05f;
 }
 
-void Ant::moveEverybody() {
+void Ant::moveEverybody(float deltaTime) {
 	for (int i = 0; i < maxAnts; ++i) {
-		ants[i].move();
+		ants[i].move(deltaTime);
 	}
 }
 
@@ -204,6 +220,15 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
 		if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * 0.5f)) {
 			return true;
 		}
+    }
+    return false;
+}
+
+bool Ant::isDying() {
+    for (unsigned oi = 0; deathCollider[oi] != nullptr; ++oi) {
+        if (deathCollider[oi]->collider != nullptr && deathCollider[oi]->collider->IsInside(position)) {
+            return true;
+        }
     }
     return false;
 }

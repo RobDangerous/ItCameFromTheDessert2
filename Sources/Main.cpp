@@ -19,6 +19,7 @@
 
 #include "Engine/Collision.h"
 #include "Engine/InstancedMeshObject.h"
+#include "Engine/DeathCollider.h"
 #include "Engine/ObjLoader.h"
 #include "Engine/Particles.h"
 #include "Engine/PhysicsObject.h"
@@ -40,13 +41,15 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[15];
+DeathCollider* deathCollider[5];
 
 namespace {
 	const char* title = "It Came from the Dessert";
     const int width = 1024;
     const int height = 768;
     const float CAMERA_ROTATION_SPEED = 0.01f;
-    const float CAMERA_ZOOM_SPEED = 1.f;
+	const float CAMERA_ZOOM_SPEED = 1.f;
+	const float CAMERA_MOVE_SPEED = 2.f;
     
     double startTime;
     Shader* vertexShader;
@@ -58,11 +61,17 @@ namespace {
     Shader* instancedVertexShader;
     Shader* instancedFragmentShader;
     Program* instancedProgram;
-    
-    bool left;
-    bool right;
-    bool up;
-    bool down;
+
+	bool left_A;
+	bool left_C;
+	bool right_A;
+	bool right_C;
+    bool up_A;
+	bool up_C;
+	bool down_A;
+    bool down_C;
+	bool jump;
+	bool crouch;
     
     Kravur* font14;
     Kravur* font24;
@@ -78,10 +87,6 @@ namespace {
     vec3 cameraDir;
     vec3 cameraUp;
     
-    float lightPosX;
-    float lightPosY;
-    float lightPosZ;
-
     ConstantLocation instancedPLocation;
     ConstantLocation instancedVLocation;
     TextureUnit instancedTex;
@@ -99,9 +104,6 @@ namespace {
     Texture* particleImage;
     
     double lastTime;
-    double gameOverTime = 0;
-    bool gameOver = false;
-    int gameOverKills = 0;
     
     ParticleRenderer* particleRenderer;
     
@@ -123,6 +125,11 @@ namespace {
     MeshObject* stove;
     MeshObject* wash;
 	KitchenObject* hovered;
+    
+    // Death collider
+    DeathCollider* microwaveBodyDeathCollider;
+    DeathCollider* fridgeDeathCollider;
+    DeathCollider* ovenDeathCollider;
     
     vec3 screenToWorld(vec2 screenPos) {
         vec4 pos((2 * screenPos.x()) / width - 1.0f, -((2 * screenPos.y()) / height - 1.0f), 0.0f, 1.0f);
@@ -200,6 +207,24 @@ namespace {
                           Kore::cos(horizontalAngle - pi / 2.0)
                           );
         cameraUp = right.cross(cameraDir);
+		if (left_A || left_C) {
+			cameraPos -= right * (float) deltaT * CAMERA_MOVE_SPEED;
+		}
+		if (right_A || right_C) {
+			cameraPos += right * (float)deltaT * CAMERA_MOVE_SPEED;
+		}
+		if (down_A || down_C) {
+			cameraPos -= cameraDir * (float)deltaT * CAMERA_MOVE_SPEED;
+		}
+		if (up_A || up_C) {
+			cameraPos += cameraDir * (float)deltaT * CAMERA_MOVE_SPEED;
+		}
+		if (crouch) {
+			cameraPos -= cameraUp * (float)deltaT * CAMERA_MOVE_SPEED;
+		}
+		if (jump) {
+			cameraPos += cameraUp * (float)deltaT * CAMERA_MOVE_SPEED;
+		}
 
 		hovered = nullptr;
 		float distMin = std::numeric_limits<float>::infinity();
@@ -256,12 +281,19 @@ namespace {
         Kore::Graphics::setMatrix(mLocation, M);
         room->render(tex, mLocation);*/
         
+        // remove later
+        /*i = 0;
+        while (deathCollider[i] != nullptr) {
+            deathCollider[i]->renderTest(tex, mLocation);
+            ++i;
+        }*/
+        
         instancedProgram->set();
         
         Graphics::setMatrix(instancedPLocation, P);
         Graphics::setMatrix(instancedVLocation, View);
         
-        Ant::moveEverybody();
+        Ant::moveEverybody(deltaT);
         Ant::render(instancedVLocation, instancedTex, View);
         
         /*projectiles->render(vLocation, tex, View);
@@ -332,14 +364,26 @@ namespace {
     
     void keyDown(KeyCode code, wchar_t character) {
         if (code == Key_Up) {
-            up = true;
+            up_A = true;
         } else if (code == Key_Down) {
-            down = true;
+            down_A = true;
         } else if (code == Key_Left) {
-            right = true;
+            right_A = true;
         } else if (code == Key_Right) {
-            left = true;
-        } else if (code == Key_Escape) {
+            left_A = true;
+        } else if (code == Key_W) {
+			up_C = true;
+		} else if (code == Key_S) {
+			down_C = true;
+		} else if (code == Key_A) {
+			right_C = true;
+		} else if (code == Key_D) {
+			left_C = true;
+		} else if (code == Key_Control) {
+			crouch = true;
+		} else if (code == Key_Space) {
+			jump = true;
+		} else if (code == Key_Escape) {
             Kore::System::stop();
         } else if (code == Key_L) {
             Kore::log(Kore::Info, "Camera pos %f %f %f", cameraPos.x(), cameraPos.y(), cameraPos.z());
@@ -353,15 +397,36 @@ namespace {
     }
     
     void keyUp(KeyCode code, wchar_t character) {
-        if (code == Key_Up) {
-            up = false;
-        } else if (code == Key_Down) {
-            down = false;
-        } else if (code == Key_Left) {
-            right = false;
-        } else if (code == Key_Right) {
-            left = false;
-        }
+		if (code == Key_Up) {
+			up_A = false;
+		}
+		else if (code == Key_Down) {
+			down_A = false;
+		}
+		else if (code == Key_Left) {
+			right_A = false;
+		}
+		else if (code == Key_Right) {
+			left_A = false;
+		}
+		else if (code == Key_W) {
+			up_C = false;
+		}
+		else if (code == Key_S) {
+			down_C = false;
+		}
+		else if (code == Key_A) {
+			right_C = false;
+		}
+		else if (code == Key_D) {
+			left_C = false;
+		}
+		else if (code == Key_Control) {
+			crouch = false;
+		}
+		else if (code == Key_Space) {
+			jump = false;
+		}
     }
     
     void mouseMove(int windowId, int x, int y, int movementX, int movementY) {
@@ -448,6 +513,9 @@ namespace {
         fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", nullptr, "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoorClosed, fridgeDoorOpen, vec3(6.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
+        fridgeDeathCollider = new DeathCollider("Data/Meshes/fridge_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[0]->getM());
+        deathCollider[0] = fridgeDeathCollider;
+        
         log(Info, "Load cupboard and cake");
         cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         cake = new MeshObject("Data/Meshes/cake.obj", "Data/Meshes/cake_collider.obj", "Data/Textures/CakeTexture.png", structure, 1.0f);
@@ -472,13 +540,19 @@ namespace {
         stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        ovenDeathCollider = new DeathCollider("Data/Meshes/oven_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[8]->getM());
+        deathCollider[1] = ovenDeathCollider;
 
         log(Info, "Load microwave");
-        microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-        microwaveDoorClosed = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", nullptr, "Data/Textures/white.png", structure, 1.0f);
+        microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
+        microwaveDoorClosed = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
+        microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", nullptr, "Data/Textures/microwaveTexture.png", structure, 1.0f);
         kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         kitchenObjects[11] = new KitchenObject(cupboard, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        microwaveBodyDeathCollider = new DeathCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->getM(), 1.0f);
+        deathCollider[2] = microwaveBodyDeathCollider;
         
         log(Info, "Load wash");
         wash = new MeshObject("Data/Meshes/wash.obj", "Data/Meshes/wash_collider.obj", "Data/Textures/white.png", structure, 1.0f);

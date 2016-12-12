@@ -12,6 +12,7 @@ public:
 
     void render(TextureUnit tex, ConstantLocation mLocation);
     void openOrClose();
+    mat4 getM();
     
     MeshObject* body;
     MeshObject* door_closed;
