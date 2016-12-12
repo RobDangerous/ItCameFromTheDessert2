@@ -538,10 +538,10 @@ namespace {
         kitchenObjects[7] = new KitchenObject(table, nullptr, nullptr, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
         
         log(Info, "Load oven");
-		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-		ovenDoorClosed = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", nullptr, "Data/Textures/white.png", structure, 1.0f);
-        stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/ovenTexture.png", structure, 1.0f);
+		ovenDoorClosed = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/ovenTexture.png", structure, 1.0f);
+        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", nullptr, "Data/Textures/ovenTexture.png", structure, 1.0f);
+        stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/stoveTexture_off.png", structure, 1.0f);
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
