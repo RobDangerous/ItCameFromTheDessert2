@@ -148,9 +148,9 @@ void Ant::move(float deltaTime) {
     //position = vec3(4.0f, 1.5f, 0.0f);// all ants in the microwave
     if (isDying()) {
         energy += deltaTime;
-        log(Info, "Ant dying %f", energy);
+        //log(Info, "Ant dying %f", energy);
         if (energy > 0.5f) {
-            log(Info, "Ant dead");
+            //log(Info, "Ant dead");
             return;
         }
     }

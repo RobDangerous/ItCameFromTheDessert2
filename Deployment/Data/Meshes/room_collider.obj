@@ -1,6 +1,6 @@
 # Blender v2.78 (sub 0) OBJ File: 'room.blend'
 # www.blender.org
-mtllib room.mtl
+mtllib room_collider.mtl
 o Cube.004_Cube.005
 v -8.000000 -0.100000 8.000000
 v -8.000000 0.100000 8.000000
