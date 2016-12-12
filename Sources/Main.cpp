@@ -394,7 +394,7 @@ namespace {
         } else if (code == Key_T) {
             int i = 0;
             while (kitchenObjects[i] != nullptr) {
-                kitchenObjects[i]->openOrClose();
+                kitchenObjects[i]->openOrClose(lastTime);
                 ++i;
             }
         }
@@ -442,7 +442,7 @@ namespace {
     void mousePress(int windowId, int button, int x, int y) {
         if (button == 0) {
 			if (hovered != nullptr) {
-				hovered->openOrClose();
+				hovered->openOrClose(lastTime);
 			}
         }
     }
