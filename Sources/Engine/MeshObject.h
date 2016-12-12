@@ -18,8 +18,6 @@
 #include "assert.h"
 #include "string.h"
 
-class SphereCollider;
-
 class MeshObject {
 public:
 	MeshObject(const char* meshFile, const char* textureFile, Kore::VertexStructure** structures, float scale = 1.0f) {
@@ -31,9 +29,9 @@ public:
 		vertexBuffers[0] = new Kore::VertexBuffer(mesh->numVertices, *structures[0], 0);
 		float* vertices = vertexBuffers[0]->lock();
 		for (int i = 0; i < mesh->numVertices; ++i) {
-			vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0] * scale;
-			vertices[i * 8 + 1] = mesh->vertices[i * 8 + 1] * scale;
-			vertices[i * 8 + 2] = mesh->vertices[i * 8 + 2] * scale;
+			vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0];
+			vertices[i * 8 + 1] = mesh->vertices[i * 8 + 1];
+			vertices[i * 8 + 2] = mesh->vertices[i * 8 + 2];
 			vertices[i * 8 + 3] = mesh->vertices[i * 8 + 3];
 			vertices[i * 8 + 4] = 1.0f - mesh->vertices[i * 8 + 4];
 			vertices[i * 8 + 5] = mesh->vertices[i * 8 + 5];
@@ -50,9 +48,6 @@ public:
 			indices[i] = mesh->indices[i];
 		}
 		indexBuffer->unlock();
-
-		Collider.center = Kore::vec3(0, 0, 0);
-		Collider.radius = 1;
 	}
     
     MeshObject(const char* meshFile, const char* colliderFile, const char* textureFile, const Kore::VertexStructure& structure, float scale) {
@@ -66,9 +61,9 @@ public:
         float* vertices = vertexBuffer->lock();
         
         for (int i = 0; i < mesh->numVertices; ++i) {
-            vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0] * scale;
-            vertices[i * 8 + 1] = mesh->vertices[i * 8 + 1] * scale;
-            vertices[i * 8 + 2] = mesh->vertices[i * 8 + 2] * scale;
+            vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0];
+            vertices[i * 8 + 1] = mesh->vertices[i * 8 + 1];
+            vertices[i * 8 + 2] = mesh->vertices[i * 8 + 2];
             vertices[i * 8 + 3] = mesh->vertices[i * 8 + 3];
             vertices[i * 8 + 4] = 1.0f - mesh->vertices[i * 8 + 4];
             vertices[i * 8 + 5] = mesh->vertices[i * 8 + 5];
@@ -88,16 +83,14 @@ public:
         if (colliderFile != nullptr) {
             int index = 0;
             int count = 0;
-            
+
             while (index >= 0 && strcmp(colliderFile, "") != 0) {
-				Kore::vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
-				Kore::vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
+				Kore::vec4 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), 1);
+				Kore::vec4 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), 1);
 				loadColl(colliderFile, min, max, index);
                 
 				if (min.x() != std::numeric_limits<double>::infinity()) {
-					Kore::vec3 center = min + (max - min) / 2;
-					Kore::vec3 extends = max - min;
-					collider[count] = new BoxCollider(center, extends);
+					collider[count] = new BoxCollider(min, max);
 
 					assert(colliderCount > count);
 					++count;
@@ -105,10 +98,6 @@ public:
             }
             Kore::log(Kore::Info, "Object has %i collider", count);
         }
-        
-        Kore::vec3 position = Kore::vec3(0,0,0); // TODO
-		Collider.center = Kore::vec3(position.x(), position.y(), position.z());
-		Collider.radius = 1;
     }
 
 	void render(Kore::TextureUnit tex, int instances) {
@@ -134,6 +123,4 @@ public:
 
 	Mesh* mesh;
 	Kore::Texture* image;
-
-	SphereCollider Collider;
 };

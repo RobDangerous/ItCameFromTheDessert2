@@ -30,14 +30,11 @@ DeathCollider::DeathCollider(const char* meshFile, const char* textureFile, cons
     }
     indexBuffer->unlock();
     
-    Kore::vec3 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
-    Kore::vec3 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
+    Kore::vec4 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), 1);
+    Kore::vec4 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), 1);
     int index = 0;
     loadColl(meshFile, min, max, index);
-    Kore::vec3 center = min + (max - min) / 2;
-    Kore::vec3 extends = max - min;
-    collider = new BoxCollider(center, extends);
-    collider->setPos(M * vec4(0, 0, 0, 1));
+    collider = new BoxCollider(min, max);
 }
 
 void DeathCollider::renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {

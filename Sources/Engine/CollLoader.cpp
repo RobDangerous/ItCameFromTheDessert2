@@ -40,7 +40,7 @@ namespace {
 	}
 }
 
-void loadColl(const char* filename, vec3 &min, vec3 &max, int &index) {
+void loadColl(const char* filename, vec4 &min, vec4 &max, int &index) {
 	FileReader fileReader(filename, FileReader::Asset);
 	void* data = fileReader.readAll();
 	int length = fileReader.size() + 1;
