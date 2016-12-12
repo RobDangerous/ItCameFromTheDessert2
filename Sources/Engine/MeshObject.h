@@ -59,8 +59,17 @@ public:
         // Mesh Vertex Buffer
         vertexBuffer = new Kore::VertexBuffer(mesh->numVertices, structure, 0);
         float* vertices = vertexBuffer->lock();
-        
+
+		Kore::vec4 min(10000, 100000, 1999909, 1);
+		Kore::vec4 max(-10000, -100000, -1999909, 1);
         for (int i = 0; i < mesh->numVertices; ++i) {
+			min.x() = Kore::min(min.x(), mesh->vertices[i * 8 + 0]);
+			max.x() = Kore::max(max.x(), mesh->vertices[i * 8 + 0]);
+			min.y() = Kore::min(min.y(), mesh->vertices[i * 8 + 1]);
+			max.y() = Kore::max(max.y(), mesh->vertices[i * 8 + 1]);
+			min.z() = Kore::min(min.z(), mesh->vertices[i * 8 + 2]);
+			max.z() = Kore::max(max.z(), mesh->vertices[i * 8 + 2]);
+
             vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0];
             vertices[i * 8 + 1] = mesh->vertices[i * 8 + 1];
             vertices[i * 8 + 2] = mesh->vertices[i * 8 + 2];
@@ -84,6 +93,10 @@ public:
             int index = 0;
             int count = 0;
 
+			//collider[count] = new BoxCollider(min, max);
+
+			Kore::vec4 min2(10000, 100000, 1999909, 1);
+			Kore::vec4 max2(-10000, -100000, -1999909, 1);
             while (index >= 0 && strcmp(colliderFile, "") != 0) {
 				Kore::vec4 min(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), 1);
 				Kore::vec4 max(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity(), 1);
@@ -92,11 +105,20 @@ public:
 				if (min.x() != std::numeric_limits<double>::infinity()) {
 					collider[count] = new BoxCollider(min, max);
 
+
+					min2.x() = Kore::min(min2.x(), min.x());
+					max2.x() = Kore::max(max2.x(), max.x());
+					min2.y() = Kore::min(min2.y(), min.y());
+					max2.y() = Kore::max(max2.y(), max.y());
+					min2.z() = Kore::min(min2.z(), min.z());
+					max2.z() = Kore::max(max2.z(), max.z());
+
+
 					assert(colliderCount > count);
 					++count;
 				}
             }
-            Kore::log(Kore::Info, "Object has %i collider", count);
+            Kore::log(Kore::Info, "Object has %i collider, diff %f / %f", count, (max - max2).getLength(), (min - min2).getLength());
         }
     }
 
