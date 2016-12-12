@@ -41,7 +41,7 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[21];
-DeathCollider* deathCollider[5];
+DeathCollider* deathCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
 	const char* title = "It Came from the Dessert";
@@ -81,9 +81,9 @@ namespace {
     mat4 P;
     mat4 View;
     
-    float horizontalAngle = 0.85f * pi;
-    float verticalAngle = 0.f;
-    vec3 cameraPos = vec3(-5, 3, 15);
+    float horizontalAngle = -1.24f * pi;
+    float verticalAngle = -0.5f;
+    vec3 cameraPos = vec3(-5.5, 6, 10);
     vec3 cameraDir;
     vec3 cameraUp;
     
@@ -137,6 +137,8 @@ namespace {
     DeathCollider* microwaveBodyDeathCollider;
     DeathCollider* fridgeDeathCollider;
     DeathCollider* ovenDeathCollider;
+    DeathCollider* stoveDeathCollider;
+    DeathCollider* washDeathCollider;
     
     vec3 screenToWorld(vec2 screenPos) {
         vec4 pos((2 * screenPos.x()) / width - 1.0f, -((2 * screenPos.y()) / height - 1.0f), 0.0f, 1.0f);
@@ -287,10 +289,10 @@ namespace {
         }
         
         // render the room
-        /*vec3 pos = vec3(0, -1.0f, 3.5f);
+        vec3 pos = vec3(0, -1.0f, 3.5f);
         mat4 M = mat4::Translation(pos.x(), pos.y(), pos.z());
         Kore::Graphics::setMatrix(mLocation, M);
-        room->render(tex, mLocation);*/
+        room->render(tex, mLocation);
         
         // remove later
         /*i = 0;
@@ -401,6 +403,8 @@ namespace {
             Kore::System::stop();
         } else if (code == Key_L) {
             Kore::log(Kore::Info, "Camera pos %f %f %f", cameraPos.x(), cameraPos.y(), cameraPos.z());
+            Kore::log(Kore::Info, "Camera angle horizontal %f", horizontalAngle);
+            Kore::log(Kore::Info, "Camera angle vertical %f", verticalAngle);
         } else if (code == Key_T) {
             int i = 0;
             while (kitchenObjects[i] != nullptr) {
@@ -535,7 +539,7 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        room = new MeshObject("Data/Meshes/room.obj", nullptr, "Data/Textures/marble_tile.png", structure, 1.0f);
+        room = new MeshObject("Data/Meshes/room.obj", "Data/Meshes/room_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
         
         log(Info, "Load fridge");
         fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
@@ -567,15 +571,18 @@ namespace {
         kitchenObjects[7] = new KitchenObject(table, nullptr, nullptr, vec3(5.0f, 0.0f, 6.5f), vec3(0.0f, 0.0f, 0.0f));
         
         log(Info, "Load oven");
-		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/map.png", structure, 1.0f);
-		ovenDoorClosed = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/white.png", structure, 1.0f);
-        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", nullptr, "Data/Textures/white.png", structure, 1.0f);
-        stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/map.png", structure, 1.0f);
+		ovenBody = new MeshObject("Data/Meshes/oven_body.obj", "Data/Meshes/oven_body_collider.obj", "Data/Textures/ovenTexture.png", structure, 1.0f);
+		ovenDoorClosed = new MeshObject("Data/Meshes/oven_door.obj", "Data/Meshes/oven_door_collider.obj", "Data/Textures/ovenTexture.png", structure, 1.0f);
+        ovenDoorOpen = new MeshObject("Data/Meshes/oven_door_open.obj", nullptr, "Data/Textures/ovenTexture.png", structure, 1.0f);
+        stove = new MeshObject("Data/Meshes/stove.obj", "Data/Meshes/stove_collider.obj", "Data/Textures/stoveTexture_off.png", structure, 1.0f);
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
         ovenDeathCollider = new DeathCollider("Data/Meshes/oven_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[8]->getM());
         deathCollider[1] = ovenDeathCollider;
+        
+        stoveDeathCollider = new DeathCollider("Data/Meshes/stove_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[9]->getM());
+        deathCollider[2] = ovenDeathCollider;
 
         log(Info, "Load microwave");
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
@@ -585,12 +592,15 @@ namespace {
 		kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         kitchenObjects[11] = new KitchenObject(cupboard2, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        microwaveBodyDeathCollider = new DeathCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->getM(), 1.0f);
-        deathCollider[2] = microwaveBodyDeathCollider;
+        microwaveBodyDeathCollider = new DeathCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->getM());
+        deathCollider[3] = microwaveBodyDeathCollider;
         
         log(Info, "Load wash");
         wash = new MeshObject("Data/Meshes/wash.obj", "Data/Meshes/wash_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[12] = new KitchenObject(wash, nullptr, nullptr, vec3(-2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        
+        washDeathCollider = new DeathCollider("Data/Meshes/wash_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[12]->getM());
+        deathCollider[4] = washDeathCollider;
         
         log(Info, "Load cupboard");
 		cupboard3 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
@@ -618,6 +628,10 @@ namespace {
         font44 = Kravur::load("Data/Fonts/arial", FontStyle(), 44);
     }
 }
+
+#ifdef SYS_WINDOWS
+#include <Windows.h>
+#endif
 
 int kore(int argc, char** argv) {
     Kore::System::setName(title);
@@ -651,7 +665,16 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
+#ifdef SYS_WINDOWS
+	char name[256];
+	DWORD size = 255;
+	GetUserNameA(name, &size);
+	if (strcmp(name, "Robert") != 0) {
+		Mouse::the()->lock(0);
+	}
+#else
 	Mouse::the()->lock(0);
+#endif
 
 	Kore::System::start();
 
