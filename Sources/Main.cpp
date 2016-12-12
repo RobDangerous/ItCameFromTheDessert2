@@ -41,7 +41,7 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[15];
-DeathCollider* deathCollider[5];
+DeathCollider* deathCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
 	const char* title = "It Came from the Dessert";
