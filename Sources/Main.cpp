@@ -256,10 +256,10 @@ namespace {
         }
         
         // render the room
-        vec3 pos = vec3(0, -1.0f, 3.5f);
+        /*vec3 pos = vec3(0, -1.0f, 3.5f);
         mat4 M = mat4::Translation(pos.x(), pos.y(), pos.z());
         Kore::Graphics::setMatrix(mLocation, M);
-        room->render(tex, mLocation);
+        room->render(tex, mLocation);*/
         
         // remove later
         /*i = 0;
