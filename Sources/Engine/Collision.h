@@ -17,12 +17,15 @@ class BoxCollider {
 public:
 	Kore::vec4 min;
 	Kore::vec4 max;
+    
+    Kore::mat4 M;
 
 	BoxCollider(Kore::vec4 min, Kore::vec4 max) : min(min), max(max) { }
 
 	void trans(Kore::mat4 m) {
 		min = m * min;
 		max = m * max;
+        M = m;
 	}
 
 	void swap(float &a, float &b) const {
