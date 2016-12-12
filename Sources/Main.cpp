@@ -41,6 +41,7 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[30];
+MeshObject* roomObjects[7];
 //TriggerCollider* triggerCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
@@ -109,12 +110,6 @@ namespace {
 	int pizzaCount = 0;
 
     ParticleRenderer* particleRenderer;
-    
-    MeshObject* room_floor;
-    MeshObject* room_wall1;
-    MeshObject* room_wall2;
-    MeshObject* room_wall3;
-    MeshObject* room_wall4;
     
     MeshObject* fridgeBody;
     MeshObject* fridgeDoorOpen;
@@ -307,11 +302,10 @@ namespace {
         vec3 pos = vec3(0, -1.0f, 6.5f);
         mat4 M = mat4::Translation(pos.x(), pos.y(), pos.z());
         Kore::Graphics::setMatrix(mLocation, M);
-        room_floor->render(tex, mLocation);
-        room_wall1->render(tex, mLocation);
-        room_wall2->render(tex, mLocation);
-        room_wall3->render(tex, mLocation);
-        room_wall4->render(tex, mLocation);
+
+		for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
+			roomObjects[oi]->render(tex, mLocation);
+		}
         
         instancedProgram->set();
         
@@ -479,6 +473,15 @@ namespace {
 			float dist = std::numeric_limits<float>::infinity();
 			hovered = getIntersectingMesh(cameraPos, cameraDir, dist);
 
+			for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
+				roomObjects[oi]->render(tex, mLocation);
+				float d = rayIntersectsWithMesh(cameraPos, cameraDir, roomObjects[oi]);
+				if (d < dist) {
+					dist = d;
+					hovered = nullptr;
+				}
+			}
+
 			if (hovered != nullptr && hovered->pizza) {
 				for (int i = 0; i < pizzaCount; ++i) {
 					if (kitchenObjects[19 + i] == hovered) {
@@ -500,6 +503,7 @@ namespace {
 				kitchenObjects[19 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(0.0f, 0.0f, 0.0f), true);
 
 				++pizzaCount;
+				kitchenObjects[19 + pizzaCount] = nullptr;
 			}
 		}
 		else if (button == 1) {
@@ -571,12 +575,13 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        room_floor = new MeshObject("Data/Meshes/room_floor.obj", "Data/Meshes/room_floor_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
-        room_wall1 = new MeshObject("Data/Meshes/room_wall1.obj", "Data/Meshes/room_wall1_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
-        room_wall2 = new MeshObject("Data/Meshes/room_wall2.obj", "Data/Meshes/room_wall2_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
-        room_wall3 = new MeshObject("Data/Meshes/room_wall3.obj", "Data/Meshes/room_wall3_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
-        room_wall4 = new MeshObject("Data/Meshes/room_wall4.obj", "Data/Meshes/room_wall4_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
-        
+        roomObjects[0] = new MeshObject("Data/Meshes/room_floor.obj", "Data/Meshes/room_floor_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+		roomObjects[1] = new MeshObject("Data/Meshes/room_wall1.obj", "Data/Meshes/room_wall1_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[2] = new MeshObject("Data/Meshes/room_wall2.obj", "Data/Meshes/room_wall2_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[3] = new MeshObject("Data/Meshes/room_wall3.obj", "Data/Meshes/room_wall3_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[4] = new MeshObject("Data/Meshes/room_wall4.obj", "Data/Meshes/room_wall4_collider.obj", "Data/Textures/omi_tapete.png", structure, 1.0f);
+		roomObjects[5] = nullptr;
+
         log(Info, "Load fridge");
         fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         fridgeDoorClosed = new MeshObject("Data/Meshes/fridge_door.obj", "Data/Meshes/fridge_door_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
@@ -658,7 +663,8 @@ namespace {
         kitchenObjects[16] = new KitchenObject(cupboard6, nullptr, nullptr, vec3(0.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
         kitchenObjects[17] = new KitchenObject(cupboard7, nullptr, nullptr, vec3(-2.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
         kitchenObjects[18] = new KitchenObject(cupboard8, nullptr, nullptr, vec3(-4.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
-        
+		kitchenObjects[19] = nullptr;
+
 		hovered = nullptr;
 
         Random::init(System::time() * 100);
