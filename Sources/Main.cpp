@@ -105,7 +105,7 @@ namespace {
     Texture* particleImage;
     
     double lastTime;
-    const int maxPizza = 5;
+    const int maxPizza = 6;
 	int pizzaCount = 0;
 
     ParticleRenderer* particleRenderer;
