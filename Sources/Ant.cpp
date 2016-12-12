@@ -237,6 +237,7 @@ void Ant::chooseScent(bool force) {
 extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 //extern TriggerCollider* triggerCollider[];
+extern MeshObject* roomObjects[7];
 
 void Ant::move(float deltaTime) {
     
@@ -253,16 +254,7 @@ void Ant::move(float deltaTime) {
         }
     }
 	if (mode == FrontWall) {
-		if (!intersects(vec4(0, 0, -1, 0))) {
-			forward = vec4(0, 0, 1, 0);
-			up = vec4(0, 1, 0, 0);
-			right = vec4(1, 0, 0, 0);
-			rotation = mat4::Identity();
-			
-			mode = Floor;
-			chooseScent(true);
-		}
-		else if (intersects(vec4(0, -1, 0, 0))) {
+		if (intersects(vec4(0, -1, 0, 0))) {
 			forward = vec4(0, 0, -1, 0);
 			up = vec4(0, 1, 0, 0);
 			right = vec4(-1, 0, 0, 0);
@@ -271,9 +263,18 @@ void Ant::move(float deltaTime) {
 			mode = Floor;
 			chooseScent(true);
 		}
+		else if (!intersects(vec4(0, 0, -1, 0))) {
+			forward = vec4(0, 0, 1, 0);
+			up = vec4(0, 1, 0, 0);
+			right = vec4(1, 0, 0, 0);
+			rotation = mat4::Identity();
+			
+			mode = Floor;
+			chooseScent(true);
+		}
 	}
 	else if (mode == BackWall) {
-		if (intersects(forward)) {
+		if (intersects(vec4(0, -1, 0, 0))) {
 			forward = vec4(0, 0, 1, 0);
 			up = vec4(0, 1, 0, 0);
 			right = vec4(1, 0, 0, 0);
@@ -319,7 +320,7 @@ void Ant::move(float deltaTime) {
 
 	chooseScent(false);
 	
-	position += forward * 0.05f;
+	//**position += forward * 0.05f;
 }
 
 void Ant::moveEverybody(float deltaTime) {
@@ -331,6 +332,11 @@ void Ant::moveEverybody(float deltaTime) {
 bool Ant::intersects(vec3 dir) {
 	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
 		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
+			return true;
+		}
+	}
+	for (int i = 0; roomObjects[i] != nullptr; ++i) {
+		if (intersectsWith(roomObjects[i], dir)) {
 			return true;
 		}
 	}
@@ -372,7 +378,7 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 		c = 0;
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -389,12 +395,15 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	Graphics::setIndexBuffer(*body->indexBuffer);
 	Graphics::drawIndexedVerticesInstanced(c);
 
+	vec3 legsOffset = vec3(0.044f, 0.035f, 0.0f);
+
 	{
 		float* data = vertexBuffers[1]->lock();
 		c = 0;
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Translation(0, +0.05f, 0) * mat4::RotationX(ants[i].legRotation) * mat4::Scale(scale, scale, scale);
+			//x = 0.461 , y = 0.461, z = 0.213
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Translation(0.0461f + legsOffset.x(), 0.0461f + legsOffset.y(), 0.0213f + 0.023f + legsOffset.z()) * mat4::RotationX(ants[i].legRotation) * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -411,9 +420,52 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	{
 		float* data = vertexBuffers[1]->lock();
 		c = 0;
+		// x = 0.422 , y = 0.414, z = -0.01
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Translation(0, +0.05f, -0.15f) * mat4::RotationX(-ants[i].legRotation) * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Translation(0.0422f + legsOffset.x(), 0.0414f + legsOffset.y(), -0.001f + legsOffset.z()) * mat4::RotationX(-ants[i].legRotation) * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+	
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		// x = 0.407, y = 0.381 , z = -0.244
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Translation(0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(ants[i].legRotation) * mat4::Scale(scale, scale, scale);
+			setMatrix(data, i, 0, 36, M);
+			setMatrix(data, i, 16, 36, calculateN(M));
+			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
+			c++;
+		}
+		vertexBuffers[1]->unlock();
+	}
+
+	legsOffset.x() *= -1.0f;
+
+	vertexBuffers[0] = leg->vertexBuffers[0];
+	Graphics::setVertexBuffers(vertexBuffers, 2);
+	Graphics::setIndexBuffer(*leg->indexBuffer);
+	Graphics::drawIndexedVerticesInstanced(c);
+
+	{
+		float* data = vertexBuffers[1]->lock();
+		c = 0;
+		// x = -0.461 , y = 0.461, z = 0.213
+		for (int i = 0; i < maxAnts; i++) {
+			const float scale = 0.02f;
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Translation(-0.0461f + legsOffset.x(), 0.0461f + legsOffset.y(), 0.0213f + 0.023f + legsOffset.z()) * mat4::RotationX(-ants[i].legRotation) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -430,9 +482,10 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	{
 		float* data = vertexBuffers[1]->lock();
 		c = 0;
+		// x = -0.422 , y = 0.414, z = -0.01
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Translation(0, +0.05f, -0.25f) * mat4::RotationX(ants[i].legRotation) * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Translation(-0.0422f + legsOffset.x(), 0.0414f + legsOffset.y(), -0.001f + legsOffset.z()) * mat4::RotationX(ants[i].legRotation) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
@@ -445,51 +498,14 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	Graphics::setVertexBuffers(vertexBuffers, 2);
 	Graphics::setIndexBuffer(*leg->indexBuffer);
 	Graphics::drawIndexedVerticesInstanced(c);
-
+	
 	{
 		float* data = vertexBuffers[1]->lock();
 		c = 0;
+		// x = -0.407, y = 0.381 , z = -0.244
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Translation(0, +0.05f, 0) * mat4::RotationX(-ants[i].legRotation) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
-			setMatrix(data, i, 0, 36, M);
-			setMatrix(data, i, 16, 36, calculateN(M));
-			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
-			c++;
-		}
-		vertexBuffers[1]->unlock();
-	}
-
-	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
-
-	{
-		float* data = vertexBuffers[1]->lock();
-		c = 0;
-		for (int i = 0; i < maxAnts; i++) {
-			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Translation(0, +0.05f, -0.15f) * mat4::RotationX(ants[i].legRotation) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
-			setMatrix(data, i, 0, 36, M);
-			setMatrix(data, i, 16, 36, calculateN(M));
-			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
-			c++;
-		}
-		vertexBuffers[1]->unlock();
-	}
-
-	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
-
-	{
-		float* data = vertexBuffers[1]->lock();
-		c = 0;
-		for (int i = 0; i < maxAnts; i++) {
-			const float scale = 0.02f;
-			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::Translation(0, +0.05f, -0.25f) * mat4::RotationX(-ants[i].legRotation) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
+			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Translation(-0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(-ants[i].legRotation) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
 			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
