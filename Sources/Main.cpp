@@ -464,7 +464,7 @@ namespace {
 			else if (pizzaCount < 6 && dist < std::numeric_limits<float>::infinity()) {
 				vec3 pos = cameraPos + cameraDir * dist;
 
-				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/CakeTexture.png", structure, 1.0f);
+				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/pizza.png", structure, 1.0f);
 				kitchenObjects[14 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(pi, 0.0f, 0.0f), true);
 
 				++pizzaCount;
