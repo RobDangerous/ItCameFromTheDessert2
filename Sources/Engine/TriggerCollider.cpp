@@ -1,9 +1,9 @@
 #include "pch.h"
 
-#include "DeathCollider.h"
+#include "TriggerCollider.h"
 #include "Collision.h"
 
-DeathCollider::DeathCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale) : M(M) {
+TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale) : M(M) {
     mesh = loadObj(meshFile);
     image = new Kore::Texture(textureFile, true);
     
@@ -40,7 +40,7 @@ DeathCollider::DeathCollider(const char* meshFile, const char* textureFile, cons
     collider->setPos(M * vec4(0, 0, 0, 1));
 }
 
-void DeathCollider::renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {
+void TriggerCollider::renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {
     Kore::Graphics::setMatrix(mLocation, M);
     Kore::Graphics::setTexture(tex, image);
     Kore::Graphics::setVertexBuffer(*vertexBuffer);

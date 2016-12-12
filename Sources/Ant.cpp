@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Ant.h"
 #include "Engine/InstancedMeshObject.h"
-#include "Engine/DeathCollider.h"
+#include "Engine/TriggerCollider.h"
 #include "KitchenObject.h"
 
 #include <assert.h>
@@ -236,7 +236,7 @@ void Ant::chooseScent(bool force) {
 
 extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
-extern DeathCollider* deathCollider[];
+extern TriggerCollider* deathCollider[];
 
 void Ant::move(float deltaTime) {
     

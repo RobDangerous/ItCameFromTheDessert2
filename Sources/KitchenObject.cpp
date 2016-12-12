@@ -14,7 +14,7 @@ namespace {
 	}
 }
 
-KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObject* door_open, vec3 position, vec3 rotation) : body(body), door_closed(door_closed), door_open(door_open), closed(true) {
+KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObject* door_open, vec3 position, vec3 rotation, bool pizza) : body(body), door_closed(door_closed), door_open(door_open), pizza(pizza), visible(true), closed(true) {
 	M = mat4::Translation(position.x(), position.y(), position.z());
     M *= mat4::Rotation(rotation.x(), rotation.y(), rotation.z());
 
@@ -23,6 +23,8 @@ KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObje
 }
 
 void KitchenObject::render(TextureUnit tex, ConstantLocation mLocation) {
+	if (!visible) return;
+
     Kore::Graphics::setMatrix(mLocation, M);
     if (body != nullptr) {
         body->render(tex, mLocation);
@@ -35,7 +37,13 @@ void KitchenObject::render(TextureUnit tex, ConstantLocation mLocation) {
     }
 }
 
-void KitchenObject::openOrClose() {
+void KitchenObject::openOrClose(float time) {
+    float deltaT = time - lastTime;
+    if (deltaT < 3) { // you can open the door only every x seconds
+        log(Info, "Cool down: %f", deltaT);
+        return;
+    }
+    
     if (closed && door_open != nullptr) {
         /*mat4 T = mat4::Translation(position.x() - off.get(0,3), position.y() - off.get(1,3), position.z() - off.get(2,3));
         mat4 T_inv = mat4::Translation(off.get(0,3), off.get(1,3), off.get(2,3));
@@ -45,6 +53,8 @@ void KitchenObject::openOrClose() {
     } else if (!closed && door_closed != nullptr) {
         closed = true;
     }
+    
+    lastTime = time;
 }
 
 mat4 KitchenObject::getM() {
