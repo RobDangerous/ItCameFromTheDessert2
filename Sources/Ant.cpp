@@ -18,8 +18,7 @@ namespace {
 	Ant ants[maxAnts];
 	float* scent;
 	const int scents = 100;
-    
-    float energy;
+    int antsDead = 0;
 	
 	float scentAt(int x, int y, int z) {
 		if (z >= scents || y >= scents || z >= scents) return 0;
@@ -92,9 +91,10 @@ void Ant::init() {
 	for (int i = 0; i < maxAnts; ++i) {
 		ants[i].position = vec3(Random::get(-100, 100) / 10.0f, 0, Random::get(-100, 100) / 10.0f);
 		//ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
+        
+        ants[i].energy = 0;
+        ants[i].dead = false;
 	}
-    
-    energy = 0;
 }
 
 void Ant::chooseScent(bool force) {
@@ -240,12 +240,15 @@ extern KitchenObject* kitchenObjects[];
 
 void Ant::move(float deltaTime) {
     
+    if (dead) return;
     //position = vec3(4.0f, 1.5f, 0.0f);// all ants in the microwave
     if (isDying()) {
         energy += deltaTime;
         //log(Info, "Ant dying %f", energy);
         if (energy > 0.5f) {
-            log(Info, "Ant dead");
+            antsDead ++;
+            log(Info, "Ant dead: %i", antsDead);
+            dead = true;
             return;
         }
     }
