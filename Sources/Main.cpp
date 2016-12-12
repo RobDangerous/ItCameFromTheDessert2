@@ -212,6 +212,14 @@ namespace {
 				}
 			}
 		}
+
+		for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
+			float d = rayIntersectsWithMesh(pos, dir, roomObjects[oi]);
+			if (d < distMin) {
+				distMin = d;
+				result = nullptr;
+			}
+		}
 		return result;
 	}
     
@@ -414,6 +422,19 @@ namespace {
 			crouch = true;
 		} else if (code == Key_Space) {
 			jump = true;
+		} else if (code == Key_R) {
+			for (int i = 0; i < maxPizza; ++i) {
+				if (kitchenObjects[19 + i] != nullptr) {
+					if (kitchenObjects[19 + i] == hovered) hovered = nullptr;
+
+					delete kitchenObjects[19 + i]->body;
+					delete kitchenObjects[19 + i];
+
+					kitchenObjects[19 + i] = nullptr;
+
+				}
+			}
+			pizzaCount = 0;
 		} else if (code == Key_Escape) {
             Kore::System::stop();
         } else if (code == Key_L) {
@@ -472,15 +493,6 @@ namespace {
 		if (button == 0) {
 			float dist = std::numeric_limits<float>::infinity();
 			hovered = getIntersectingMesh(cameraPos, cameraDir, dist);
-
-			for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
-				roomObjects[oi]->render(tex, mLocation);
-				float d = rayIntersectsWithMesh(cameraPos, cameraDir, roomObjects[oi]);
-				if (d < dist) {
-					dist = d;
-					hovered = nullptr;
-				}
-			}
 
 			if (hovered != nullptr && hovered->pizza) {
 				for (int i = 0; i < pizzaCount; ++i) {
