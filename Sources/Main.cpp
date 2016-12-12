@@ -40,7 +40,7 @@
 
 using namespace Kore;
 
-KitchenObject* kitchenObjects[15];
+KitchenObject* kitchenObjects[21];
 DeathCollider* deathCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
@@ -98,13 +98,15 @@ namespace {
     ConstantLocation vLocation;
     ConstantLocation mLocation;
     ConstantLocation lightPosLocation;
+	VertexStructure structure;
     
     BoxCollider boxCollider(vec3(-46.0f, -4.0f, 44.0f), vec3(10.6f, 4.4f, 4.0f));
     
     Texture* particleImage;
     
     double lastTime;
-    
+	int pizzaCount = 0;
+
     ParticleRenderer* particleRenderer;
     
     MeshObject* room;
@@ -113,8 +115,13 @@ namespace {
     MeshObject* fridgeDoorOpen;
     MeshObject* fridgeDoorClosed;
     MeshObject* cake;
-    MeshObject* cupboard;
-    MeshObject* chair;
+	MeshObject* cupboard1;
+	MeshObject* cupboard2;
+	MeshObject* cupboard3;
+	MeshObject* chair1;
+	MeshObject* chair2;
+	MeshObject* chair3;
+	MeshObject* chair4;
     MeshObject* table;
     MeshObject* microwaveBody;
     MeshObject* microwaveDoorOpen;
@@ -180,6 +187,28 @@ namespace {
 		}
 		return distance;
 	}
+
+	KitchenObject* getIntersectingMesh(vec3 pos, vec3 dir, float &distMin) {
+		distMin = std::numeric_limits<float>::infinity();
+		KitchenObject* result = nullptr;
+		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+			if (!kitchenObjects[oi]->visible) continue;
+
+			float dist = rayIntersectsWithMesh(pos, dir, kitchenObjects[oi]->body);
+			if (dist < distMin) {
+				distMin = dist;
+				result = kitchenObjects[oi];
+			}
+			if (kitchenObjects[oi]->door_closed != nullptr && kitchenObjects[oi]->closed) {
+				dist = rayIntersectsWithMesh(pos, dir, kitchenObjects[oi]->door_closed);
+				if (dist < distMin) {
+					distMin = dist;
+					result = kitchenObjects[oi];
+				}
+			}
+		}
+		return result;
+	}
     
     void update() {
         double t = System::time() - startTime;
@@ -230,25 +259,7 @@ namespace {
 
 		hovered = nullptr;
 		float distMin = std::numeric_limits<float>::infinity();
-		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
-			float dist = rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->body);
-			if (dist < distMin) {
-				distMin = dist;
-				if (kitchenObjects[oi]->door_closed != nullptr) {
-					hovered = kitchenObjects[oi];
-				}
-				else {
-					hovered = nullptr;
-				}
-			}
-			if (kitchenObjects[oi]->door_closed != nullptr && kitchenObjects[oi]->closed) {
-				dist = rayIntersectsWithMesh(cameraPos, cameraDir, kitchenObjects[oi]->door_closed);
-				if (dist < distMin) {
-					distMin = dist;
-					hovered = kitchenObjects[oi];
-				}
-			}
-		}
+		hovered = getIntersectingMesh(cameraPos, cameraDir, distMin);
         
         View = mat4::lookAlong(cameraDir, cameraPos, cameraUp);
         
@@ -350,8 +361,11 @@ namespace {
 		if (hovered == nullptr) {
             g2->setColor(Color::White);
         }
+		else if (hovered->door_closed == nullptr) {
+            g2->setColor(Color::Red);
+		}
 		else {
-            g2->setColor(Color::Cyan);
+			g2->setColor(Color::Green);
 		}
 		g2->drawRect(width / 2 -  1, height / 2 -  1, 2, 2, 1);
 		g2->drawRect(width / 2 +  8, height / 2 -  1, 8, 2, 1);
@@ -440,7 +454,23 @@ namespace {
     }
     
     void mousePress(int windowId, int button, int x, int y) {
-        if (button == 0) {
+		if (button == 0) {
+			float dist = std::numeric_limits<float>::infinity();
+			hovered = getIntersectingMesh(cameraPos, cameraDir, dist);
+
+			if (hovered != nullptr && hovered->pizza) {
+				hovered->visible = false;
+			}
+			else if (pizzaCount < 6 && dist < std::numeric_limits<float>::infinity()) {
+				vec3 pos = cameraPos + cameraDir * dist;
+
+				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/CakeTexture.png", structure, 1.0f);
+				kitchenObjects[14 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(pi, 0.0f, 0.0f), true);
+
+				++pizzaCount;
+			}
+		}
+		else if (button == 1) {
 			if (hovered != nullptr) {
 				hovered->openOrClose(lastTime);
 			}
@@ -493,7 +523,7 @@ namespace {
         fragmentShader = new Shader(fs2.readAll(), fs2.size(), FragmentShader);
         
         // This defines the structure of your Vertex Buffer
-        VertexStructure structure;
+		structure = VertexStructure();
         structure.add("pos", Float3VertexData);
         structure.add("tex", Float2VertexData);
         structure.add("nor", Float3VertexData);
@@ -521,17 +551,20 @@ namespace {
         deathCollider[0] = fridgeDeathCollider;
         
         log(Info, "Load cupboard and cake");
-        cupboard = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+        cupboard1 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         cake = new MeshObject("Data/Meshes/cake.obj", "Data/Meshes/cake_collider.obj", "Data/Textures/CakeTexture.png", structure, 1.0f);
-        kitchenObjects[1] = new KitchenObject(cupboard, nullptr, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+        kitchenObjects[1] = new KitchenObject(cupboard1, nullptr, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         kitchenObjects[2] = new KitchenObject(cake, nullptr, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
         log(Info, "Load chair");
-        chair = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/LightFurnitureTexture.png", structure, 1.0f);
-        kitchenObjects[3] = new KitchenObject(chair, nullptr, nullptr, vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
-        kitchenObjects[4] = new KitchenObject(chair, nullptr, nullptr, vec3(5.0f, 0.0f, 8.0f), vec3(pi, 0.0f, 0.0f));
-        kitchenObjects[5] = new KitchenObject(chair, nullptr, nullptr, vec3(6.5f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
-        kitchenObjects[6] = new KitchenObject(chair, nullptr, nullptr, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
+		chair1 = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/LightFurnitureTexture.png", structure, 1.0f);
+		chair2 = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/LightFurnitureTexture.png", structure, 1.0f);
+		chair3 = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/LightFurnitureTexture.png", structure, 1.0f);
+		chair4 = new MeshObject("Data/Meshes/chair.obj", "Data/Meshes/chair_collider.obj", "Data/Textures/LightFurnitureTexture.png", structure, 1.0f);
+		kitchenObjects[3] = new KitchenObject(chair1, nullptr, nullptr, vec3(5.0f, 0.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f));
+        kitchenObjects[4] = new KitchenObject(chair2, nullptr, nullptr, vec3(5.0f, 0.0f, 8.0f), vec3(pi, 0.0f, 0.0f));
+        kitchenObjects[5] = new KitchenObject(chair3, nullptr, nullptr, vec3(6.5f, 0.0f, 6.5f), vec3(-pi/2, 0.0f, 0.0f));
+        kitchenObjects[6] = new KitchenObject(chair4, nullptr, nullptr, vec3(3.5f, 0.0f, 6.5f), vec3(pi/2, 0.0f, 0.0f));
         
         log(Info, "Load table");
         table = new MeshObject("Data/Meshes/table.obj", "Data/Meshes/table_collider.obj", "Data/Textures/LightFurnitureTexture.png", structure, 1.0f);
@@ -555,8 +588,9 @@ namespace {
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
         microwaveDoorClosed = new MeshObject("Data/Meshes/microwave_door.obj", "Data/Meshes/microwave_door_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
         microwaveDoorOpen = new MeshObject("Data/Meshes/microwave_door_open.obj", nullptr, "Data/Textures/microwaveTexture.png", structure, 1.0f);
-        kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
-        kitchenObjects[11] = new KitchenObject(cupboard, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+		cupboard2 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+		kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
+        kitchenObjects[11] = new KitchenObject(cupboard2, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
         microwaveBodyDeathCollider = new DeathCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->getM());
         deathCollider[3] = microwaveBodyDeathCollider;
@@ -569,7 +603,8 @@ namespace {
         deathCollider[4] = washDeathCollider;
         
         log(Info, "Load cupboard");
-        kitchenObjects[13] = new KitchenObject(cupboard, nullptr, nullptr, vec3(-4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
+		cupboard3 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
+		kitchenObjects[13] = new KitchenObject(cupboard3, nullptr, nullptr, vec3(-4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
 		hovered = nullptr;
 
