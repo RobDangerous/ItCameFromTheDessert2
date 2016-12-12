@@ -20,6 +20,8 @@ KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObje
 
 	setM(body, M * mat4::RotationY(pi * 0.5f));
 	setM(door_closed, M * mat4::RotationY(pi * 0.5f));
+    
+    triggerCollider = nullptr;
 }
 
 void KitchenObject::render(TextureUnit tex, ConstantLocation mLocation) {
@@ -57,6 +59,6 @@ void KitchenObject::openOrClose(float time) {
     lastTime = time;
 }
 
-mat4 KitchenObject::getM() {
-    return M;
+void KitchenObject::setTriggerCollider(TriggerCollider* triggerCollider) {
+    this->triggerCollider = triggerCollider;
 }

@@ -41,7 +41,7 @@
 using namespace Kore;
 
 KitchenObject* kitchenObjects[21];
-TriggerCollider* deathCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+//TriggerCollider* triggerCollider[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 namespace {
 	const char* title = "It Came from the Dessert";
@@ -134,11 +134,11 @@ namespace {
 	KitchenObject* hovered;
     
     // Death collider
-    TriggerCollider* microwaveBodyDeathCollider;
-    TriggerCollider* fridgeDeathCollider;
-    TriggerCollider* ovenDeathCollider;
-    TriggerCollider* stoveDeathCollider;
-    TriggerCollider* washDeathCollider;
+    TriggerCollider* microwaveTrigger;
+    TriggerCollider* fridgeTrigger;
+    TriggerCollider* ovenTrigger;
+    TriggerCollider* stoveTrigger;
+    TriggerCollider* washTrigger;
     
     vec3 screenToWorld(vec2 screenPos) {
         vec4 pos((2 * screenPos.x()) / width - 1.0f, -((2 * screenPos.y()) / height - 1.0f), 0.0f, 1.0f);
@@ -285,6 +285,11 @@ namespace {
         int i = 0;
         while (kitchenObjects[i] != nullptr) {
             kitchenObjects[i]->render(tex, mLocation);
+            
+            // test: render trigger collider
+            /*if (kitchenObjects[i]->triggerCollider != nullptr) {
+                kitchenObjects[i]->triggerCollider->renderTest(tex, mLocation);
+            }*/
             ++i;
         }
         
@@ -293,13 +298,6 @@ namespace {
         mat4 M = mat4::Translation(pos.x(), pos.y(), pos.z());
         Kore::Graphics::setMatrix(mLocation, M);
         room->render(tex, mLocation);
-        
-        // remove later
-        /*i = 0;
-        while (deathCollider[i] != nullptr) {
-            deathCollider[i]->renderTest(tex, mLocation);
-            ++i;
-        }*/
         
         instancedProgram->set();
         
@@ -539,7 +537,7 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        room = new MeshObject("Data/Meshes/room.obj", "Data/Meshes/room_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+        room = new MeshObject("Data/Meshes/room_floor.obj", "Data/Meshes/room_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
         
         log(Info, "Load fridge");
         fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
@@ -547,8 +545,9 @@ namespace {
         fridgeDoorOpen = new MeshObject("Data/Meshes/fridge_door_open.obj", nullptr, "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         kitchenObjects[0] = new KitchenObject(fridgeBody, fridgeDoorClosed, fridgeDoorOpen, vec3(6.0f, 0.0f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         
-        fridgeDeathCollider = new TriggerCollider("Data/Meshes/fridge_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[0]->getM());
-        deathCollider[0] = fridgeDeathCollider;
+        fridgeTrigger = new TriggerCollider("Data/Meshes/fridge_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[0]->M);
+        kitchenObjects[0]->setTriggerCollider(fridgeTrigger);
+        //triggerCollider[0] = fridgeTrigger;
         
         log(Info, "Load cupboard and cake");
         cupboard1 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
@@ -578,11 +577,13 @@ namespace {
         kitchenObjects[8] = new KitchenObject(ovenBody, ovenDoorClosed, ovenDoorOpen, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
 		kitchenObjects[9] = new KitchenObject(stove, nullptr, nullptr, vec3(2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        ovenDeathCollider = new TriggerCollider("Data/Meshes/oven_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[8]->getM());
-        deathCollider[1] = ovenDeathCollider;
+        ovenTrigger = new TriggerCollider("Data/Meshes/oven_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[8]->M);
+        kitchenObjects[8]->setTriggerCollider(ovenTrigger);
+        //triggerCollider[1] = ovenTrigger;
         
-        stoveDeathCollider = new TriggerCollider("Data/Meshes/stove_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[9]->getM());
-        deathCollider[2] = ovenDeathCollider;
+        stoveTrigger = new TriggerCollider("Data/Meshes/stove_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[9]->M);
+        kitchenObjects[9]->setTriggerCollider(stoveTrigger);
+        //triggerCollider[2] = stoveTrigger;
 
         log(Info, "Load microwave");
         microwaveBody = new MeshObject("Data/Meshes/microwave_body.obj", "Data/Meshes/microwave_body_collider.obj", "Data/Textures/microwaveTexture.png", structure, 1.0f);
@@ -592,15 +593,17 @@ namespace {
 		kitchenObjects[10] = new KitchenObject(microwaveBody, microwaveDoorClosed, microwaveDoorOpen, vec3(4.0f, 1.4f, 0.0f), vec3(-pi/2, 0.0f, 0.0f));
         kitchenObjects[11] = new KitchenObject(cupboard2, nullptr, nullptr, vec3(4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        microwaveBodyDeathCollider = new TriggerCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->getM());
-        deathCollider[3] = microwaveBodyDeathCollider;
+        microwaveTrigger = new TriggerCollider("Data/Meshes/microwave_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[10]->M);
+        kitchenObjects[10]->setTriggerCollider(microwaveTrigger);
+        //triggerCollider[3] = microwaveTrigger;
         
         log(Info, "Load wash");
         wash = new MeshObject("Data/Meshes/wash.obj", "Data/Meshes/wash_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[12] = new KitchenObject(wash, nullptr, nullptr, vec3(-2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        washDeathCollider = new TriggerCollider("Data/Meshes/wash_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[12]->getM());
-        deathCollider[4] = washDeathCollider;
+        washTrigger = new TriggerCollider("Data/Meshes/wash_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[12]->M);
+        kitchenObjects[12]->setTriggerCollider(washTrigger);
+        //triggerCollider[4] = washTrigger;
         
         log(Info, "Load cupboard");
 		cupboard3 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);

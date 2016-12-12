@@ -193,7 +193,7 @@ void Ant::chooseScent(bool force) {
 
 extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
-extern TriggerCollider* deathCollider[];
+//extern TriggerCollider* triggerCollider[];
 
 void Ant::move(float deltaTime) {
     
@@ -202,7 +202,7 @@ void Ant::move(float deltaTime) {
         energy += deltaTime;
         //log(Info, "Ant dying %f", energy);
         if (energy > 0.5f) {
-            //log(Info, "Ant dead");
+            log(Info, "Ant dead");
             return;
         }
     }
@@ -277,9 +277,10 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
 }
 
 bool Ant::isDying() {
-    for (unsigned oi = 0; deathCollider[oi] != nullptr; ++oi) {
-        if (deathCollider[oi]->collider != nullptr && deathCollider[oi]->collider->IsInside(position)) {
-            return true;
+    for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+        if (kitchenObjects[oi]->triggerCollider != nullptr && kitchenObjects[oi]->triggerCollider->collider != nullptr && kitchenObjects[oi]->triggerCollider->collider->IsInside(position)) {
+            if (kitchenObjects[oi]->closed)
+                return true;
         }
     }
     return false;
