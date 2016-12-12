@@ -23,7 +23,11 @@ namespace {
 	}
 
 	vec3 parseVertex(char* line) {
-		return vec3((float)strtod(strtok(nullptr, " "), nullptr), (float)strtod(strtok(nullptr, " "), nullptr), (float)strtod(strtok(nullptr, " "), nullptr));
+		float x = (float)strtod(strtok(nullptr, " "), nullptr);
+		float y = (float)strtod(strtok(nullptr, " "), nullptr);
+		float z = (float)strtod(strtok(nullptr, " "), nullptr);
+
+		return vec3(x, y, z);
 	}
 
 	bool parseLine(char* line, vec3 &v, bool &isSet) {
