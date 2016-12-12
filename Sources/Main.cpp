@@ -595,7 +595,7 @@ namespace {
         kitchenObjects[8]->setTriggerCollider(ovenTrigger);
         //triggerCollider[1] = ovenTrigger;
         
-        stoveTrigger = new TriggerCollider("Data/Meshes/stove_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[9]->M);
+        stoveTrigger = new TriggerCollider("Data/Meshes/stove_trigger.obj", "Data/Textures/black.png", structure, kitchenObjects[9]->M);
         kitchenObjects[9]->setTriggerCollider(stoveTrigger);
         //triggerCollider[2] = stoveTrigger;
 
@@ -615,7 +615,7 @@ namespace {
         wash = new MeshObject("Data/Meshes/wash.obj", "Data/Meshes/wash_collider.obj", "Data/Textures/white.png", structure, 1.0f);
         kitchenObjects[12] = new KitchenObject(wash, nullptr, nullptr, vec3(-2.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        washTrigger = new TriggerCollider("Data/Meshes/wash_collider.obj", "Data/Textures/black.png", structure, kitchenObjects[12]->M);
+        washTrigger = new TriggerCollider("Data/Meshes/wash_trigger.obj", "Data/Textures/black.png", structure, kitchenObjects[12]->M);
         kitchenObjects[12]->setTriggerCollider(washTrigger);
         //triggerCollider[4] = washTrigger;
         
