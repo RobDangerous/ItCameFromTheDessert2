@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Ant.h"
 #include "Engine/InstancedMeshObject.h"
+#include "Engine/DeathCollider.h"
 #include "KitchenObject.h"
 
 #include <assert.h>
@@ -136,8 +137,15 @@ void Ant::chooseScent() {
 
 extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
+extern DeathCollider* deathCollider[];
 
 void Ant::move() {
+    
+    //position = vec3(4.0f, 1.5f, 0.0f);// all ants in the microwave
+    if (isDying()) {
+        log(Info, "Ant dying");
+        return;
+    }
 	
 	if (goingup) {
 		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
@@ -204,6 +212,15 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
 		if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * 0.5f)) {
 			return true;
 		}
+    }
+    return false;
+}
+
+bool Ant::isDying() {
+    for (unsigned oi = 0; deathCollider[oi] != nullptr; ++oi) {
+        if (deathCollider[oi]->collider != nullptr && deathCollider[oi]->collider->IsInside(position)) {
+            return true;
+        }
     }
     return false;
 }

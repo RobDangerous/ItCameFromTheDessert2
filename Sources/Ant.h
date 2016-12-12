@@ -5,6 +5,7 @@
 #include <Kore/Graphics/Graphics.h>
 
 #include "Engine/MeshObject.h"
+#include "Engine/DeathCollider.h"
 
 class InstancedMeshObject;
 
@@ -29,4 +30,6 @@ public:
 private:
     bool intersectsWith(MeshObject* obj, Kore::vec3 dir);
 	bool intersects(Kore::vec3 dir);
+    
+    bool isDying();
 };
