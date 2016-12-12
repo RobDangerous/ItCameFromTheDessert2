@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "Engine/MeshObject.h"
+#include "Engine/TriggerCollider.h"
 
 using namespace Kore;
 
@@ -14,7 +15,7 @@ public:
 	bool pizza;
     void render(TextureUnit tex, ConstantLocation mLocation);
     void openOrClose(float time);
-    mat4 getM();
+    void setTriggerCollider(TriggerCollider* triggerCollider);
     
     MeshObject* body;
     MeshObject* door_closed;
@@ -23,4 +24,6 @@ public:
     bool closed;
     float lastTime;
     mat4 M;
+    
+    TriggerCollider* triggerCollider;
 };

@@ -5,7 +5,7 @@
 #include <Kore/Graphics/Graphics.h>
 
 #include "Engine/MeshObject.h"
-#include "Engine/DeathCollider.h"
+#include "Engine/TriggerCollider.h"
 
 class InstancedMeshObject;
 
@@ -24,6 +24,9 @@ public:
 	Kore::vec4 forward, up, right;
 	Kore::vec3 dir;
 	Kore::mat4 rotation;
+    
+    float energy;
+    bool dead;
     
 	Kore::vec3i lastGrid;
 	float legRotation;

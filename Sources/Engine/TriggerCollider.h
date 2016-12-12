@@ -8,9 +8,9 @@
 
 #include "PhysicsObject.h"
 
-class DeathCollider {
+class TriggerCollider {
     public:
-    DeathCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale = 1.0f);
+    TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale = 1.0f);
     
     void renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation);
     

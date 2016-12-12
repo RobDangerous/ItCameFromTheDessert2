@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Ant.h"
 #include "Engine/InstancedMeshObject.h"
-#include "Engine/DeathCollider.h"
+#include "Engine/TriggerCollider.h"
 #include "KitchenObject.h"
 
 #include <assert.h>
@@ -18,8 +18,7 @@ namespace {
 	Ant ants[maxAnts];
 	float* scent;
 	const int scents = 100;
-    
-    float energy;
+    int antsDead = 0;
 	
 	float scentAt(int x, int y, int z) {
 		if (z >= scents || y >= scents || z >= scents) return 0;
@@ -90,11 +89,12 @@ void Ant::init() {
 	vertexBuffers[1] = new VertexBuffer(maxAnts, *structures[1], 1);
 
 	for (int i = 0; i < maxAnts; ++i) {
-		ants[i].position = vec3(Random::get(-1000, 1000) / 10.0f, 0, Random::get(-1000, 1000) / 10.0f);
+		ants[i].position = vec3(Random::get(-100, 100) / 10.0f, 0, Random::get(-100, 100) / 10.0f);
 		//ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
+        
+        ants[i].energy = 0;
+        ants[i].dead = false;
 	}
-    
-    energy = 0;
 }
 
 void Ant::chooseScent(bool force) {
@@ -188,45 +188,109 @@ void Ant::chooseScent(bool force) {
 				}
 			}
 		}
+		else if (mode == BackWall) {
+			vec3i neighbours[8];
+			for (int i = 0; i < 8; ++i) neighbours[i] = grid;
+			neighbours[0].x() -= 1;
+			neighbours[0].y() += 1;
+			neighbours[1].x() += 0;
+			neighbours[1].y() += 1;
+			neighbours[2].x() += 1;
+			neighbours[2].y() += 1;
+			neighbours[3].x() += 1;
+			neighbours[3].y() += 0;
+			neighbours[4].x() += 1;
+			neighbours[4].y() -= 1;
+			neighbours[5].x() += 0;
+			neighbours[5].y() -= 1;
+			neighbours[6].x() -= 1;
+			neighbours[6].y() -= 1;
+			neighbours[7].x() -= 1;
+			neighbours[7].y() += 0;
+
+			float maxScent = 0;
+			for (int i = 0; i < 8; ++i) {
+				float scent = scentAt(neighbours[i].x(), neighbours[i].y(), neighbours[i].z());
+				if (scent > maxScent) {
+					int i1 = i - 1 < 0 ? 7 : i - 1;
+					int i2 = i;
+					int i3 = i + 1 > 7 ? 0 : i + 1;
+					if (nextGrid == neighbours[i1] || nextGrid == neighbours[i2] || nextGrid == neighbours[i3]) {
+						maxScent = scent;
+						vec3 pos = realPosition(neighbours[i]);
+						vec3 forward = pos - position;
+						forward = forward.normalize();
+						up = vec4(0, 0, -1, 0);
+						vec3 right = forward.cross(vec3(up.x(), up.y(), up.z()));
+						//vec3 right = vec3(up.x(), up.y(), up.z()).cross(forward);
+						this->right = vec4(right.x(), right.y(), right.z(), 0);
+						this->forward = vec4(forward.x(), forward.y(), forward.z(), 0);
+						float angle = Kore::atan2(forward.y(), forward.x());
+						rotation = Quaternion(vec3(up.x(), up.y(), up.z()), angle + pi / 2.0f).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
+					}
+				}
+			}
+		}
 	}
 }
 
 extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
-extern DeathCollider* deathCollider[];
+//extern TriggerCollider* triggerCollider[];
 
 void Ant::move(float deltaTime) {
     
+    if (dead) return;
     //position = vec3(4.0f, 1.5f, 0.0f);// all ants in the microwave
     if (isDying()) {
         energy += deltaTime;
         //log(Info, "Ant dying %f", energy);
         if (energy > 0.5f) {
-            //log(Info, "Ant dead");
+            antsDead ++;
+            log(Info, "Ant dead: %i", antsDead);
+            dead = true;
             return;
         }
     }
 	if (mode == FrontWall) {
 		if (!intersects(vec4(0, 0, -1, 0))) {
-			mat4 rot = mat4::Identity();
-			forward = vec4(0, 0, 1, 0);//rot * forward;
-			up = vec4(0, 1, 0, 0);//rot * up;
-			right = vec4(1, 0, 0, 0); //rot * right;
-			rotation = rot;// * rotation;
+			forward = vec4(0, 0, 1, 0);
+			up = vec4(0, 1, 0, 0);
+			right = vec4(1, 0, 0, 0);
+			rotation = mat4::Identity();
 			
+			mode = Floor;
+			chooseScent(true);
+		}
+	}
+	else if (mode == BackWall) {
+		if (intersects(forward)) {
+			forward = vec4(0, 0, 1, 0);
+			up = vec4(0, 1, 0, 0);
+			right = vec4(1, 0, 0, 0);
+			rotation = mat4::Identity();
+
 			mode = Floor;
 			chooseScent(true);
 		}
 	}
 	else {
 		if (intersects(forward)) {
-			mat4 rot = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
-			forward = vec4(0, 1, 0, 0);//rot * forward;
-			up = vec4(0, 0, -1, 0);//rot * up;
-			right = vec4(1, 0, 0, 0); //rot * right;
-			rotation = rot;// * rotation;
+			forward = vec4(0, 1, 0, 0);
+			up = vec4(0, 0, -1, 0);
+			right = vec4(1, 0, 0, 0);
+			rotation = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
 
 			mode = FrontWall;
+			chooseScent(true);
+		}
+		else if (!intersects(vec4(0, -1, 0, 0))) {
+			forward = vec4(0, -1, 0, 0);
+			up = vec4(0, 0, 1, 0);
+			right = vec4(-1, 0, 0, 0);
+			rotation = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
+
+			mode = BackWall;
 			chooseScent(true);
 		}
 	}
@@ -277,9 +341,10 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
 }
 
 bool Ant::isDying() {
-    for (unsigned oi = 0; deathCollider[oi] != nullptr; ++oi) {
-        if (deathCollider[oi]->collider != nullptr && deathCollider[oi]->collider->IsInside(position)) {
-            return true;
+    for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+        if (kitchenObjects[oi]->triggerCollider != nullptr && kitchenObjects[oi]->triggerCollider->collider != nullptr && kitchenObjects[oi]->triggerCollider->collider->IsInside(position)) {
+            if (kitchenObjects[oi]->closed)
+                return true;
         }
     }
     return false;
