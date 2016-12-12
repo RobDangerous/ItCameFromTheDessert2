@@ -110,7 +110,11 @@ namespace {
 
     ParticleRenderer* particleRenderer;
     
-    MeshObject* room;
+    MeshObject* room_floor;
+    MeshObject* room_wall1;
+    MeshObject* room_wall2;
+    MeshObject* room_wall3;
+    MeshObject* room_wall4;
     
     MeshObject* fridgeBody;
     MeshObject* fridgeDoorOpen;
@@ -295,10 +299,14 @@ namespace {
         }
         
         // render the room
-        vec3 pos = vec3(0, -1.0f, 3.5f);
+        vec3 pos = vec3(0, -1.0f, 6.5f);
         mat4 M = mat4::Translation(pos.x(), pos.y(), pos.z());
         Kore::Graphics::setMatrix(mLocation, M);
-        room->render(tex, mLocation);
+        room_floor->render(tex, mLocation);
+        room_wall1->render(tex, mLocation);
+        room_wall2->render(tex, mLocation);
+        room_wall3->render(tex, mLocation);
+        room_wall4->render(tex, mLocation);
         
         instancedProgram->set();
         
@@ -558,7 +566,11 @@ namespace {
         vLocation = program->getConstantLocation("V");
         mLocation = program->getConstantLocation("M");
         
-        room = new MeshObject("Data/Meshes/room_floor.obj", "Data/Meshes/room_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+        room_floor = new MeshObject("Data/Meshes/room_floor.obj", "Data/Meshes/room_floor_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+        room_wall1 = new MeshObject("Data/Meshes/room_wall1.obj", "Data/Meshes/room_wall1_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+        room_wall2 = new MeshObject("Data/Meshes/room_wall2.obj", "Data/Meshes/room_wall2_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+        room_wall3 = new MeshObject("Data/Meshes/room_wall3.obj", "Data/Meshes/room_wall3_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
+        room_wall4 = new MeshObject("Data/Meshes/room_wall4.obj", "Data/Meshes/room_wall4_collider.obj", "Data/Textures/marble_tile.png", structure, 1.0f);
         
         log(Info, "Load fridge");
         fridgeBody = new MeshObject("Data/Meshes/fridge_body.obj", "Data/Meshes/fridge_body_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
