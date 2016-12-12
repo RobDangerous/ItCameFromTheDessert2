@@ -54,6 +54,39 @@ public:
 		recalc(pos, ext);
 	}
 
+	void trans(Kore::mat4 m) {
+		setMinMax(m * getMin(), m * getMax());
+	}
+
+	void setMinMax(Kore::vec4 min, Kore::vec4 max) {
+		negX.d = -min.x() / negX.normal.x();
+		posX.d = -max.x() / posX.normal.x();
+		negY.d = -min.y() / negY.normal.y();
+		posY.d = -max.y() / posY.normal.y();
+		negZ.d = -min.z() / negZ.normal.z();
+		posZ.d = -max.z() / posZ.normal.z();
+	}
+
+	Kore::vec4 getMin() {
+		return Kore::vec4(-negX.d * negX.normal.x(),
+			-negY.d * negY.normal.y(),
+			-negZ.d * negZ.normal.z(),
+			1);
+	}
+
+	Kore::vec4 getMax() {
+		return Kore::vec4(-posX.d * posX.normal.x(),
+			-posY.d * posY.normal.y(),
+			-posZ.d * posZ.normal.z(),
+			1);
+	}
+
+	void swap(float &a, float &b) const {
+		float t = a;
+		a = b;
+		b = t;
+	}
+
 	bool IntersectsWith(Kore::vec3 orig, Kore::vec3 dir, float &dist) const {
 		double tmin = -std::numeric_limits<double>::infinity();
 		double tmax = std::numeric_limits<double>::infinity();
@@ -75,8 +108,8 @@ public:
 		}
 
 		if (dir.z() != 0.0) {
-			double tz1 = (-negZ.d * negZ.normal.z() - orig.z()) / dir.z();
-			double tz2 = (-posZ.d * posZ.normal.z() - orig.z()) / dir.z();
+			double tz1 = (negZ.d * negZ.normal.z() - orig.z()) / dir.z();
+			double tz2 = (posZ.d * posZ.normal.z() - orig.z()) / dir.z();
 
 			tmin = Kore::max(tmin, Kore::min(tz1, tz2));
 			tmax = Kore::min(tmax, Kore::max(tz1, tz2));

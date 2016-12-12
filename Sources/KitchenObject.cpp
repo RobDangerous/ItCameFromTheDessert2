@@ -7,7 +7,7 @@ namespace {
 			for (int k = 0; k < mesh->colliderCount; ++k) {
 				float distance;
 				if (mesh->collider[k] != nullptr) {
-					mesh->collider[k]->setPos(M * vec4(0, 0, 0, 1));
+					mesh->collider[k]-> trans(M);
 				}
 			}
 		}
@@ -18,8 +18,8 @@ KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObje
 	M = mat4::Translation(position.x(), position.y(), position.z());
     M *= mat4::Rotation(rotation.x(), rotation.y(), rotation.z());
 
-	setM(body, M);
-	setM(door_closed, M);
+	setM(body, M * mat4::RotationY(pi * 0.5f));
+	setM(door_closed, M * mat4::RotationY(pi * 0.5f));
 }
 
 void KitchenObject::render(TextureUnit tex, ConstantLocation mLocation) {
