@@ -5,7 +5,6 @@ namespace {
 	void setM(MeshObject* mesh, mat4 M) {
 		if (mesh != nullptr) {
 			for (int k = 0; k < mesh->colliderCount; ++k) {
-				float distance;
 				if (mesh->collider[k] != nullptr) {
 					mesh->collider[k]-> trans(M);
 				}

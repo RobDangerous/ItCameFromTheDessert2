@@ -23,8 +23,17 @@ public:
 	BoxCollider(Kore::vec4 min, Kore::vec4 max) : min(min), max(max) { }
 
 	void trans(Kore::mat4 m) {
-		min = m * min;
-		max = m * max;
+		Kore::vec4 mmin = m * min;
+		Kore::vec4 mmax = m * max;
+
+		min.x() = Kore::min(mmin.x(), mmax.x());
+		max.x() = Kore::max(mmin.x(), mmax.x());
+
+		min.y() = Kore::min(mmin.y(), mmax.y());
+		max.y() = Kore::max(mmin.y(), mmax.y());
+
+		min.z() = Kore::min(mmin.z(), mmax.z());
+		max.z() = Kore::max(mmin.z(), mmax.z());
         M = m;
 	}
 

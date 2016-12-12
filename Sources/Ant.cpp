@@ -247,7 +247,7 @@ void Ant::move(float deltaTime) {
         //log(Info, "Ant dying %f", energy);
         if (energy > 0.5f) {
             antsDead ++;
-            log(Info, "Ant dead: %i", antsDead);
+            log(Info, "%i Ant dead at pos %f %f %f", antsDead, position.x(), position.y(), position.z());
             dead = true;
             return;
         }
