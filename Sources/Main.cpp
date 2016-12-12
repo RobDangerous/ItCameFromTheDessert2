@@ -74,9 +74,9 @@ namespace {
     mat4 P;
     mat4 View;
     
-    float horizontalAngle = 0.0;
-    float verticalAngle = -pi/2;
-    vec3 cameraPos;
+    float horizontalAngle = 0.85f * pi;
+    float verticalAngle = 0.f;
+    vec3 cameraPos = vec3(-5, 3, 15);
     vec3 cameraDir;
     vec3 cameraUp;
     
@@ -329,10 +329,8 @@ namespace {
             g2->setColor(Color::White);
         }
 		else {
-            g2->setColor(Color::Yellow);
+            g2->setColor(Color::Cyan);
 		}
-        g2->drawRect(0, 0, width / 2, height / 2, 2);
-        
 		g2->drawRect(width / 2 -  1, height / 2 -  1, 2, 2, 1);
 		g2->drawRect(width / 2 +  8, height / 2 -  1, 8, 2, 1);
 		g2->drawRect(width / 2 - 16, height / 2 -  1, 8, 2, 1);
@@ -381,6 +379,7 @@ namespace {
     void mouseMove(int windowId, int x, int y, int movementX, int movementY) {
         horizontalAngle += CAMERA_ROTATION_SPEED * movementX;
         verticalAngle -= CAMERA_ROTATION_SPEED * movementY;
+		verticalAngle = Kore::min(Kore::max(verticalAngle, -0.49f * pi), 0.49f * pi);
     }
     
     void mousePress(int windowId, int button, int x, int y) {
@@ -515,9 +514,6 @@ namespace {
         Graphics::setTextureAddressing(tex, U, Repeat);
         Graphics::setTextureAddressing(tex, V, Repeat);
         
-        cameraPos = vec3(0, 30, 2.5f);
-        cameraDir = vec3(0, 0, -2.5f);
-        cameraUp = vec3(0, 0, -1);
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
         
 		g2 = new Graphics2(width, height);
@@ -561,7 +557,7 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
-	//Mouse::the()->lock(0);
+	Mouse::the()->lock(0);
 
 	Kore::System::start();
 
