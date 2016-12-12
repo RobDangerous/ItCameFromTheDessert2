@@ -55,10 +55,11 @@ namespace {
 	}
 }
 
-Ant::Ant() : goingup(false) {
+Ant::Ant() : mode(Floor) {
 	rotation = mat4::Identity();
 	forward = vec4(0, 0, -1, 0);
 	right = vec4(1, 0, 0, 0);
+	up = vec4(0, 1, 0, 0);
 }
 
 void Ant::init() {
@@ -91,43 +92,94 @@ void Ant::init() {
 	}
 }
 
-void Ant::chooseScent() {
+void Ant::chooseScent(bool force) {
 	vec3i grid = gridPosition(position);
-	if (grid != lastGrid) {
-		setScent(grid.x(), grid.y(), grid.z(), scentAt(grid.x(), grid.y(), grid.z()) + 100.5f);
+	if (force || grid != lastGrid) {
+		setScent(grid.x(), grid.y(), grid.z(), scentAt(grid.x(), grid.y(), grid.z()) + 1.0f);
 		lastGrid = grid;
-		vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 0.5f);
-		vec3i neighbours[8];
-		for (int i = 0; i < 8; ++i) neighbours[i] = grid;
-		neighbours[0].x() -= 1;
-		neighbours[0].z() += 1;
-		neighbours[1].x() += 0;
-		neighbours[1].z() += 1;
-		neighbours[2].x() += 1;
-		neighbours[2].z() += 1;
-		neighbours[3].x() += 1;
-		neighbours[3].z() += 0;
-		neighbours[4].x() += 1;
-		neighbours[4].z() -= 1;
-		neighbours[5].x() += 0;
-		neighbours[5].z() -= 1;
-		neighbours[6].x() -= 1;
-		neighbours[6].z() -= 1;
-		neighbours[7].x() -= 1;
-		neighbours[7].z() += 0;
+		vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 1.0f);
+		if (mode == Floor) {
+			vec3i neighbours[8];
+			for (int i = 0; i < 8; ++i) neighbours[i] = grid;
+			neighbours[0].x() -= 1;
+			neighbours[0].z() += 1;
+			neighbours[1].x() += 0;
+			neighbours[1].z() += 1;
+			neighbours[2].x() += 1;
+			neighbours[2].z() += 1;
+			neighbours[3].x() += 1;
+			neighbours[3].z() += 0;
+			neighbours[4].x() += 1;
+			neighbours[4].z() -= 1;
+			neighbours[5].x() += 0;
+			neighbours[5].z() -= 1;
+			neighbours[6].x() -= 1;
+			neighbours[6].z() -= 1;
+			neighbours[7].x() -= 1;
+			neighbours[7].z() += 0;
 
-		float maxScent = 0;
-		for (int i = 0; i < 8; ++i) {
-			float scent = scentAt(neighbours[i].x(), neighbours[i].y(), neighbours[i].z());
-			if (scent > maxScent) {
-				if (nextGrid == neighbours[i] || (i > 0 && nextGrid == neighbours[i - 1]) || (i < 7 && nextGrid == neighbours[i + 1])) {
-					maxScent = scent;
-					vec3 pos = realPosition(neighbours[i]);
-					vec3 forward = pos - position;
-					forward = forward.normalize();
-					this->forward = vec4(forward.x(), forward.y(), forward.z(), 0);
-					float angle = Kore::atan2(forward.z(), forward.x());
-					rotation = Quaternion(vec3(0, 1, 0), angle + pi / 2.0f).matrix();
+			float maxScent = 0;
+			for (int i = 0; i < 8; ++i) {
+				float scent = scentAt(neighbours[i].x(), neighbours[i].y(), neighbours[i].z());
+				if (scent > maxScent) {
+					int i1 = i - 1 < 0 ? 7 : i - 1;
+					int i2 = i;
+					int i3 = i + 1 > 7 ? 0 : i + 1;
+					if (nextGrid == neighbours[i1] || nextGrid == neighbours[i2] || nextGrid == neighbours[i3]) {
+						maxScent = scent;
+						vec3 pos = realPosition(neighbours[i]);
+						vec3 forward = pos - position;
+						forward = forward.normalize();
+						//vec3 right = forward.cross(vec3(up.x(), up.y(), up.z()));
+						vec3 right = vec3(up.x(), up.y(), up.z()).cross(forward);
+						this->right = vec4(right.x(), right.y(), right.z(), 0);
+						this->forward = vec4(forward.x(), forward.y(), forward.z(), 0);
+						float angle = Kore::atan2(forward.z(), forward.x());
+						rotation = Quaternion(vec3(up.x(), up.y(), up.z()), angle + pi / 2.0f).matrix();
+					}
+				}
+			}
+		}
+		else if (mode == FrontWall) {
+			vec3i neighbours[8];
+			for (int i = 0; i < 8; ++i) neighbours[i] = grid;
+			neighbours[0].x() -= 1;
+			neighbours[0].y() += 1;
+			neighbours[1].x() += 0;
+			neighbours[1].y() += 1;
+			neighbours[2].x() += 1;
+			neighbours[2].y() += 1;
+			neighbours[3].x() += 1;
+			neighbours[3].y() += 0;
+			neighbours[4].x() += 1;
+			neighbours[4].y() -= 1;
+			neighbours[5].x() += 0;
+			neighbours[5].y() -= 1;
+			neighbours[6].x() -= 1;
+			neighbours[6].y() -= 1;
+			neighbours[7].x() -= 1;
+			neighbours[7].y() += 0;
+
+			float maxScent = 0;
+			for (int i = 0; i < 8; ++i) {
+				float scent = scentAt(neighbours[i].x(), neighbours[i].y(), neighbours[i].z());
+				if (scent > maxScent) {
+					int i1 = i - 1 < 0 ? 7 : i - 1;
+					int i2 = i;
+					int i3 = i + 1 > 7 ? 0 : i + 1;
+					if (nextGrid == neighbours[i1] || nextGrid == neighbours[i2] || nextGrid == neighbours[i3]) {
+						maxScent = scent;
+						vec3 pos = realPosition(neighbours[i]);
+						vec3 forward = pos - position;
+						forward = forward.normalize();
+						up = vec4(0, 0, -1, 0);
+						vec3 right = forward.cross(vec3(up.x(), up.y(), up.z()));
+						//vec3 right = vec3(up.x(), up.y(), up.z()).cross(forward);
+						this->right = vec4(right.x(), right.y(), right.z(), 0);
+						this->forward = vec4(forward.x(), forward.y(), forward.z(), 0);
+						float angle = Kore::atan2(forward.y(), forward.x());
+						rotation = Quaternion(vec3(up.x(), up.y(), up.z()), angle + pi / 2.0f).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
+					}
 				}
 			}
 		}
@@ -138,28 +190,28 @@ extern MeshObject* objects[];
 extern KitchenObject* kitchenObjects[];
 
 void Ant::move() {
-	
-	if (goingup) {
-		if (!intersects(vec4(0, 0, -1, 0)) || position.y() > 5) {
-			rotation = mat4::Identity();
-
-			forward = vec4(0, 0, -1, 0);
-			//forward = rotation * vec4(0, 0, 1, 0);
-			//up = rotation * vec4(0, 1, 0, 0);
-			//right = rotation * vec4(1, 0, 0, 0);
-
-			goingup = false;
+	if (mode == FrontWall) {
+		if (!intersects(vec4(0, 0, -1, 0))) {
+			mat4 rot = mat4::Identity();
+			forward = vec4(0, 0, 1, 0);//rot * forward;
+			up = vec4(0, 1, 0, 0);//rot * up;
+			right = vec4(1, 0, 0, 0); //rot * right;
+			rotation = rot;// * rotation;
+			
+			mode = Floor;
+			chooseScent(true);
 		}
 	}
 	else {
-		if (intersects(vec4(0, 0, -1, 0))) {
-			rotation = Quaternion(right, pi / 2).matrix();
+		if (intersects(forward)) {
+			mat4 rot = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
+			forward = vec4(0, 1, 0, 0);//rot * forward;
+			up = vec4(0, 0, -1, 0);//rot * up;
+			right = vec4(1, 0, 0, 0); //rot * right;
+			rotation = rot;// * rotation;
 
-			forward = rotation * vec4(0, 0, 1, 0);
-			//up = rotation * vec4(0, 1, 0, 0);
-			//right = rotation * vec4(1, 0, 0, 0);
-
-			goingup = true;
+			mode = FrontWall;
+			chooseScent(true);
 		}
 	}
 	
@@ -176,7 +228,7 @@ void Ant::move() {
 		}
 	}
 
-	//chooseScent();
+	chooseScent(false);
 	
 	position += forward * 0.05f;
 }

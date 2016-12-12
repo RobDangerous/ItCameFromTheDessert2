@@ -8,11 +8,13 @@
 
 class InstancedMeshObject;
 
+enum AntMode { Floor, LeftWall, RightWall, FrontWall, BackWall, Ceiling };
+
 class Ant {
 public:
 	static void init();
 	Ant();
-	void chooseScent();
+	void chooseScent(bool force);
 	static void moveEverybody();
 	void move();
 	static void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
@@ -22,10 +24,10 @@ public:
 	Kore::vec3 dir;
 	Kore::mat4 rotation;
     
-	bool goingup;
 	Kore::vec3i lastGrid;
 	float legRotation;
 	bool legRotationUp;
+	AntMode mode;
 private:
     bool intersectsWith(MeshObject* obj, Kore::vec3 dir);
 	bool intersects(Kore::vec3 dir);
