@@ -5,7 +5,7 @@
 #include <Kore/Graphics/Graphics.h>
 
 #include "Engine/MeshObject.h"
-#include "Engine/DeathCollider.h"
+#include "Engine/TriggerCollider.h"
 
 class InstancedMeshObject;
 
