@@ -20,6 +20,9 @@ public:
 	void move(float deltaTime);
 	static void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
 
+	static void morePizze(Kore::vec3 position);
+	static void lessPizza(Kore::vec3 position);
+
 	Kore::vec3 position;
 	Kore::vec4 forward, up, right;
 	Kore::vec3 dir;
