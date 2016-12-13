@@ -67,7 +67,7 @@ Ant::Ant() : mode(Floor) {
 void Ant::init() {
 	scent = new float[scents * scents * scents];
 	for (int i = 0; i < scents * scents * scents; ++i) {
-		scent[i] = Random::get(100) / 100.0f;
+		scent[i] = Random::get(100) / 200.0f;
 	}
 
 	VertexStructure** structures = new VertexStructure*[2];
@@ -89,7 +89,8 @@ void Ant::init() {
 	vertexBuffers[1] = new VertexBuffer(maxAnts, *structures[1], 1);
 
 	for (int i = 0; i < maxAnts; ++i) {
-		ants[i].position = vec3(Random::get(-100, 100) / 10.0f, -1, Random::get(-100, 100) / 10.0f);
+		vec3 start(0, 1.5, 0);
+		ants[i].position = vec3(start.x() + Random::get(-100, 100) / 100.0f, start.y(), start.z() + Random::get(-100, 100) / 100.0f); // vec3(Random::get(-100, 100) / 10.0f, -1, Random::get(-100, 100) / 10.0f);
 		//ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
         
         ants[i].energy = 0;
@@ -100,7 +101,11 @@ void Ant::init() {
 void Ant::chooseScent(bool force) {
 	vec3i grid = gridPosition(position);
 	if (force || grid != lastGrid) {
-		setScent(grid.x(), grid.y(), grid.z(), scentAt(grid.x(), grid.y(), grid.z()) + 1.0f);
+		if (!force) {
+			float scent = scentAt(grid.x(), grid.y(), grid.z());
+			scent = Kore::min(scent + 0.2f, 1.0f);
+			setScent(grid.x(), grid.y(), grid.z(), scent);
+		}
 		lastGrid = grid;
 		vec3i nextGrid = gridPosition(position + vec3(forward.x(), forward.y(), forward.z()) * 1.0f);
 		if (mode == Floor) {
@@ -272,6 +277,7 @@ void Ant::move(float deltaTime) {
             antsDead ++;
             log(Info, "%i Ant dead at pos %f %f %f", antsDead, position.x(), position.y(), position.z());
             dead = true;
+			rotation = Quaternion(vec4(1, 0, 0, 0), pi).matrix();
             return;
         }
     }
@@ -307,7 +313,7 @@ void Ant::move(float deltaTime) {
 		}
 	}
 	else {
-		if (intersects(forward)) {
+		if (intersects(vec4(0, 0, 1, 0))) {
 			forward = vec4(0, 1, 0, 0);
 			up = vec4(0, 0, -1, 0);
 			right = vec4(1, 0, 0, 0);
@@ -379,7 +385,7 @@ bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
 			}
 		}*/
 
-		if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * 0.5f)) {
+		if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * 1.0f)) {
 			return true;
 		}
     }
