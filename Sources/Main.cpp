@@ -313,6 +313,9 @@ namespace {
             ++i;
         }
         
+		Graphics::setTextureAddressing(tex, U, Repeat);
+		Graphics::setTextureAddressing(tex, V, Repeat);
+
         // render the room
         Kore::Graphics::setMatrix(mLocation, rooM);
 
