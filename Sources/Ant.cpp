@@ -55,6 +55,8 @@ namespace {
 		pos.z() = realPosition(grid.z());
 		return pos;
 	}
+
+	int count = 0;
 }
 
 Ant::Ant() : mode(Floor) {
@@ -352,6 +354,22 @@ void Ant::move(float deltaTime) {
 }
 
 void Ant::moveEverybody(float deltaTime) {
+	++count;
+	if (count % 10 == 0) {
+		Ant& ant = ants[Random::get(maxAnts - 1)];
+
+		ant.rotation = mat4::Identity();
+		ant.forward = vec4(0, 0, -1, 0);
+		ant.right = vec4(1, 0, 0, 0);
+		ant.up = vec4(0, 1, 0, 0);
+
+		vec3 start(0, 1.5, 0);
+		ant.position = vec3(start.x() + Random::get(-100, 100) / 100.0f, start.y(), start.z() + Random::get(-100, 100) / 100.0f); // vec3(Random::get(-100, 100) / 10.0f, -1, Random::get(-100, 100) / 10.0f);
+																																	  //ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
+		ant.energy = 0;
+		ant.dead = false;
+	}
+
 	for (int i = 0; i < maxAnts; ++i) {
 		ants[i].move(deltaTime);
 	}
