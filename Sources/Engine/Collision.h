@@ -43,7 +43,34 @@ public:
 		b = t;
 	}
 
-	bool IntersectsWith(Kore::vec3 orig, Kore::vec3 dir, float &dist) const {
+	Kore::vec4 normalAt(const Kore::vec4 &point) const {
+		Kore::vec4 size = (max - min);
+		Kore::vec4 center = min + (size * 0.5f);
+		Kore::vec4 normal;
+		Kore::vec4 localPoint = point - center;
+		float min = std::numeric_limits<float>::max();
+		float distance = Kore::abs(size.x() - Kore::abs(localPoint.x()));
+		if (distance < min) {
+			min = distance;
+			normal.set(1, 0, 0);
+			normal *= localPoint.x() / Kore::abs(localPoint.x());
+		}
+		distance = Kore::abs(size.y() - Kore::abs(localPoint.y()));
+		if (distance < min) {
+			min = distance;
+			normal.set(0, 1, 0);
+			normal *= localPoint.y() / Kore::abs(localPoint.y());
+		}
+		distance = Kore::abs(size.z() - Kore::abs(localPoint.z()));
+		if (distance < min) {
+			min = distance;
+			normal.set(0, 0, 1);
+			normal *= localPoint.z() / Kore::abs(localPoint.z());
+		}
+		return normal;
+	}
+
+	bool IntersectsWith(Kore::vec3 orig, Kore::vec3 dir, float &dist, Kore::vec3 &norm) const {
 		double tmin = -std::numeric_limits<double>::infinity();
 		double tmax = std::numeric_limits<double>::infinity();
 		
@@ -72,6 +99,12 @@ public:
 		}
 
 		dist = tmin;
+
+		Kore::vec3 v = orig + dir * dist;
+		Kore::vec4 n = normalAt(Kore::vec4(v.x(), v.y(), v.z(), 1));
+		norm.x() = n.x();
+		norm.y() = n.y();
+		norm.z() = n.z();
 		return tmax >= 0 && tmax >= tmin;
 	}
 
