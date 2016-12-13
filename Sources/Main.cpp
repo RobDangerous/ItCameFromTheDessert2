@@ -494,9 +494,16 @@ namespace {
 		}
     }
     
+	double lastMouseTime = 0;
+
     void mouseMove(int windowId, int x, int y, int movementX, int movementY) {
-        horizontalAngle += CAMERA_ROTATION_SPEED * movementX;
-        verticalAngle -= CAMERA_ROTATION_SPEED * movementY;
+		double t = System::time() - startTime;
+		double deltaT = t - lastMouseTime;
+		lastMouseTime = t;
+		if (deltaT > 1.0f / 30.0f) return;
+
+        horizontalAngle += CAMERA_ROTATION_SPEED * movementX * deltaT * 7.0f;
+        verticalAngle -= CAMERA_ROTATION_SPEED * movementY * deltaT * 7.0f;
 		verticalAngle = Kore::min(Kore::max(verticalAngle, -0.49f * pi), 0.49f * pi);
     }
     
@@ -734,10 +741,6 @@ namespace {
     }
 }
 
-#ifdef SYS_WINDOWS
-#include <Windows.h>
-#endif
-
 int kore(int argc, char** argv) {
     Kore::System::setName(title);
 	Kore::System::setup();
@@ -770,16 +773,8 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Scroll = mouseScroll;
-#ifdef SYS_WINDOWS
-	char name[256];
-	DWORD size = 255;
-	GetUserNameA(name, &size);
-	if (strcmp(name, "Robert") != 0) {
-		Mouse::the()->lock(0);
-	}
-#else
+
 	Mouse::the()->lock(0);
-#endif
 
 	Kore::System::start();
 
