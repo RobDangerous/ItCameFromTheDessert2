@@ -51,6 +51,8 @@ namespace {
     const float CAMERA_ROTATION_SPEED = 0.01f;
 	const float CAMERA_ZOOM_SPEED = 1.f;
 	const float CAMERA_MOVE_SPEED = 2.f;
+
+	const int PIZZA_OFFSET = 21;
     
     double startTime;
     Shader* vertexShader;
@@ -429,15 +431,15 @@ namespace {
 			jump = true;
 		} else if (code == Key_R) {
 			for (int i = 0; i < maxPizza; ++i) {
-				if (kitchenObjects[20 + i] != nullptr) {
-					if (kitchenObjects[20 + i] == hovered) hovered = nullptr;
+				if (kitchenObjects[PIZZA_OFFSET + i] != nullptr) {
+					if (kitchenObjects[PIZZA_OFFSET + i] == hovered) hovered = nullptr;
 
-					Ant::lessPizza(kitchenObjects[20 + i]->readOnlyPos);
+					Ant::lessPizza(kitchenObjects[PIZZA_OFFSET + i]->readOnlyPos);
 
-					delete kitchenObjects[20 + i]->body;
-					delete kitchenObjects[20 + i];
+					delete kitchenObjects[PIZZA_OFFSET + i]->body;
+					delete kitchenObjects[PIZZA_OFFSET + i];
 
-					kitchenObjects[20 + i] = nullptr;
+					kitchenObjects[PIZZA_OFFSET + i] = nullptr;
 				}
 			}
 			pizzaCount = 0;
@@ -503,10 +505,10 @@ namespace {
 
 			if (hovered != nullptr && hovered->pizza) {
 				for (int i = 0; i < pizzaCount; ++i) {
-					if (kitchenObjects[20 + i] == hovered) {
-						Ant::lessPizza(kitchenObjects[20 + i]->readOnlyPos);
-						kitchenObjects[20 + i] = kitchenObjects[20 + pizzaCount - 1];
-						kitchenObjects[20 + pizzaCount - 1] = nullptr;
+					if (kitchenObjects[PIZZA_OFFSET + i] == hovered) {
+						Ant::lessPizza(kitchenObjects[PIZZA_OFFSET + i]->readOnlyPos);
+						kitchenObjects[PIZZA_OFFSET + i] = kitchenObjects[PIZZA_OFFSET + pizzaCount - 1];
+						kitchenObjects[PIZZA_OFFSET + pizzaCount - 1] = nullptr;
 
 						delete hovered->body;
 						delete hovered;
@@ -526,11 +528,11 @@ namespace {
 				if (norm.z() < -0.9f) rot.z() = -0.5f * pi;
 
 				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/pizza.png", structure, 1.0f);
-				kitchenObjects[20 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, rot, true);
+				kitchenObjects[PIZZA_OFFSET + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, rot, true);
 				Ant::morePizze(pos);
 
 				++pizzaCount;
-				kitchenObjects[20 + pizzaCount] = nullptr;
+				kitchenObjects[PIZZA_OFFSET + pizzaCount] = nullptr;
 			}
 		}
 		else if (button == 1) {
@@ -687,7 +689,6 @@ namespace {
 		cupboard3 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
 		kitchenObjects[13] = new KitchenObject(cupboard3, nullptr, nullptr, vec3(-4.0f, 0.0f, 0.0f), vec3(pi, 0.0f, 0.0f));
         
-        
         cupboard4 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         cupboard5 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
         cupboard6 = new MeshObject("Data/Meshes/cupboard.obj", "Data/Meshes/cupboard_collider.obj", "Data/Textures/fridgeAndCupboardTexture.png", structure, 1.0f);
@@ -700,9 +701,12 @@ namespace {
         kitchenObjects[18] = new KitchenObject(cupboard8, nullptr, nullptr, vec3(-4.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
 		
 		MeshObject* img = new MeshObject("Data/Meshes/credits.obj", nullptr, "Data/Textures/creditsTexture.png", structure, 1.0f);
-		kitchenObjects[19] = new KitchenObject(img, nullptr, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f));
+		kitchenObjects[19] = new KitchenObject(img, nullptr, nullptr, vec3(-7.95f, 5.0f, 7.0f), vec3(-pi * 0.5f, 0.0f, 0.0f));
+		
+		MeshObject* lamp = new MeshObject("Data/Meshes/lamp.obj", nullptr, "Data/Textures/lampTexture.png", structure, 1.0f);
+		kitchenObjects[20] = new KitchenObject(lamp, nullptr, nullptr, vec3(0.0f, 9.0f, 7.0f), vec3(0.0f, 0.0f, 0.0f));
 
-		kitchenObjects[20] = nullptr;
+		kitchenObjects[21] = nullptr;
 
 		hovered = nullptr;
 
