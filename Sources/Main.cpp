@@ -178,46 +178,51 @@ namespace {
         renderShadowText(s, w - l / 2, h);*/
     }
 
-	float rayIntersectsWithMesh(vec3 pos, vec3 dir, MeshObject* obj) {
+	float rayIntersectsWithMesh(vec3 pos, vec3 dir, MeshObject* obj, vec3 &norm) {
 		float distance = std::numeric_limits<float>::infinity();
-
+		vec3 n;
 		if (obj == nullptr) return distance;
 
 		for (int k = 0; k < obj->colliderCount; ++k) {
 			if (obj->collider[k] != nullptr) {
 				float dist;
-				if (obj->collider[k]->IntersectsWith(pos, dir, dist)) {
+				if (obj->collider[k]->IntersectsWith(pos, dir, dist, n)) {
 					distance = Kore::min(dist, distance);
+					norm = n;
 				}
 			}
 		}
 		return distance;
 	}
 
-	KitchenObject* getIntersectingMesh(vec3 pos, vec3 dir, float &distMin) {
+	KitchenObject* getIntersectingMesh(vec3 pos, vec3 dir, float &distMin, vec3 &normMin) {
 		distMin = std::numeric_limits<float>::infinity();
+		vec3 norm;
 		KitchenObject* result = nullptr;
 		for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
 			if (!kitchenObjects[oi]->visible) continue;
-
-			float dist = rayIntersectsWithMesh(pos, dir, kitchenObjects[oi]->body);
+			
+			float dist = rayIntersectsWithMesh(pos, dir, kitchenObjects[oi]->body, norm);
 			if (dist < distMin) {
 				distMin = dist;
+				normMin = norm;
 				result = kitchenObjects[oi];
 			}
 			if (kitchenObjects[oi]->door_closed != nullptr && kitchenObjects[oi]->closed) {
-				dist = rayIntersectsWithMesh(pos, dir, kitchenObjects[oi]->door_closed);
+				dist = rayIntersectsWithMesh(pos, dir, kitchenObjects[oi]->door_closed, norm);
 				if (dist < distMin) {
 					distMin = dist;
+					normMin = norm;
 					result = kitchenObjects[oi];
 				}
 			}
 		}
 
 		for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
-			float d = rayIntersectsWithMesh(pos, dir, roomObjects[oi]);
+			float d = rayIntersectsWithMesh(pos, dir, roomObjects[oi], norm);
 			if (d < distMin) {
 				distMin = d;
+				normMin = norm;
 				result = nullptr;
 			}
 		}
@@ -273,7 +278,8 @@ namespace {
 
 		hovered = nullptr;
 		float distMin = std::numeric_limits<float>::infinity();
-		hovered = getIntersectingMesh(cameraPos, cameraDir, distMin);
+		vec3 norm;
+		hovered = getIntersectingMesh(cameraPos, cameraDir, distMin, norm);
         
         View = mat4::lookAlong(cameraDir, cameraPos, cameraUp);
         
@@ -423,14 +429,15 @@ namespace {
 			jump = true;
 		} else if (code == Key_R) {
 			for (int i = 0; i < maxPizza; ++i) {
-				if (kitchenObjects[19 + i] != nullptr) {
-					if (kitchenObjects[19 + i] == hovered) hovered = nullptr;
+				if (kitchenObjects[20 + i] != nullptr) {
+					if (kitchenObjects[20 + i] == hovered) hovered = nullptr;
 
-					delete kitchenObjects[19 + i]->body;
-					delete kitchenObjects[19 + i];
+					Ant::lessPizza(kitchenObjects[20 + i]->readOnlyPos);
 
-					kitchenObjects[19 + i] = nullptr;
+					delete kitchenObjects[20 + i]->body;
+					delete kitchenObjects[20 + i];
 
+					kitchenObjects[20 + i] = nullptr;
 				}
 			}
 			pizzaCount = 0;
@@ -490,14 +497,16 @@ namespace {
     
     void mousePress(int windowId, int button, int x, int y) {
 		if (button == 0) {
+			vec3 norm;
 			float dist = std::numeric_limits<float>::infinity();
-			hovered = getIntersectingMesh(cameraPos, cameraDir, dist);
+			hovered = getIntersectingMesh(cameraPos, cameraDir, dist, norm);
 
 			if (hovered != nullptr && hovered->pizza) {
 				for (int i = 0; i < pizzaCount; ++i) {
-					if (kitchenObjects[19 + i] == hovered) {
-						kitchenObjects[19 + i] = kitchenObjects[19 + pizzaCount - 1];
-						kitchenObjects[19 + pizzaCount - 1] = nullptr;
+					if (kitchenObjects[20 + i] == hovered) {
+						Ant::lessPizza(kitchenObjects[20 + i]->readOnlyPos);
+						kitchenObjects[20 + i] = kitchenObjects[20 + pizzaCount - 1];
+						kitchenObjects[20 + pizzaCount - 1] = nullptr;
 
 						delete hovered->body;
 						delete hovered;
@@ -509,12 +518,19 @@ namespace {
 			}
 			else if (dist < std::numeric_limits<float>::infinity() && pizzaCount < maxPizza) {
 				vec3 pos = cameraPos + cameraDir * dist;
+				vec3 rot(0.0f, 0.0f, 0.0f);
+				if (norm.y() < -0.9f) rot.y() = pi;
+				if (norm.x() > 0.9f) rot.y() = -0.5f * pi;
+				if (norm.x() < -0.9f) rot.y() = 0.5f * pi;
+				if (norm.z() > 0.9f) rot.z() = 0.5f * pi;
+				if (norm.z() < -0.9f) rot.z() = -0.5f * pi;
 
 				MeshObject* pizza = new MeshObject("Data/Meshes/pizza.obj", "Data/Meshes/pizza_collider.obj", "Data/Textures/pizza.png", structure, 1.0f);
-				kitchenObjects[19 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, vec3(0.0f, 0.0f, 0.0f), true);
+				kitchenObjects[20 + pizzaCount] = new KitchenObject(pizza, nullptr, nullptr, pos, rot, true);
+				Ant::morePizze(pos);
 
 				++pizzaCount;
-				kitchenObjects[19 + pizzaCount] = nullptr;
+				kitchenObjects[20 + pizzaCount] = nullptr;
 			}
 		}
 		else if (button == 1) {
@@ -682,7 +698,11 @@ namespace {
         kitchenObjects[16] = new KitchenObject(cupboard6, nullptr, nullptr, vec3(0.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
         kitchenObjects[17] = new KitchenObject(cupboard7, nullptr, nullptr, vec3(-2.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
         kitchenObjects[18] = new KitchenObject(cupboard8, nullptr, nullptr, vec3(-4.0f, 0.0f, 13.5f), vec3(0.0f, 0.0f, 0.0f));
-		kitchenObjects[19] = nullptr;
+		
+		MeshObject* img = new MeshObject("Data/Meshes/credits.obj", nullptr, "Data/Textures/creditsTexture.png", structure, 1.0f);
+		kitchenObjects[19] = new KitchenObject(img, nullptr, nullptr, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f));
+
+		kitchenObjects[20] = nullptr;
 
 		hovered = nullptr;
 

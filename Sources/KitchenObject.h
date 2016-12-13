@@ -13,6 +13,7 @@ public:
 
 	bool visible;
 	bool pizza;
+	Kore::vec3 readOnlyPos;
     void render(TextureUnit tex, ConstantLocation mLocation);
     void openOrClose(float time);
     void setTriggerCollider(TriggerCollider* triggerCollider);

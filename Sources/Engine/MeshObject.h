@@ -60,15 +60,15 @@ public:
         vertexBuffer = new Kore::VertexBuffer(mesh->numVertices, structure, 0);
         float* vertices = vertexBuffer->lock();
 
-		Kore::vec4 min(10000, 100000, 1999909, 1);
-		Kore::vec4 max(-10000, -100000, -1999909, 1);
+		Kore::vec4 min1(10000, 100000, 1999909, 1);
+		Kore::vec4 max1(-10000, -100000, -1999909, 1);
         for (int i = 0; i < mesh->numVertices; ++i) {
-			min.x() = Kore::min(min.x(), mesh->vertices[i * 8 + 0]);
-			max.x() = Kore::max(max.x(), mesh->vertices[i * 8 + 0]);
-			min.y() = Kore::min(min.y(), mesh->vertices[i * 8 + 1]);
-			max.y() = Kore::max(max.y(), mesh->vertices[i * 8 + 1]);
-			min.z() = Kore::min(min.z(), mesh->vertices[i * 8 + 2]);
-			max.z() = Kore::max(max.z(), mesh->vertices[i * 8 + 2]);
+			min1.x() = Kore::min(min1.x(), mesh->vertices[i * 8 + 0]);
+			max1.x() = Kore::max(max1.x(), mesh->vertices[i * 8 + 0]);
+			min1.y() = Kore::min(min1.y(), mesh->vertices[i * 8 + 1]);
+			max1.y() = Kore::max(max1.y(), mesh->vertices[i * 8 + 1]);
+			min1.z() = Kore::min(min1.z(), mesh->vertices[i * 8 + 2]);
+			max1.z() = Kore::max(max1.z(), mesh->vertices[i * 8 + 2]);
 
             vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0];
             vertices[i * 8 + 1] = mesh->vertices[i * 8 + 1];
@@ -118,7 +118,7 @@ public:
 					++count;
 				}
             }
-            Kore::log(Kore::Info, "Object has %i collider, diff %f / %f", count, (max - max2).getLength(), (min - min2).getLength());
+            Kore::log(Kore::Info, "Object has %i collider, diff %f / %f", count, (max1 - max2).getLength(), (min1 - min2).getLength());
         }
     }
 

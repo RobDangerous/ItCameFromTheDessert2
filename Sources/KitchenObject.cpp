@@ -13,7 +13,7 @@ namespace {
 	}
 }
 
-KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObject* door_open, vec3 position, vec3 rotation, bool pizza) : body(body), door_closed(door_closed), door_open(door_open), pizza(pizza), visible(true), closed(true) {
+KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObject* door_open, vec3 position, vec3 rotation, bool pizza) : body(body), door_closed(door_closed), door_open(door_open), pizza(pizza), readOnlyPos(position), visible(true), closed(true) {
 	M = mat4::Translation(position.x(), position.y(), position.z());
     M *= mat4::Rotation(rotation.x(), rotation.y(), rotation.z());
 
