@@ -423,35 +423,42 @@ bool Ant::isDying() {
     return false;
 }
 
-void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
-	for (int i = 0; i < body->meshesCount; ++i) {
-		Geometry* geometry = body->geometries[i];
-		mat4 modelMatrix = body->M * geometry->transform;
-		mat4 modelMatrixInverse = modelMatrix.Invert();
+namespace {
+	void renderMesh(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
+		for (int i = 0; i < mesh->meshesCount; ++i) {
+			Geometry* geometry = mesh->geometries[i];
+			mat4 modelMatrix = mesh->M * geometry->transform;
+			mat4 modelMatrixInverse = modelMatrix.Invert();
 
-		Graphics4::setMatrix(mLocation, modelMatrix);
-		Graphics4::setMatrix(mLocationInverse, modelMatrixInverse);
+			Graphics4::setMatrix(mLocation, modelMatrix);
+			Graphics4::setMatrix(mLocationInverse, modelMatrixInverse);
 
-		unsigned int materialIndex = geometry->materialIndex;
-		Material* material = body->findMaterialWithIndex(materialIndex);
-		if (material != nullptr) {
-			Graphics4::setFloat3(diffuseLocation, material->diffuse);
-			Graphics4::setFloat3(specularLocation, material->specular);
-			Graphics4::setFloat(specularPowerLocation, material->specular_power);
+			unsigned int materialIndex = geometry->materialIndex;
+			Material* material = mesh->findMaterialWithIndex(materialIndex);
+			if (material != nullptr) {
+				Graphics4::setFloat3(diffuseLocation, material->diffuse);
+				Graphics4::setFloat3(specularLocation, material->specular);
+				Graphics4::setFloat(specularPowerLocation, material->specular_power);
+			}
+			else {
+				Graphics4::setFloat3(diffuseLocation, vec3(1.0, 1.0, 1.0));
+				Graphics4::setFloat3(specularLocation, vec3(1.0, 1.0, 1.0));
+				Graphics4::setFloat(specularPowerLocation, 1.0);
+			}
+
+			Graphics4::Texture* image = mesh->images[i];
+			if (image != nullptr) Graphics4::setTexture(tex, image);
+
+			Graphics4::setVertexBuffer(*mesh->vertexBuffers[i]);
+			Graphics4::setIndexBuffer(*mesh->indexBuffers[i]);
+			Graphics4::drawIndexedVertices();
 		}
-		else {
-			Graphics4::setFloat3(diffuseLocation, vec3(1.0, 1.0, 1.0));
-			Graphics4::setFloat3(specularLocation, vec3(1.0, 1.0, 1.0));
-			Graphics4::setFloat(specularPowerLocation, 1.0);
-		}
-
-		Graphics4::Texture* image = body->images[i];
-		if (image != nullptr) Graphics4::setTexture(tex, image);
-
-		Graphics4::setVertexBuffer(*body->vertexBuffers[i]);
-		Graphics4::setIndexBuffer(*body->indexBuffers[i]);
-		Graphics4::drawIndexedVertices();
 	}
+}
+
+void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
+	renderMesh(body, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+	renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 
 	/*int c = 0;
 	{
