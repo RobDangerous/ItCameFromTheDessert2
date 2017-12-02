@@ -360,8 +360,8 @@ void Ant::move(float deltaTime) {
 	}
 
 	chooseScent(false);*/
-	legRotation += 0.1f;
-	position += forward * 0.001f;
+	legRotation += 0.2f;
+	position += forward * 0.004f;
 }
 
 void Ant::moveEverybody(float deltaTime) {
@@ -468,26 +468,27 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 	for (int i = 0; i < maxAnts; ++i) {
 		mat4 bodytrans = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z());
 		mat4 bodyrotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
-		mat4 bodyscale = mat4::Scale(0.01f, 0.01f, 0.01f);
+		float scale = 0.005f;
+		mat4 bodyscale = mat4::Scale(scale, scale, scale);
 		body->M = bodytrans * bodyrotation * bodyscale;
 		renderMesh(body, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 
 		mat4 legrotation1 = Quaternion(vec3(1, 0, 0), Kore::sin(ants[i].legRotation)).matrix();
 		mat4 legrotation2 = Quaternion(vec3(1, 0, 0), -Kore::sin(ants[i].legRotation)).matrix();
 		
-		leg->M = bodytrans * bodyrotation * mat4::Translation(0.042f, -0.022f, 0.046f) * legrotation1 * bodyscale;
+		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(4.2f, -2.2f, 4.6f) * legrotation1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = bodytrans * bodyrotation * mat4::Translation(0.04f, 0.0f, 0.043f) * legrotation2 * bodyscale;
+		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(4.0f, 0.0f, 4.3f) * legrotation2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = bodytrans * bodyrotation * mat4::Translation(0.04f, 0.024f, 0.041f) * legrotation1 * bodyscale;
+		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(4.0f, 2.4f, 4.1f) * legrotation1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 
 		mat4 leg2 = Quaternion(vec3(0, 0, 1), pi).matrix();
-		leg->M = bodytrans * bodyrotation * mat4::Translation(-0.042f, -0.022f, 0.046f) * legrotation2 * leg2 * bodyscale;
+		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.2f, -2.2f, 4.6f) * legrotation2 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = bodytrans * bodyrotation * mat4::Translation(-0.04f, 0.0f, 0.043f) * legrotation1 * leg2 * bodyscale;
+		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.0f, 0.0f, 4.3f) * legrotation1 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = bodytrans * bodyrotation * mat4::Translation(-0.04f, 0.024f, 0.041f) * legrotation2 * leg2 * bodyscale;
+		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.0f, 2.4f, 4.1f) * legrotation2 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
