@@ -11,7 +11,6 @@
 
 #include "MeshObject.h"
 #include "LivingRoom.h"
-#include "RotationUtility.h"
 
 using namespace Kore;
 using namespace Kore::Graphics4;
@@ -20,11 +19,8 @@ namespace {
 	const int width = 1024;
 	const int height = 768;
 
-	int line = 0;
-
 	double startTime;
 	double lastTime;
-	float fiveSec;
 
 	// Avatar shader
 	VertexStructure structure;
