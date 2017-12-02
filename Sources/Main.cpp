@@ -19,6 +19,10 @@ using namespace Kore::Graphics4;
 namespace {
 	const int width = 1024;
 	const int height = 768;
+	
+	const float CAMERA_ROTATION_SPEED = 0.01f;
+	const float CAMERA_ZOOM_SPEED = 1.f;
+	const float CAMERA_MOVE_SPEED = 2.f;
 
 	double startTime;
 	double lastTime;
@@ -54,10 +58,16 @@ namespace {
 	// Keyboard controls
 	bool rotate = false;
 	bool W, A, S, D = false;
-	bool Z, X = false;
+	bool F, L, B, R = false;
+	//bool Z, X = false;
 
-	Quaternion cameraRotation = Quaternion(0, 0, 0, 1);
-	vec3 cameraPosition = vec3(0, 0, 0);
+	Quaternion cameraRot = Quaternion(0, 0, 0, 1);
+	vec3 cameraPos = vec3(0, 0, 0);					// x - left, right, y - up, down, z - forward, backward
+	vec3 cameraUp;
+	vec3 right;
+	vec3 forward;
+	float horizontalAngle = -1.24f * pi;
+	float verticalAngle = -0.5f;
 
 	LivingRoom* livingRoom;
 	Ant* ant;
@@ -87,9 +97,20 @@ namespace {
 	}
 
 	Kore::mat4 getViewMatrix() {
-		vec3 lookAt = cameraPosition + vec3(0, 0, -1);
-		mat4 V = mat4::lookAt(cameraPosition, lookAt, vec3(0, 1, 0));
-		V *= cameraRotation.matrix();
+		/*vec3 lookAt = cameraPosition + vec3(0, 0, -1);
+		mat4 V = mat4::lookAt(cameraPos, lookAt, vec3(0, 1, 0));
+		V *= cameraRotation.matrix();*/
+		
+		// Calculate camera direction
+		vec3 cameraDir = vec3(Kore::cos(verticalAngle) * Kore::sin(horizontalAngle),
+							  Kore::sin(verticalAngle),
+							  Kore::cos(verticalAngle) * Kore::cos(horizontalAngle));
+		
+		// Re-calculate the orthonormal up vector
+		cameraUp = right.cross(forward);  // cross product
+		cameraUp.normalize();
+		
+		mat4 V = mat4::lookAlong(cameraDir, cameraPos, cameraUp);
 		return V;
 	}
 
@@ -98,25 +119,25 @@ namespace {
 		double deltaT = t - lastTime;
 		lastTime = t;
 
-		// Move position of camera based on WASD keys, and XZ keys for up and down
-		const float moveSpeed = 0.1f;
-		if (S) {
-			cameraPosition.z() += moveSpeed;
+		cameraUp = vec3(0, 1, 0);
+		right = vec3(Kore::sin(horizontalAngle - pi / 2.0),
+					 0,
+					 Kore::cos(horizontalAngle - pi / 2.0));
+		
+		forward = cameraUp.cross(right);  // cross product
+		
+		// Move position of camera based on WASD keys
+		if (S || B) {
+			cameraPos -= forward * (float) deltaT * CAMERA_MOVE_SPEED;
 		}
-		else if (W) {
-			cameraPosition.z() -= moveSpeed;
+		if (W || F) {
+			cameraPos += forward * (float) deltaT * CAMERA_MOVE_SPEED;
 		}
-		if (A) {
-			cameraPosition.x() -= moveSpeed;
+		if (A || L) {
+			cameraPos -= right * (float)deltaT * CAMERA_MOVE_SPEED;
 		}
-		else if (D) {
-			cameraPosition.x() += moveSpeed;
-		}
-		if (Z) {
-			cameraPosition.y() += moveSpeed;
-		}
-		else if (X) {
-			cameraPosition.y() -= moveSpeed;
+		if (D || R) {
+			cameraPos += right * (float)deltaT * CAMERA_MOVE_SPEED;
 		}
 
 		Graphics4::begin();
@@ -154,20 +175,27 @@ namespace {
 		case Kore::KeyD:
 			D = true;
 			break;
-		case Kore::KeyZ:
-			Z = true;
+		case Kore::KeyLeft:
+			L = true;
 			break;
-		case Kore::KeyX:
-			X = true;
+		case Kore::KeyRight:
+			R = true;
 			break;
+		case Kore::KeyUp:
+			F = true;
+			break;
+		case Kore::KeyDown:
+			B = true;
+			break;
+
 		case Kore::KeyR:
 #ifdef KORE_STEAMVR
 			VrInterface::resetHmdPose();
 #endif
 			break;
 		case KeyL:
-			Kore::log(Kore::LogLevel::Info, "Position: (%f, %f, %f)", cameraPosition.x(), cameraPosition.y(), cameraPosition.z());
-			Kore::log(Kore::LogLevel::Info, "Rotation: (%f, %f, %f, %f)", cameraRotation.w, cameraRotation.x, cameraRotation.y, cameraRotation.z);
+			Kore::log(Kore::LogLevel::Info, "Position: (%f, %f, %f)", cameraPos.x(), cameraPos.y(), cameraPos.z());
+			Kore::log(Kore::LogLevel::Info, "Rotation: (%f, %f, %f, %f)", cameraRot.w, cameraRot.x, cameraRot.y, cameraRot.z);
 			break;
 		case Kore::KeyEscape:
 		case KeyQ:
@@ -192,23 +220,39 @@ namespace {
 		case Kore::KeyD:
 			D = false;
 			break;
-		case Kore::KeyZ:
-			Z = false;
+		case Kore::KeyLeft:
+			L = true;
 			break;
-		case Kore::KeyX:
-			X = false;
+		case Kore::KeyRight:
+			R = true;
+			break;
+		case Kore::KeyUp:
+			F = true;
+			break;
+		case Kore::KeyDown:
+			B = true;
 			break;
 		default:
 			break;
 		}
 	}
 
+	double lastMouseTime = 0;
 	void mouseMove(int windowId, int x, int y, int movementX, int movementY) {
-		if (rotate) {
+		//if (rotate) {
 			const float mouseSensitivity = 0.01f;
-			cameraRotation.rotate(Quaternion(vec3(0, 1, 0), movementX * mouseSensitivity));
-			cameraRotation.rotate(Quaternion(vec3(1, 0, 0), movementY * mouseSensitivity));
-		}
+			//cameraRotation.rotate(Quaternion(vec3(0, 1, 0), movementX * mouseSensitivity));		// look left and right
+			//cameraRotation.rotate(Quaternion(vec3(1, 0, 0), movementY * mouseSensitivity));		// look up and down
+			
+			double t = System::time() - startTime;
+			double deltaT = t - lastMouseTime;
+			lastMouseTime = t;
+			if (deltaT > 1.0f / 30.0f) return;
+			
+			horizontalAngle += CAMERA_ROTATION_SPEED * movementX * deltaT * 7.0f;
+			verticalAngle -= CAMERA_ROTATION_SPEED * movementY * deltaT * 7.0f;
+			verticalAngle = Kore::min(Kore::max(verticalAngle, -0.49f * pi), 0.49f * pi);
+		//}
 	}
 
 	void mousePress(int windowId, int button, int x, int y) {
@@ -295,9 +339,9 @@ namespace {
 		loadShader();
 		loadLivingRoomShader();
 		
-		cameraPosition = vec3(-1.1, 1.6, 4.5);
-		cameraRotation.rotate(Quaternion(vec3(0, 1, 0), Kore::pi / 2));
-		cameraRotation.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 6));
+		cameraPos = vec3(1.3, 1.6, 0.5);
+		//cameraRot.rotate(Quaternion(vec3(0, 1, 0), Kore::pi / 2));
+		//cameraRot.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 6));
 		
 		livingRoom = new LivingRoom("sherlock_living_room/sherlock_living_room.ogex", "sherlock_living_room/", structure_living_room, 1);
 		Quaternion livingRoomRot = Quaternion(0, 0, 0, 1);
