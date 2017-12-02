@@ -349,7 +349,7 @@ namespace {
 }
 
 int kore(int argc, char** argv) {
-	System::init("BodyTracking", width, height);
+	System::init("BodyTracking", width, height, 4);
 
 	init();
 
