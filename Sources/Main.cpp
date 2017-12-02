@@ -376,7 +376,7 @@ namespace {
          textRenderer->end();*/
 
         
-		g2->begin(false);
+		g2->begin(false, -1, -1, false);
         
 		if (hovered == nullptr) {
             g2->setColor(Graphics1::Color::White);
