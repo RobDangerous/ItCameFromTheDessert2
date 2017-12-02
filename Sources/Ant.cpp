@@ -1,12 +1,14 @@
 #include "pch.h"
 #include "Ant.h"
-//#include "Engine/InstancedMeshObject.h"
+#include "InstancedMeshObject.h"
 //#include "Engine/TriggerCollider.h"
 //#include "KitchenObject.h"
 #include "Rendering.h"
 
 #include <assert.h>
+
 #include <Kore/Math/Random.h>
+#include <Kore/Log.h>
 
 using namespace Kore;
 
@@ -265,7 +267,7 @@ void Ant::lessPizza(Kore::vec3 position) {
 }
 
 extern MeshObject* objects[];
-extern KitchenObject* kitchenObjects[];
+//extern KitchenObject* kitchenObjects[];
 //extern TriggerCollider* triggerCollider[];
 extern MeshObject* roomObjects[7];
 
@@ -380,7 +382,7 @@ bool Ant::intersects(vec3 dir) {
 	if ((position + dir * 0.5f).y() <= -1) {
 		return true;
 	}
-	for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+	/*for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
 		if (intersectsWith(kitchenObjects[oi]->body, dir) || intersectsWith(kitchenObjects[oi]->door_closed, dir)) {
 			return true;
 		}
@@ -389,7 +391,7 @@ bool Ant::intersects(vec3 dir) {
 		if (intersectsWith(roomObjects[i], dir)) {
 			return true;
 		}
-	}
+	}*/
 	return false;
 }
 
@@ -412,12 +414,12 @@ bool Ant::intersects(vec3 dir) {
 }*/
 
 bool Ant::isDying() {
-    for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
+    /*for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
         if (kitchenObjects[oi]->triggerCollider != nullptr && kitchenObjects[oi]->triggerCollider->collider != nullptr && kitchenObjects[oi]->triggerCollider->collider->IsInside(position)) {
             if (kitchenObjects[oi]->closed)
                 return true;
         }
-    }
+    }*/
     return false;
 }
 

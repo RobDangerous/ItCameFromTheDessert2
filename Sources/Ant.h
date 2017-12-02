@@ -4,7 +4,7 @@
 #include <Kore/Math/Quaternion.h>
 #include <Kore/Graphics4/Graphics.h>
 
-//#include "Engine/MeshObject.h"
+#include "MeshObject.h"
 //#include "Engine/TriggerCollider.h"
 
 class InstancedMeshObject;

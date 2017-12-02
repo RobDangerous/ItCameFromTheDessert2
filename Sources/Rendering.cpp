@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Rendering.h"
 
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics4/Graphics.h>
 
 using namespace Kore;
 
