@@ -368,7 +368,9 @@ int kore(int argc, char** argv) {
 	Mouse::the()->Move = mouseMove;
 	Mouse::the()->Press = mousePress;
 	Mouse::the()->Release = mouseRelease;
-
+#ifdef NDEBUG
+	Mouse::the()->lock(0);
+#endif
 	System::start();
 
 	return 0;
