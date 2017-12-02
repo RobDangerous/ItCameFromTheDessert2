@@ -600,3 +600,24 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 	Graphics4::setIndexBuffer(*leg->indexBuffer);
 	Graphics4::drawIndexedVerticesInstanced(c);*/
 }
+
+void Ant::setLights(Kore::Graphics4::ConstantLocation lightCountLocation, Kore::Graphics4::ConstantLocation lightPosLocation, MeshObject* room) {
+	static const int maxLightCount = 10;
+	Kore::vec4 lightPositions[maxLightCount];
+
+	const int lightCount = (int)room->lights.size();
+	for (int i = 0; i < lightCount; ++i) {
+		Light* light = room->lights[i];
+		lightPositions[i] = body->M * light->position;
+
+		if (light->type == 0) {
+			lightPositions[i].w() = 0;
+		}
+		else if (light->type == 1) {
+			lightPositions[i].w() = 1;
+		}
+	}
+
+	Graphics4::setInt(lightCountLocation, lightCount);
+	Graphics4::setFloats(lightPosLocation, (float*)lightPositions, lightCount * 4);
+}
