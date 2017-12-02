@@ -4,8 +4,8 @@
 #include <Kore/Math/Quaternion.h>
 #include <Kore/Graphics4/Graphics.h>
 
-#include "Engine/MeshObject.h"
-#include "Engine/TriggerCollider.h"
+//#include "Engine/MeshObject.h"
+//#include "Engine/TriggerCollider.h"
 
 class InstancedMeshObject;
 
@@ -36,7 +36,7 @@ public:
 	bool legRotationUp;
 	AntMode mode;
 private:
-    bool intersectsWith(MeshObject* obj, Kore::vec3 dir);
+    //bool intersectsWith(MeshObject* obj, Kore::vec3 dir);
 	bool intersects(Kore::vec3 dir);
     
     bool isDying();

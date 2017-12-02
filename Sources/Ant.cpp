@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "Ant.h"
-#include "Engine/InstancedMeshObject.h"
-#include "Engine/TriggerCollider.h"
-#include "KitchenObject.h"
+//#include "Engine/InstancedMeshObject.h"
+//#include "Engine/TriggerCollider.h"
+//#include "KitchenObject.h"
+#include "Rendering.h"
 
 #include <assert.h>
 #include <Kore/Math/Random.h>
@@ -392,23 +393,23 @@ bool Ant::intersects(vec3 dir) {
 	return false;
 }
 
-bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
+/*bool Ant::intersectsWith(MeshObject* obj, vec3 dir) {
     if (obj == nullptr) return false;
     for (int k = 0; k < obj->colliderCount; ++k) {
         //float distance;
 		//if (obj->collider[k] != nullptr && obj->collider[k]->IntersectsWith(position, dir, distance) && distance < .1f) {
-		/*for (float offset = 0.0f; offset < 10.0f; offset += 0.1f) {
-			if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * offset) && dir.y() == -1) {
-				return true;
-			}
-		}*/
+		//for (float offset = 0.0f; offset < 10.0f; offset += 0.1f) {
+		//	if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * offset) && dir.y() == -1) {
+		//		return true;
+		//	}
+		//}
 
 		if (obj->collider[k] != nullptr && obj->collider[k]->IsInside(position + dir * 1.0f)) {
 			return true;
 		}
     }
     return false;
-}
+}*/
 
 bool Ant::isDying() {
     for (unsigned oi = 0; kitchenObjects[oi] != nullptr; ++oi) {
