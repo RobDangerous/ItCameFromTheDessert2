@@ -361,7 +361,7 @@ void Ant::move(float deltaTime) {
 
 	chooseScent(false);*/
 	legRotation += 0.1f;
-	position += forward * 0.001f;
+	//position += forward * 0.001f;
 }
 
 void Ant::moveEverybody(float deltaTime) {
@@ -490,8 +490,14 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(-0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);*/
-		body->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix() * mat4::Scale(0.01f, 0.01f, 0.01f);
+
+		mat4 bodytrans = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z());
+		mat4 bodyrotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
+		mat4 bodyscale = mat4::Scale(0.01f, 0.01f, 0.01f);
+		body->M = bodytrans * bodyrotation * bodyscale;
 		renderMesh(body, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		leg->M = bodytrans * bodyrotation * bodyscale;
+		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
 	/*int c = 0;
