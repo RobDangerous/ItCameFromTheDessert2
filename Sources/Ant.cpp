@@ -465,24 +465,29 @@ namespace {
 }
 
 void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
+	static float whatever = 0.0f;
+	whatever += 0.1f;
 	for (int i = 0; i < maxAnts; ++i) {
 		const float scale = 0.02f;
-		mat4 scale2 = mat4::Scale(0.05f, 0.05f, 0.05f);
-		body->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
+		const float s = 0.5f;
+		mat4 scale2 = mat4::Scale(s, s, s);
+		mat4 rot1 = mat4::RotationX(pi / -2.0f) * mat4::RotationZ(Kore::atan2(ants[i].forward.x(), ants[i].forward.z()));
+		mat4 rot2 = mat4::RotationY(pi);
+		body->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(body, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 
 		vec3 legsOffset = vec3(0.044f, 0.035f, 0.0f);
-		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::RotationY(pi) * mat4::Translation(0.0461f + legsOffset.x(), 0.0461f + legsOffset.y(), 0.0213f + 0.023f + legsOffset.z()) * mat4::RotationX(Kore::sin(ants[i].legRotation)) * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
+		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(0.0461f + legsOffset.x(), 0.0461f + legsOffset.y(), 0.0213f + 0.023f + legsOffset.z()) * mat4::RotationX(Kore::sin(ants[i].legRotation)) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::RotationY(pi) * mat4::Translation(0.0422f + legsOffset.x(), 0.0414f + legsOffset.y(), -0.001f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
+		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(0.0422f + legsOffset.x(), 0.0414f + legsOffset.y(), -0.001f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::RotationY(pi) * mat4::Translation(0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(Kore::sin(ants[i].legRotation)) * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
+		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(Kore::sin(ants[i].legRotation)) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::RotationY(pi) * mat4::Translation(-0.0461f + legsOffset.x(), 0.0461f + legsOffset.y(), 0.0213f + 0.023f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
+		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(-0.0461f + legsOffset.x(), 0.0461f + legsOffset.y(), 0.0213f + 0.023f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::RotationY(pi) * mat4::Translation(-0.0422f + legsOffset.x(), 0.0414f + legsOffset.y(), -0.001f + legsOffset.z()) * mat4::RotationX(Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
+		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(-0.0422f + legsOffset.x(), 0.0414f + legsOffset.y(), -0.001f + legsOffset.z()) * mat4::RotationX(Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::RotationY(pi) * mat4::Translation(-0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
+		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(-0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
