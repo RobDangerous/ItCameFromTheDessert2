@@ -154,6 +154,7 @@ namespace {
 		// Render living room
 		renderLivingRoom(V, P);
 
+		Ant::moveEverybody(1.0f / 60.0f);
 		renderAnt(V, P);
 		
 		Graphics4::end();
