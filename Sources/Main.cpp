@@ -10,7 +10,6 @@
 #include <Kore/Log.h>
 
 #include "MeshObject.h"
-#include "Avatar.h"
 #include "LivingRoom.h"
 #include "RotationUtility.h"
 
@@ -63,26 +62,7 @@ namespace {
 	Quaternion cameraRotation = Quaternion(0, 0, 0, 1);
 	vec3 cameraPosition = vec3(0, 0, 0);
 
-	// Null terminated array of MeshObject pointers
-	MeshObject* cubes[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
-	Avatar* avatar;
 	LivingRoom* livingRoom;
-
-#ifdef KORE_STEAMVR
-	int leftTrackerIndex = -1;
-	int rightTrackerIndex = -1;
-	int leftFootTrackerIndex = -1;
-	int rightFootTrackerIndex = -1;
-	int backTrackerIndex = -1;
-#endif
-
-	mat4 initTrans = mat4::Identity();
-	mat4 initTransInv = mat4::Identity();
-	const mat4 hmdOffset = mat4::Translation(0, 0.2f, 0);
-	Quaternion initRot = Quaternion(0, 0, 0, 1);
-	Quaternion initRotInv = Quaternion(0, 0, 0, 1);
-
-	bool initCharacter = false;
 
 	void renderLivingRoom(mat4 V, mat4 P) {
 		Graphics4::setPipeline(pipeline_living_room);
@@ -111,15 +91,6 @@ namespace {
 		double deltaT = t - lastTime;
 		lastTime = t;
 
-		fiveSec += deltaT;
-		if (fiveSec > 1) {
-			fiveSec = 0;
-
-			float averageIt = avatar->getAverageIKiterationNum();
-
-			//log(Info, "Average iteration %f", averageIt);
-		}
-
 		// Move position of camera based on WASD keys, and XZ keys for up and down
 		const float moveSpeed = 0.1f;
 		if (S) {
@@ -145,21 +116,6 @@ namespace {
 		Graphics4::clear(Graphics4::ClearColorFlag | Graphics4::ClearDepthFlag, Graphics1::Color::Black, 1.0f, 0);
 
 		Graphics4::setPipeline(pipeline);
-
-		if (!initCharacter) {
-			//avatar->setScale(0.95);	// Scale test
-
-			vec3 initPos = vec3(0, 0, 0);
-			
-			initRot.normalize();
-			initRotInv = initRot.invert();
-
-			initTrans = mat4::Translation(initPos.x(), initPos.y(), initPos.z()) * initRot.matrix().Transpose();
-			avatar->M = initTrans;
-			initTransInv = initTrans.Invert();
-
-			initCharacter = true;
-		}
 		
 		// Get projection and view matrix
 		mat4 P = getProjectionMatrix();
@@ -168,12 +124,6 @@ namespace {
 		Graphics4::setMatrix(vLocation, V);
 		Graphics4::setMatrix(pLocation, P);
 
-		Graphics4::setMatrix(mLocation, avatar->M);
-
-		// Animate avatar
-		avatar->animate(tex, deltaT);
-		//avatar->drawJoints(avatar->M, V, P, width, height, true);
-		
 		// Render living room
 		renderLivingRoom(V, P);
 		
@@ -260,7 +210,7 @@ namespace {
 		rotate = false;
 	}
 
-	void loadAvatarShader() {
+	void loadShader() {
 		FileReader vs("shader.vert");
 		FileReader fs("shader.frag");
 		vertexShader = new Shader(vs.readAll(), vs.size(), VertexShader);
@@ -333,23 +283,18 @@ namespace {
 	}
 
 	void init() {
-		loadAvatarShader();
-		avatar = new Avatar("avatar/avatar_skeleton.ogex", "avatar/", structure);
-
+		loadShader();
+		loadLivingRoomShader();
+		
 		cameraPosition = vec3(-1.1, 1.6, 4.5);
 		cameraRotation.rotate(Quaternion(vec3(0, 1, 0), Kore::pi / 2));
 		cameraRotation.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 6));
-
-		initRot.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 2.0));
-
-
-		loadLivingRoomShader();
+		
 		livingRoom = new LivingRoom("sherlock_living_room/sherlock_living_room.ogex", "sherlock_living_room/", structure_living_room, 1);
 		Quaternion livingRoomRot = Quaternion(0, 0, 0, 1);
 		livingRoomRot.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 2.0));
 		livingRoomRot.rotate(Quaternion(vec3(0, 0, 1), Kore::pi / 2.0));
 		livingRoom->M = mat4::Translation(-0.7, 0, 0) * livingRoomRot.matrix().Transpose();
-
 	}
 
 }
