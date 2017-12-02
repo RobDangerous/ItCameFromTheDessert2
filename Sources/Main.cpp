@@ -243,9 +243,6 @@ namespace {
         
         // Important: We need to set the program before we set a uniform
 		Graphics4::setPipeline(program);
-        //**Graphics4::setBlendingMode(Graphics4::SourceAlpha, Kore::Graphics4::BlendingOperation::InverseSourceAlpha);
-        //**Graphics4::setRenderState(Graphics4::BlendingState, true);
-        //**Graphics4::setRenderState(Graphics4::DepthTest, true);
         
         // Direction: Spherical coordinates to Cartesian coordinates conversion
         cameraDir = vec3(
@@ -611,6 +608,10 @@ namespace {
 		program->inputLayout[1] = nullptr;
         program->vertexShader = vertexShader;
         program->fragmentShader = fragmentShader;
+		program->blendSource = Graphics4::SourceAlpha;
+		program->blendDestination = Graphics4::InverseSourceAlpha;
+		program->depthMode = Graphics4::ZCompareLess;
+		program->depthWrite = true;
 		program->compile();
         
         tex = program->getTextureUnit("tex");
@@ -728,9 +729,6 @@ namespace {
         Random::init(System::time() * 100);
         
         Ant::init();
-        
-        //**Graphics4::setRenderState(Graphics4::DepthTest, true);
-        //**Graphics4::setRenderState(Graphics4::DepthTestCompare, Graphics4::ZCompareLess);
         
         Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::Repeat);
         Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::Repeat);
