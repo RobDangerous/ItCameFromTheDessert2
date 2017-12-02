@@ -100,7 +100,7 @@ void Ant::init() {
 	vertexBuffers[1] = new Graphics4::VertexBuffer(maxAnts, *structures[1], 1);
 
 	for (int i = 0; i < maxAnts; ++i) {
-		vec3 start(0, .0f, 0);
+		vec3 start(0, 1.0f, 0);
 		ants[i].position = vec3(start.x() + Random::get(-100, 100) / 50.0f, start.y(), start.z() + Random::get(-100, 100) / 50.0f); // vec3(Random::get(-100, 100) / 10.0f, -1, Random::get(-100, 100) / 10.0f);
 		//ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
         
@@ -360,8 +360,8 @@ void Ant::move(float deltaTime) {
 	}
 
 	chooseScent(false);*/
-	
-	position += forward * 0.005f;
+	legRotation += 0.1f;
+	position += forward * 0.001f;
 }
 
 void Ant::moveEverybody(float deltaTime) {
@@ -470,9 +470,10 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 	for (int i = 0; i < maxAnts; ++i) {
 		const float scale = 0.02f;
 		const float s = 0.5f;
-		mat4 scale2 = mat4::Scale(s, s, s);
-		mat4 rot1 = mat4::RotationX(pi / -2.0f) * mat4::RotationZ(Kore::atan2(ants[i].forward.x(), ants[i].forward.z()));
-		mat4 rot2 = mat4::RotationY(pi);
+		/*mat4 scale2 = mat4::Scale(s, s, s);
+		mat4 rot1 = Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix() * Quaternion(vec3(0, 0, 1), Kore::atan2(ants[i].forward.x(), ants[i].forward.z())).matrix();
+		// mat4::RotationX(pi / -2.0f);// *Quaternion(vec3(0, 0, 1), Kore::atan2(ants[i].forward.x(), ants[i].forward.z())).matrix();// mat4::RotationZ(Kore::atan2(ants[i].forward.x(), ants[i].forward.z()));
+		mat4 rot2 = Quaternion(vec3(0, 1, 0), pi).matrix();// mat4::RotationY(pi);
 		body->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(body, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 
@@ -488,7 +489,9 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(-0.0422f + legsOffset.x(), 0.0414f + legsOffset.y(), -0.001f + legsOffset.z()) * mat4::RotationX(Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * rot1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 		leg->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * scale2 * rot2 * mat4::Translation(-0.0407 + legsOffset.x(), 0.0381f + legsOffset.y(), -0.0244f - 0.028f + legsOffset.z()) * mat4::RotationX(-Kore::sin(ants[i].legRotation)) * mat4::Translation(-.09f, 0.0f, 0.0f) * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * rot1;
-		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);*/
+		body->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix() * mat4::Scale(0.01f, 0.01f, 0.01f);
+		renderMesh(body, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
 	/*int c = 0;
