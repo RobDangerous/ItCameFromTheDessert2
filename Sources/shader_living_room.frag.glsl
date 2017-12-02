@@ -16,7 +16,7 @@ uniform vec4 lightPos[MAX_LIGHTS];
 
 in vec2 texCoord;
 in vec3 normal;
-in vec3 lightDirection;
+//in vec3 lightDirection;
 in vec3 eyeCoord;
 
 out vec4 FragColor;
