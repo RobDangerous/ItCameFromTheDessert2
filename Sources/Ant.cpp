@@ -86,8 +86,8 @@ void Ant::init() {
 	structures[1]->add("N", Graphics4::Float4x4VertexData);
 	structures[1]->add("tint", Graphics4::Float4VertexData);
 
-	body = new MeshObject("ant/AntBody.ogex", "", *structures[0], 10);
-	leg = new MeshObject("ant/AntBody.ogex", "", *structures[0], 10);
+	body = new MeshObject("ant/AntBody.ogex", "ant/", *structures[0], 10);
+	leg = new MeshObject("ant/AntBody.ogex", "ant/", *structures[0], 10);
 
 	vertexBuffers = new Graphics4::VertexBuffer*[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
