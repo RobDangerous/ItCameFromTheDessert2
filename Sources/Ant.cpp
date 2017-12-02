@@ -466,7 +466,7 @@ namespace {
 
 void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
 	static float whatever = 0.0f;
-	whatever += 0.1f;
+	whatever += 0.01f;
 	for (int i = 0; i < maxAnts; ++i) {
 		const float scale = 0.02f;
 		const float s = 0.5f;
@@ -492,11 +492,27 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);*/
 
 		mat4 bodytrans = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z());
-		mat4 bodyrotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
+		mat4 bodyrotation = Quaternion(vec3(0, 1, 0), whatever + pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
 		mat4 bodyscale = mat4::Scale(0.01f, 0.01f, 0.01f);
 		body->M = bodytrans * bodyrotation * bodyscale;
 		renderMesh(body, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
-		leg->M = bodytrans * bodyrotation * bodyscale;
+
+		mat4 legrotation1 = Quaternion(vec3(1, 0, 0), Kore::sin(ants[i].legRotation)).matrix();
+		mat4 legrotation2 = Quaternion(vec3(1, 0, 0), -Kore::sin(ants[i].legRotation)).matrix();
+		
+		leg->M = bodytrans * bodyrotation * mat4::Translation(0.042f, -0.022f, 0.046f) * legrotation1 * bodyscale;
+		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		leg->M = bodytrans * bodyrotation * mat4::Translation(0.04f, 0.0f, 0.043f) * legrotation2 * bodyscale;
+		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		leg->M = bodytrans * bodyrotation * mat4::Translation(0.04f, 0.024f, 0.041f) * legrotation1 * bodyscale;
+		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+
+		mat4 leg2 = Quaternion(vec3(0, 0, 1), pi).matrix();
+		leg->M = bodytrans * bodyrotation * mat4::Translation(-0.042f, -0.022f, 0.046f) * legrotation2 * leg2 * bodyscale;
+		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		leg->M = bodytrans * bodyrotation * mat4::Translation(-0.04f, 0.0f, 0.043f) * legrotation1 * leg2 * bodyscale;
+		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		leg->M = bodytrans * bodyrotation * mat4::Translation(-0.04f, 0.024f, 0.041f) * legrotation2 * leg2 * bodyscale;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
