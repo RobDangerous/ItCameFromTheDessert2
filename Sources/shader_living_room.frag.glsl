@@ -21,7 +21,7 @@ in vec3 eyeCoord;
 
 out vec4 FragColor;
 
-vec3 applyLight(vec4 lightPosition) {
+void applyLight(vec4 lightPosition, out vec3 ambientOut, out vec3 diffuseOut, out vec3 specularOut) {
 	
 	vec3 lightDirection;
 	float attenuation = 1.0;
@@ -59,16 +59,23 @@ vec3 applyLight(vec4 lightPosition) {
 	vec3 halfVector = normalize(lightDirection - normalize(eyeCoord));
 	vec3 specular = pow(max(0.0, dot(halfVector, reflect(-lightDirection, normal))), specularPow) * vec3(specularCol);
 	
-	vec3 light = ambient + attenuation * (diffuse + specular);
-	return light;
+	ambientOut = ambient;
+	diffuseOut = attenuation * diffuse;
+	specularOut = attenuation * specular;
 }
 
 void main() {
-	
-	vec3 finalLight = vec3(0, 0, 0);
+	vec3 finalAmbient = vec3(0, 0, 0);
+	vec3 finalDiffuse = vec3(0, 0, 0);
+	vec3 finalSpecular = vec3(0, 0, 0);
+	vec3 diffuse = vec3(0, 0, 0);
 	for (int i = 0; i < numLights; ++i) {
-		finalLight += applyLight(lightPos[i]);
+		vec3 ambient, diffuse, specular;
+		applyLight(lightPos[i], ambient, diffuse, specular);
+		finalAmbient += ambient;
+		finalDiffuse += diffuse;
+		finalSpecular += specular;
 	}
 	
-	FragColor = vec4(finalLight, 1.0) * texture(tex, texCoord);
+	FragColor = vec4((finalAmbient + finalDiffuse) * texture(tex, texCoord).rgb + finalSpecular, 1.0);
 }
