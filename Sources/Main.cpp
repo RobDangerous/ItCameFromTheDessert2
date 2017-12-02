@@ -20,9 +20,9 @@ namespace {
 	const int width = 1024;
 	const int height = 768;
 	
-	const float CAMERA_ROTATION_SPEED = 0.01f;
+	const float CAMERA_ROTATION_SPEED = 0.05f;
 	const float CAMERA_ZOOM_SPEED = 1.f;
-	const float CAMERA_MOVE_SPEED = 2.f;
+	const float CAMERA_MOVE_SPEED = 4.f;
 
 	double startTime;
 	double lastTime;
