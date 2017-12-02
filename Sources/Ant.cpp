@@ -106,6 +106,8 @@ void Ant::init() {
         
         ants[i].energy = 0;
         ants[i].dead = false;
+		float value = Random::get(-100.0f, 100.0f) / 10.0f;
+		ants[i].forward = vec4(Kore::sin(value), 0.0f, Kore::cos(value), 1.0f);
 	}
 }
 

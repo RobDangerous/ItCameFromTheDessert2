@@ -1,4 +1,4 @@
-var project = new Project('AntYou', __dirname);
+var project = new Project('ItCameFromTheDessert2', __dirname);
 
 project.addFile('Sources/**');
 project.setDebugDir('Deployment');
