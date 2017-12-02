@@ -13,6 +13,7 @@
 #include "Avatar.h"
 #include "LivingRoom.h"
 #include "RotationUtility.h"
+#include "Ant.h"
 
 using namespace Kore;
 using namespace Kore::Graphics4;
@@ -67,6 +68,7 @@ namespace {
 	MeshObject* cubes[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 	Avatar* avatar;
 	LivingRoom* livingRoom;
+	Ant* ant;
 
 #ifdef KORE_STEAMVR
 	int leftTrackerIndex = -1;
@@ -91,6 +93,15 @@ namespace {
 		Graphics4::setMatrix(vLocation_living_room, V);
 		Graphics4::setMatrix(pLocation_living_room, P);
 		livingRoom->render(tex_living_room, mLocation_living_room, mLocation_living_room_inverse, diffuse_living_room, specular_living_room, specular_power_living_room);
+	}
+
+	void renderAnt(mat4 V, mat4 P) {
+		Graphics4::setPipeline(pipeline_living_room);
+
+		//livingRoom->setLights(lightCount_living_room, lightPosLocation_living_room);
+		Graphics4::setMatrix(vLocation_living_room, V);
+		Graphics4::setMatrix(pLocation_living_room, P);
+		ant->render(tex_living_room, mLocation_living_room, mLocation_living_room_inverse, diffuse_living_room, specular_living_room, specular_power_living_room);
 	}
 
 	Kore::mat4 getProjectionMatrix() {
@@ -176,6 +187,8 @@ namespace {
 		
 		// Render living room
 		renderLivingRoom(V, P);
+
+		renderAnt(V, P);
 		
 		Graphics4::end();
 		Graphics4::swapBuffers();
@@ -350,6 +363,8 @@ namespace {
 		livingRoomRot.rotate(Quaternion(vec3(0, 0, 1), Kore::pi / 2.0));
 		livingRoom->M = mat4::Translation(-0.7, 0, 0) * livingRoomRot.matrix().Transpose();
 
+		Ant::init();
+		ant = new Ant;
 	}
 
 }

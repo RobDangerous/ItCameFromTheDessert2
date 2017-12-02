@@ -18,7 +18,7 @@ public:
 	void chooseScent(bool force);
 	static void moveEverybody(float deltaTime);
 	void move(float deltaTime);
-	static void render(Kore::Graphics4::ConstantLocation vLocation, Kore::Graphics4::TextureUnit tex, Kore::mat4 view);
+	static void render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation);// Kore::Graphics4::ConstantLocation vLocation, Kore::Graphics4::TextureUnit tex, Kore::mat4 view);
 
 	static void morePizze(Kore::vec3 position);
 	static void lessPizza(Kore::vec3 position);

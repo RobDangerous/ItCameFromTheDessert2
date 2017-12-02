@@ -14,8 +14,8 @@ using namespace Kore;
 
 namespace {
 	Kore::Graphics4::VertexBuffer** vertexBuffers;
-	InstancedMeshObject* body;
-	InstancedMeshObject* leg;
+	MeshObject* body;
+	MeshObject* leg;
 
 	const int maxAnts = 500;
 	Ant ants[maxAnts];
@@ -86,8 +86,8 @@ void Ant::init() {
 	structures[1]->add("N", Graphics4::Float4x4VertexData);
 	structures[1]->add("tint", Graphics4::Float4VertexData);
 
-	body = new InstancedMeshObject("Data/Meshes/ant_body.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
-	leg = new InstancedMeshObject("Data/Meshes/ant_leg.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
+	body = new MeshObject("ant/AntBody.ogex", "", *structures[0], 10);
+	leg = new MeshObject("ant/AntBody.ogex", "", *structures[0], 10);
 
 	vertexBuffers = new Graphics4::VertexBuffer*[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
@@ -423,8 +423,37 @@ bool Ant::isDying() {
     return false;
 }
 
-void Ant::render(Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
-	int c = 0;
+void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
+	for (int i = 0; i < body->meshesCount; ++i) {
+		Geometry* geometry = body->geometries[i];
+		mat4 modelMatrix = body->M * geometry->transform;
+		mat4 modelMatrixInverse = modelMatrix.Invert();
+
+		Graphics4::setMatrix(mLocation, modelMatrix);
+		Graphics4::setMatrix(mLocationInverse, modelMatrixInverse);
+
+		unsigned int materialIndex = geometry->materialIndex;
+		Material* material = body->findMaterialWithIndex(materialIndex);
+		if (material != nullptr) {
+			Graphics4::setFloat3(diffuseLocation, material->diffuse);
+			Graphics4::setFloat3(specularLocation, material->specular);
+			Graphics4::setFloat(specularPowerLocation, material->specular_power);
+		}
+		else {
+			Graphics4::setFloat3(diffuseLocation, vec3(1.0, 1.0, 1.0));
+			Graphics4::setFloat3(specularLocation, vec3(1.0, 1.0, 1.0));
+			Graphics4::setFloat(specularPowerLocation, 1.0);
+		}
+
+		Graphics4::Texture* image = body->images[i];
+		if (image != nullptr) Graphics4::setTexture(tex, image);
+
+		Graphics4::setVertexBuffer(*body->vertexBuffers[i]);
+		Graphics4::setIndexBuffer(*body->indexBuffers[i]);
+		Graphics4::drawIndexedVertices();
+	}
+
+	/*int c = 0;
 	{
 		float* data = vertexBuffers[1]->lock();
 		c = 0;
@@ -569,5 +598,5 @@ void Ant::render(Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit t
 	vertexBuffers[0] = leg->vertexBuffers[0];
 	Graphics4::setVertexBuffers(vertexBuffers, 2);
 	Graphics4::setIndexBuffer(*leg->indexBuffer);
-	Graphics4::drawIndexedVerticesInstanced(c);
+	Graphics4::drawIndexedVerticesInstanced(c);*/
 }
