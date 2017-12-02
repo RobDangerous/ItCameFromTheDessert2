@@ -457,6 +457,9 @@ namespace {
 }
 
 void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
+	static float rot = 0.0f;
+	rot += 0.1f;
+	ants[0].legRotation = Kore::sin(rot);
 	int i = 0;
 	const float scale = 0.02f;
 	body->M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale) * mat4::RotationX(pi / -2.0f);
@@ -483,7 +486,7 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		for (int i = 0; i < maxAnts; i++) {
 			const float scale = 0.02f;
 			mat4 M = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z()) * ants[i].rotation * mat4::RotationY(pi) * mat4::Scale(scale, scale, scale);
-			setMatrix(data, i, 0, 36, M);a
+			setMatrix(data, i, 0, 36, M);
 			setMatrix(data, i, 16, 36, calculateN(M));
 			setVec4(data, i, 32, 36, vec4(1, 1, 1, 1));
 			c++;
