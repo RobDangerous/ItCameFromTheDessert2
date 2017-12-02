@@ -11,14 +11,14 @@
 
 using namespace Kore;
 
-Kore::VertexBuffer** landscapeVertices;
-Kore::IndexBuffer* landscapeIndices;
-Kore::Texture* landscapeTexture;
+Kore::Graphics4::VertexBuffer** landscapeVertices;
+Kore::Graphics4::IndexBuffer* landscapeIndices;
+Kore::Graphics4::Texture* landscapeTexture;
 
 namespace {
 	int stoneCount;
 	InstancedMeshObject* stoneMesh;
-	Kore::Image* normalmap;
+	Kore::Graphics1::Image* normalmap;
 }
 
 vec3 getLandscapeNormal(float x, float y) {
@@ -33,16 +33,16 @@ vec3 getLandscapeNormal(float x, float y) {
 }
 
 
-void createLandscape(VertexStructure** structures, float size, InstancedMeshObject* sMesh, int sCount, Ground*& ground) {
-	Kore::Image* map = new Kore::Image("Data/Textures/map.png", true);
-	normalmap = new Kore::Image("Data/Textures/mapnormals.png", true);
-	landscapeTexture = new Texture("Data/Textures/sand.png", true);
+void createLandscape(Graphics4::VertexStructure** structures, float size, InstancedMeshObject* sMesh, int sCount, Ground*& ground) {
+	Kore::Graphics1::Image* map = new Kore::Graphics1::Image("Data/Textures/map.png", true);
+	normalmap = new Kore::Graphics1::Image("Data/Textures/mapnormals.png", true);
+	landscapeTexture = new Graphics4::Texture("Data/Textures/sand.png", true);
 
 	const int w = 250;
 	const int h = 250;
 	
-	landscapeVertices = new VertexBuffer*[2];
-	landscapeVertices[0] = new VertexBuffer((w + 1) * (h + 1), *structures[0], 0);
+	landscapeVertices = new Graphics4::VertexBuffer*[2];
+	landscapeVertices[0] = new Graphics4::VertexBuffer((w + 1) * (h + 1), *structures[0], 0);
 	float* vertices = landscapeVertices[0]->lock();
 	int i = 0;
 	
@@ -91,8 +91,8 @@ void createLandscape(VertexStructure** structures, float size, InstancedMeshObje
 
 	landscapeVertices[0]->unlock();
 	
-	landscapeVertices[1] = new VertexBuffer(1, *structures[1], 1);
-	landscapeIndices = new IndexBuffer(w * h * 6);
+	landscapeVertices[1] = new Graphics4::VertexBuffer(1, *structures[1], 1);
+	landscapeIndices = new Graphics4::IndexBuffer(w * h * 6);
 	int* indices = landscapeIndices->lock();
 	i = 0;
 	for (int y = 0; y < h; ++y) {
@@ -110,8 +110,8 @@ void createLandscape(VertexStructure** structures, float size, InstancedMeshObje
 	landscapeIndices->unlock();
 }
 
-void renderLandscape(Kore::TextureUnit tex) {
-	Graphics::setTexture(tex, landscapeTexture);
+void renderLandscape(Kore::Graphics4::TextureUnit tex) {
+	Graphics4::setTexture(tex, landscapeTexture);
 
 	float* data = landscapeVertices[1]->lock();
 	setMatrix(data, 0, 0, 36, mat4::Identity());
@@ -119,9 +119,9 @@ void renderLandscape(Kore::TextureUnit tex) {
 	setVec4(data, 0, 32, 36, vec4(1, 1, 1, 1));
 	landscapeVertices[1]->unlock();
 	
-	Graphics::setVertexBuffers(landscapeVertices, 2);
-	Graphics::setIndexBuffer(*landscapeIndices);
-	Graphics::drawIndexedVerticesInstanced(1);
+	Graphics4::setVertexBuffers(landscapeVertices, 2);
+	Graphics4::setIndexBuffer(*landscapeIndices);
+	Graphics4::drawIndexedVerticesInstanced(1);
 	
 	stoneMesh->render(tex, stoneCount);
 }

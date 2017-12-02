@@ -20,17 +20,17 @@ typedef struct
 
 class Projectiles {
 public:
-	Projectiles(int maxProjectiles, float hitDistance, Kore::Texture* particleTex, MeshObject* mesh, Kore::VertexStructure** structures, PhysicsWorld* physics);
+	Projectiles(int maxProjectiles, float hitDistance, Kore::Graphics4::Texture* particleTex, MeshObject* mesh, Kore::Graphics4::VertexStructure** structures, PhysicsWorld* physics);
 	int fire(vec3 pos, PhysicsObject* target, float s, int dmg, Tank* shooter);
 	void update(float deltaT);
-	void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
+	void render(Kore::Graphics4::ConstantLocation vLocation, Kore::Graphics4::TextureUnit tex, Kore::mat4 view);
 	void onShooterDeath(int projectileID);
 	void remove(Tank* tank);
 private:
 	int maxProj;
 	float hitDist;
 	MeshObject* sharedMesh;
-	Kore::VertexBuffer** vertexBuffers;
+	Kore::Graphics4::VertexBuffer** vertexBuffers;
 
 	// Projectiles
 	float* timeToLife;

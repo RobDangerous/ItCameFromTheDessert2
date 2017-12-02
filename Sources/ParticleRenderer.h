@@ -20,13 +20,13 @@ using namespace Kore;
 class ParticleRenderer
 {
 public:
-    ParticleRenderer(Kore::VertexStructure** structures);
-    void render(TextureUnit tex, mat4 View, ConstantLocation vLocation);
+    ParticleRenderer(Kore::Graphics4::VertexStructure** structures);
+    void render(Graphics4::TextureUnit tex, mat4 View, Graphics4::ConstantLocation vLocation);
 
     void addParticleSystem(ParticleSystem* system);
     void removeParticleSystem(ParticleSystem* system);
-    Kore::VertexStructure** getStructures();
+    Kore::Graphics4::VertexStructure** getStructures();
 private:
     std::set<ParticleSystem*> particlesystems;
-    Kore::VertexStructure** structures;
+    Kore::Graphics4::VertexStructure** structures;
 };

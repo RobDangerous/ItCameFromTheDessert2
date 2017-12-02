@@ -3,12 +3,12 @@
 #include "TriggerCollider.h"
 #include "Collision.h"
 
-TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale) {
+TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, const Kore::Graphics4::VertexStructure& structure, mat4 M, float scale) {
     mesh = loadObj(meshFile);
-    image = new Kore::Texture(textureFile, true);
+    image = new Kore::Graphics4::Texture(textureFile, true);
     
     // Mesh Vertex Buffer
-    vertexBuffer = new Kore::VertexBuffer(mesh->numVertices, structure, 0);
+    vertexBuffer = new Kore::Graphics4::VertexBuffer(mesh->numVertices, structure, 0);
     float* vertices = vertexBuffer->lock();
     
     for (int i = 0; i < mesh->numVertices; ++i) {
@@ -23,7 +23,7 @@ TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, 
     }
     vertexBuffer->unlock();
     
-    indexBuffer = new Kore::IndexBuffer(mesh->numFaces * 3);
+    indexBuffer = new Kore::Graphics4::IndexBuffer(mesh->numFaces * 3);
     int* indices = indexBuffer->lock();
     for (int i = 0; i < mesh->numFaces * 3; ++i) {
         indices[i] = mesh->indices[i];
@@ -38,10 +38,10 @@ TriggerCollider::TriggerCollider(const char* meshFile, const char* textureFile, 
     collider->trans(M);
 }
 
-void TriggerCollider::renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {
-    Kore::Graphics::setMatrix(mLocation, collider->M);
-    Kore::Graphics::setTexture(tex, image);
-    Kore::Graphics::setVertexBuffer(*vertexBuffer);
-    Kore::Graphics::setIndexBuffer(*indexBuffer);
-    Kore::Graphics::drawIndexedVertices();
+void TriggerCollider::renderTest(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation) {
+    Kore::Graphics4::setMatrix(mLocation, collider->M);
+    Kore::Graphics4::setTexture(tex, image);
+    Kore::Graphics4::setVertexBuffer(*vertexBuffer);
+    Kore::Graphics4::setIndexBuffer(*indexBuffer);
+    Kore::Graphics4::drawIndexedVertices();
 }

@@ -14,7 +14,7 @@ public:
 	bool visible;
 	bool pizza;
 	Kore::vec3 readOnlyPos;
-    void render(TextureUnit tex, ConstantLocation mLocation);
+    void render(Graphics4::TextureUnit tex, Graphics4::ConstantLocation mLocation);
     void openOrClose(float time);
     void setTriggerCollider(TriggerCollider* triggerCollider);
     

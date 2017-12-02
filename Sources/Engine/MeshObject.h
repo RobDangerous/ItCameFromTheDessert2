@@ -6,9 +6,9 @@
 #include <Kore/System.h>
 #include <Kore/Input/Keyboard.h>
 #include <Kore/Input/Mouse.h>
-#include <Kore/Audio/Mixer.h>
-#include <Kore/Graphics/Image.h>
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Audio1/Audio.h>
+#include <Kore/Graphics1/Image.h>
+#include <Kore/Graphics4/Graphics.h>
 #include <Kore/Log.h>
 
 #include "Collision.h"
@@ -20,13 +20,13 @@
 
 class MeshObject {
 public:
-	MeshObject(const char* meshFile, const char* textureFile, Kore::VertexStructure** structures, float scale = 1.0f) {
+	MeshObject(const char* meshFile, const char* textureFile, Kore::Graphics4::VertexStructure** structures, float scale = 1.0f) {
 		for (int i = 0; i < colliderCount; ++i) collider[i] = nullptr;
 		mesh = loadObj(meshFile);
-		image = new Kore::Texture(textureFile, true);
+		image = new Kore::Graphics4::Texture(textureFile, true);
 		
-		vertexBuffers = new Kore::VertexBuffer*[2];
-		vertexBuffers[0] = new Kore::VertexBuffer(mesh->numVertices, *structures[0], 0);
+		vertexBuffers = new Kore::Graphics4::VertexBuffer*[2];
+		vertexBuffers[0] = new Kore::Graphics4::VertexBuffer(mesh->numVertices, *structures[0], 0);
 		float* vertices = vertexBuffers[0]->lock();
 		for (int i = 0; i < mesh->numVertices; ++i) {
 			vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0];
@@ -40,9 +40,9 @@ public:
 		}
 		vertexBuffers[0]->unlock();
 		
-		vertexBuffers[1] = new Kore::VertexBuffer(1, *structures[1], 1);
+		vertexBuffers[1] = new Kore::Graphics4::VertexBuffer(1, *structures[1], 1);
 
-		indexBuffer = new Kore::IndexBuffer(mesh->numFaces * 3);
+		indexBuffer = new Kore::Graphics4::IndexBuffer(mesh->numFaces * 3);
 		int* indices = indexBuffer->lock();
 		for (int i = 0; i < mesh->numFaces * 3; i++) {
 			indices[i] = mesh->indices[i];
@@ -50,14 +50,14 @@ public:
 		indexBuffer->unlock();
 	}
     
-    MeshObject(const char* meshFile, const char* colliderFile, const char* textureFile, const Kore::VertexStructure& structure, float scale) {
+    MeshObject(const char* meshFile, const char* colliderFile, const char* textureFile, const Kore::Graphics4::VertexStructure& structure, float scale) {
 		for (int i = 0; i < colliderCount; ++i) collider[i] = nullptr;
         mesh = loadObj(meshFile);
-        image = new Kore::Texture(textureFile, true);
+        image = new Kore::Graphics4::Texture(textureFile, true);
 		vertexBuffers = nullptr;
         
         // Mesh Vertex Buffer
-        vertexBuffer = new Kore::VertexBuffer(mesh->numVertices, structure, 0);
+        vertexBuffer = new Kore::Graphics4::VertexBuffer(mesh->numVertices, structure, 0);
         float* vertices = vertexBuffer->lock();
 
 		Kore::vec4 min1(10000, 100000, 1999909, 1);
@@ -81,7 +81,7 @@ public:
         }
         vertexBuffer->unlock();
         
-        indexBuffer = new Kore::IndexBuffer(mesh->numFaces * 3);
+        indexBuffer = new Kore::Graphics4::IndexBuffer(mesh->numFaces * 3);
         int* indices = indexBuffer->lock();
         for (int i = 0; i < mesh->numFaces * 3; ++i) {
             indices[i] = mesh->indices[i];
@@ -122,27 +122,27 @@ public:
         }
     }
 
-	void render(Kore::TextureUnit tex, int instances) {
-		Kore::Graphics::setTexture(tex, image);
-		Kore::Graphics::setVertexBuffers(vertexBuffers, 2);
-		Kore::Graphics::setIndexBuffer(*indexBuffer);
-		Kore::Graphics::drawIndexedVerticesInstanced(instances);
+	void render(Kore::Graphics4::TextureUnit tex, int instances) {
+		Kore::Graphics4::setTexture(tex, image);
+		Kore::Graphics4::setVertexBuffers(vertexBuffers, 2);
+		Kore::Graphics4::setIndexBuffer(*indexBuffer);
+		Kore::Graphics4::drawIndexedVerticesInstanced(instances);
 	}
     
-    void render(Kore::TextureUnit tex, Kore::ConstantLocation mLocation) {
-        Kore::Graphics::setTexture(tex, image);
-        Kore::Graphics::setVertexBuffer(*vertexBuffer);
-        Kore::Graphics::setIndexBuffer(*indexBuffer);
-        Kore::Graphics::drawIndexedVertices();
+    void render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation) {
+        Kore::Graphics4::setTexture(tex, image);
+        Kore::Graphics4::setVertexBuffer(*vertexBuffer);
+        Kore::Graphics4::setIndexBuffer(*indexBuffer);
+        Kore::Graphics4::drawIndexedVertices();
     }
 
-	Kore::VertexBuffer** vertexBuffers;
-    Kore::VertexBuffer* vertexBuffer;
-	Kore::IndexBuffer* indexBuffer;
+	Kore::Graphics4::VertexBuffer** vertexBuffers;
+    Kore::Graphics4::VertexBuffer* vertexBuffer;
+	Kore::Graphics4::IndexBuffer* indexBuffer;
     
     static const int colliderCount = 15;
     BoxCollider* collider[colliderCount];
 
 	Mesh* mesh;
-	Kore::Texture* image;
+	Kore::Graphics4::Texture* image;
 };

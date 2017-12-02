@@ -1,7 +1,7 @@
 #include "Kore/pch.h"
 #include "TankSystem.h"
 
-TankSystem::TankSystem(PhysicsWorld* world, ParticleRenderer* particleRenderer, InstancedMeshObject* meshB, InstancedMeshObject* meshT, InstancedMeshObject* meshF, vec3 spawn1a, vec3 spawn1b, vec3 spawn2a, vec3 spawn2b, float delay, Projectiles* projectiles, VertexStructure** structures, Ground* grnd) :
+TankSystem::TankSystem(PhysicsWorld* world, ParticleRenderer* particleRenderer, InstancedMeshObject* meshB, InstancedMeshObject* meshT, InstancedMeshObject* meshF, vec3 spawn1a, vec3 spawn1b, vec3 spawn2a, vec3 spawn2b, float delay, Projectiles* projectiles, Graphics4::VertexStructure** structures, Ground* grnd) :
 		meshBottom(meshB),
 		meshTop(meshT),
 		meshFlag(meshF),
@@ -16,8 +16,8 @@ TankSystem::TankSystem(PhysicsWorld* world, ParticleRenderer* particleRenderer, 
 		ground(grnd) {
 	tanks.reserve(MAX_TANKS);
 	spawnTimer = spawnDelay;
-    particleTexture = new Texture("Data/Textures/particle.png", true);
-	texture = new Texture("Data/Textures/white.png", true);
+    particleTexture = new Graphics4::Texture("Data/Textures/particle.png", true);
+	texture = new Graphics4::Texture("Data/Textures/white.png", true);
 	hoveredTank = nullptr;
 
 	destroyed = 0;
@@ -27,9 +27,9 @@ TankSystem::TankSystem(PhysicsWorld* world, ParticleRenderer* particleRenderer, 
 	initBars(vec2(2.0f, 0.5f), structures);
 }
 
-void TankSystem::initBars(vec2 halfSize, VertexStructure** structures) {
-	vbs = new VertexBuffer*[2];
-	vbs[0] = new VertexBuffer(4, *structures[0], 0);
+void TankSystem::initBars(vec2 halfSize, Graphics4::VertexStructure** structures) {
+	vbs = new Graphics4::VertexBuffer*[2];
+	vbs[0] = new Graphics4::VertexBuffer(4, *structures[0], 0);
 	float* vertices = vbs[0]->lock();
 	setVertex(vertices, 0, -1 * halfSize.x(), -1 * halfSize.y(), 0, 0, 0);
 	setVertex(vertices, 1, -1 * halfSize.x(), 1 * halfSize.y(), 0, 0, 1);
@@ -37,10 +37,10 @@ void TankSystem::initBars(vec2 halfSize, VertexStructure** structures) {
 	setVertex(vertices, 3, 1 * halfSize.x(), -1 * halfSize.y(), 0, 1, 0);
 	vbs[0]->unlock();
 
-	vbs[1] = new VertexBuffer(MAX_TANKS * 4, *structures[1], 1);
+	vbs[1] = new Graphics4::VertexBuffer(MAX_TANKS * 4, *structures[1], 1);
 
 	// Set index buffer
-	ib = new IndexBuffer(6);
+	ib = new Graphics4::IndexBuffer(6);
 	int* indices = ib->lock();
 	indices[0] = 0;
 	indices[1] = 1;
@@ -139,7 +139,7 @@ bool TankSystem::kill(int i) {
         particleRenderer->addParticleSystem(explosions[i]);
 		Sound* shootSound = getSound();
 		shootSound->setVolume(0.3);
-        Mixer::play(shootSound, Random::get(50, 200) / 100.0f);
+        Audio1::play(shootSound, Random::get(50, 200) / 100.0f);
 		destroyed++;
 		if (tanks[i]->won) {
 			deserted--;
@@ -186,7 +186,7 @@ mat4 getRotM(vec3 ax, float an) {
 	return result;
 }
 
-void TankSystem::render(TextureUnit tex, mat4 View, ConstantLocation vLocation) {
+void TankSystem::render(Graphics4::TextureUnit tex, mat4 View, Graphics4::ConstantLocation vLocation) {
 	float* dataB = meshBottom->vertexBuffers[1]->lock();
 	float* dataT = meshTop->vertexBuffers[1]->lock();
 	float* dataF = meshFlag->vertexBuffers[1]->lock();
@@ -272,12 +272,12 @@ void TankSystem::render(TextureUnit tex, mat4 View, ConstantLocation vLocation) 
 	meshTop->render(tex, j);
 	meshFlag->render(tex, j);
 
-	Graphics::setRenderState(RenderState::DepthTest, false);
-	Graphics::setTexture(tex, texture);
-	Graphics::setVertexBuffers(vbs, 2);
-	Graphics::setIndexBuffer(*ib);
-	Graphics::drawIndexedVerticesInstanced(k);
-	Graphics::setRenderState(RenderState::DepthTest, true);
+	//**Graphics4::setRenderState(Graphics4::RenderState::DepthTest, false);
+	Graphics4::setTexture(tex, texture);
+	Graphics4::setVertexBuffers(vbs, 2);
+	Graphics4::setIndexBuffer(*ib);
+	Graphics4::drawIndexedVerticesInstanced(k);
+	//**Graphics4::setRenderState(Graphics4::RenderState::DepthTest, true);
 }
 
 void TankSystem::hover(vec3 cameraPosition, vec3 pickDir) {

@@ -10,11 +10,11 @@
 #include <Kore/System.h>
 #include <Kore/Input/Keyboard.h>
 #include <Kore/Input/Mouse.h>
-#include <Kore/Audio/Mixer.h>
-#include <Kore/Graphics/Image.h>
-#include <Kore/Graphics/Graphics.h>
-#include <Kore/Graphics/Graphics2.h>
-#include <Kore/Graphics/Color.h>
+#include <Kore/Audio1/Audio.h>
+#include <Kore/Graphics1/Image.h>
+#include <Kore/Graphics4/Graphics.h>
+#include <Kore/Graphics2/Graphics.h>
+#include <Kore/Graphics1/Color.h>
 #include <Kore/Log.h>
 
 #include "Engine/Collision.h"
@@ -55,15 +55,15 @@ namespace {
 	const int PIZZA_OFFSET = 21;
     
     double startTime;
-    Shader* vertexShader;
-    Shader* fragmentShader;
-    Program* program;
+	Graphics4::Shader* vertexShader;
+	Graphics4::Shader* fragmentShader;
+	Graphics4::PipelineState* program;
 
-	Graphics2* g2;
+	Graphics2::Graphics2* g2;
     
-    Shader* instancedVertexShader;
-    Shader* instancedFragmentShader;
-    Program* instancedProgram;
+	Graphics4::Shader* instancedVertexShader;
+	Graphics4::Shader* instancedFragmentShader;
+	Graphics4::PipelineState* instancedProgram;
 
 	bool left_A;
 	bool left_C;
@@ -91,22 +91,22 @@ namespace {
     vec3 cameraDir;
     vec3 cameraUp;
     
-    ConstantLocation instancedPLocation;
-    ConstantLocation instancedVLocation;
-    TextureUnit instancedTex;
+	Graphics4::ConstantLocation instancedPLocation;
+	Graphics4::ConstantLocation instancedVLocation;
+	Graphics4::TextureUnit instancedTex;
 	
 	PhysicsWorld physics;
     
-    TextureUnit tex;
-    ConstantLocation pLocation;
-    ConstantLocation vLocation;
-    ConstantLocation mLocation;
-    ConstantLocation lightPosLocation;
-	VertexStructure structure;
+	Graphics4::TextureUnit tex;
+	Graphics4::ConstantLocation pLocation;
+	Graphics4::ConstantLocation vLocation;
+	Graphics4::ConstantLocation mLocation;
+	Graphics4::ConstantLocation lightPosLocation;
+	Graphics4::VertexStructure structure;
     
     //BoxCollider boxCollider(vec3(-46.0f, -4.0f, 44.0f), vec3(10.6f, 4.4f, 4.0f));
     
-    Texture* particleImage;
+	Graphics4::Texture* particleImage;
     
     double lastTime;
     const int maxPizza = 6;
@@ -236,16 +236,16 @@ namespace {
         double deltaT = t - lastTime;
         
         lastTime = t;
-        Kore::Audio::update();
+        Kore::Audio2::update();
         
-        Graphics::begin();
-        Graphics::clear(Graphics::ClearColorFlag | Graphics::ClearDepthFlag | Graphics::ClearStencilFlag, 0xFF0000FF, 1.0f, 0);
+        Graphics4::begin();
+        Graphics4::clear(Graphics4::ClearColorFlag | Graphics4::ClearDepthFlag | Graphics4::ClearStencilFlag, 0xFF0000FF, 1.0f, 0);
         
         // Important: We need to set the program before we set a uniform
-        program->set();
-        Graphics::setBlendingMode(SourceAlpha, Kore::BlendingOperation::InverseSourceAlpha);
-        Graphics::setRenderState(BlendingState, true);
-        Graphics::setRenderState(DepthTest, true);
+		Graphics4::setPipeline(program);
+        //**Graphics4::setBlendingMode(Graphics4::SourceAlpha, Kore::Graphics4::BlendingOperation::InverseSourceAlpha);
+        //**Graphics4::setRenderState(Graphics4::BlendingState, true);
+        //**Graphics4::setRenderState(Graphics4::DepthTest, true);
         
         // Direction: Spherical coordinates to Cartesian coordinates conversion
         cameraDir = vec3(
@@ -285,8 +285,8 @@ namespace {
         
         View = mat4::lookAlong(cameraDir, cameraPos, cameraUp);
         
-        Graphics::setMatrix(pLocation, P);
-        Graphics::setMatrix(vLocation, View);
+        Graphics4::setMatrix(pLocation, P);
+        Graphics4::setMatrix(vLocation, View);
         
         // update light pos
         /*lightPosX = 100;
@@ -315,20 +315,20 @@ namespace {
             ++i;
         }
         
-		Graphics::setTextureAddressing(tex, U, Repeat);
-		Graphics::setTextureAddressing(tex, V, Repeat);
+		Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::Repeat);
+		Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::Repeat);
 
         // render the room
-        Kore::Graphics::setMatrix(mLocation, rooM);
+        Kore::Graphics4::setMatrix(mLocation, rooM);
 
 		for (unsigned oi = 0; roomObjects[oi] != nullptr; ++oi) {
 			roomObjects[oi]->render(tex, mLocation);
 		}
         
-        instancedProgram->set();
+		Graphics4::setPipeline(instancedProgram);
         
-        Graphics::setMatrix(instancedPLocation, P);
-        Graphics::setMatrix(instancedVLocation, View);
+        Graphics4::setMatrix(instancedPLocation, P);
+        Graphics4::setMatrix(instancedVLocation, View);
         
         Ant::moveEverybody(deltaT);
         Ant::render(instancedVLocation, instancedTex, View);
@@ -382,16 +382,16 @@ namespace {
 		g2->begin(false);
         
 		if (hovered == nullptr) {
-            g2->setColor(Color::White);
+            g2->setColor(Graphics1::Color::White);
         }
 		else if (hovered->pizza) {
-            g2->setColor(Color::Red);
+            g2->setColor(Graphics1::Color::Red);
 		}
 		else if (hovered->door_closed == nullptr) {
-			g2->setColor(Color::Green);
+			g2->setColor(Graphics1::Color::Green);
 		}
 		else {
-			g2->setColor(Color::Blue);
+			g2->setColor(Graphics1::Color::Blue);
 		}
 		g2->drawRect(width / 2 -  1, height / 2 -  1, 2, 2, 1);
 		g2->drawRect(width / 2 +  8, height / 2 -  1, 8, 2, 1);
@@ -401,38 +401,38 @@ namespace {
 		g2->end();
         
         g2->setFont(font24);
-        g2->setFontColor(Color::Black);
+        g2->setFontColor(Graphics1::Color::Black);
         g2->setFontSize(24);
         char pizza_text[42];
         sprintf(pizza_text, "You have %i pizza", maxPizza-pizzaCount);
         g2->drawString(pizza_text, 10, 10);
         
-        Graphics::end();
-		Graphics::swapBuffers();
+        Graphics4::end();
+		Graphics4::swapBuffers();
     }
     
-    void keyDown(KeyCode code, wchar_t character) {
-        if (code == Key_Up) {
+    void keyDown(KeyCode code) {
+        if (code == KeyUp) {
             up_A = true;
-        } else if (code == Key_Down) {
+        } else if (code == KeyDown) {
             down_A = true;
-        } else if (code == Key_Left) {
+        } else if (code == KeyLeft) {
             right_A = true;
-        } else if (code == Key_Right) {
+        } else if (code == KeyRight) {
             left_A = true;
-        } else if (code == Key_W) {
+        } else if (code == KeyW) {
 			up_C = true;
-		} else if (code == Key_S) {
+		} else if (code == KeyS) {
 			down_C = true;
-		} else if (code == Key_A) {
+		} else if (code == KeyA) {
 			right_C = true;
-		} else if (code == Key_D) {
+		} else if (code == KeyD) {
 			left_C = true;
-		} else if (code == Key_Control) {
+		} else if (code == KeyControl) {
 			crouch = true;
-		} else if (code == Key_Space) {
+		} else if (code == KeySpace) {
 			jump = true;
-		} else if (code == Key_R) {
+		} else if (code == KeyR) {
 			for (int i = 0; i < maxPizza; ++i) {
 				if (kitchenObjects[PIZZA_OFFSET + i] != nullptr) {
 					if (kitchenObjects[PIZZA_OFFSET + i] == hovered) hovered = nullptr;
@@ -446,13 +446,13 @@ namespace {
 				}
 			}
 			pizzaCount = 0;
-		} else if (code == Key_Escape) {
+		} else if (code == KeyEscape) {
             Kore::System::stop();
-        } else if (code == Key_L) {
+        } else if (code == KeyL) {
             Kore::log(Kore::Info, "Camera pos %f %f %f", cameraPos.x(), cameraPos.y(), cameraPos.z());
             Kore::log(Kore::Info, "Camera angle horizontal %f", horizontalAngle);
             Kore::log(Kore::Info, "Camera angle vertical %f", verticalAngle);
-        } else if (code == Key_T) {
+        } else if (code == KeyT) {
             int i = 0;
             while (kitchenObjects[i] != nullptr) {
                 kitchenObjects[i]->openOrClose(lastTime);
@@ -461,35 +461,35 @@ namespace {
         }
     }
     
-    void keyUp(KeyCode code, wchar_t character) {
-		if (code == Key_Up) {
+    void keyUp(KeyCode code) {
+		if (code == KeyUp) {
 			up_A = false;
 		}
-		else if (code == Key_Down) {
+		else if (code == KeyDown) {
 			down_A = false;
 		}
-		else if (code == Key_Left) {
+		else if (code == KeyLeft) {
 			right_A = false;
 		}
-		else if (code == Key_Right) {
+		else if (code == KeyRight) {
 			left_A = false;
 		}
-		else if (code == Key_W) {
+		else if (code == KeyW) {
 			up_C = false;
 		}
-		else if (code == Key_S) {
+		else if (code == KeyS) {
 			down_C = false;
 		}
-		else if (code == Key_A) {
+		else if (code == KeyA) {
 			right_C = false;
 		}
-		else if (code == Key_D) {
+		else if (code == KeyD) {
 			left_C = false;
 		}
-		else if (code == Key_Control) {
+		else if (code == KeyControl) {
 			crouch = false;
 		}
-		else if (code == Key_Space) {
+		else if (code == KeySpace) {
 			jump = false;
 		}
     }
@@ -559,25 +559,28 @@ namespace {
     void init() {
         FileReader vs("shader.vert");
         FileReader fs("shader.frag");
-        instancedVertexShader = new Shader(vs.readAll(), vs.size(), VertexShader);
-        instancedFragmentShader = new Shader(fs.readAll(), fs.size(), FragmentShader);
+        instancedVertexShader = new Graphics4::Shader(vs.readAll(), vs.size(), Graphics4::VertexShader);
+        instancedFragmentShader = new Graphics4::Shader(fs.readAll(), fs.size(), Graphics4::FragmentShader);
         
         // This defines the structure of your Vertex Buffer
-        VertexStructure** structures = new VertexStructure*[2];
-        structures[0] = new VertexStructure();
-        structures[0]->add("pos", Float3VertexData);
-        structures[0]->add("tex", Float2VertexData);
-        structures[0]->add("nor", Float3VertexData);
+		Graphics4::VertexStructure** structures = new Graphics4::VertexStructure*[2];
+        structures[0] = new Graphics4::VertexStructure();
+        structures[0]->add("pos", Graphics4::Float3VertexData);
+        structures[0]->add("tex", Graphics4::Float2VertexData);
+        structures[0]->add("nor", Graphics4::Float3VertexData);
         
-        structures[1] = new VertexStructure();
-        structures[1]->add("M", Float4x4VertexData);
-        structures[1]->add("N", Float4x4VertexData);
-        structures[1]->add("tint", Float4VertexData);
+        structures[1] = new Graphics4::VertexStructure();
+        structures[1]->add("M", Graphics4::Float4x4VertexData);
+        structures[1]->add("N", Graphics4::Float4x4VertexData);
+        structures[1]->add("tint", Graphics4::Float4VertexData);
         
-        instancedProgram = new Program;
-        instancedProgram->setVertexShader(instancedVertexShader);
-        instancedProgram->setFragmentShader(instancedFragmentShader);
-        instancedProgram->link(structures, 2);
+        instancedProgram = new Graphics4::PipelineState;
+		instancedProgram->inputLayout[0] = structures[0];
+		instancedProgram->inputLayout[1] = structures[1];
+		instancedProgram->inputLayout[2] = nullptr;
+        instancedProgram->vertexShader = instancedVertexShader;
+        instancedProgram->fragmentShader = instancedFragmentShader;
+		instancedProgram->compile();
         
         instancedTex = instancedProgram->getTextureUnit("tex");
         instancedPLocation = instancedProgram->getConstantLocation("P");
@@ -594,19 +597,21 @@ namespace {
         // New shaders
         FileReader vs2("shader2.vert");
         FileReader fs2("shader2.frag");
-        vertexShader = new Shader(vs2.readAll(), vs2.size(), VertexShader);
-        fragmentShader = new Shader(fs2.readAll(), fs2.size(), FragmentShader);
+        vertexShader = new Graphics4::Shader(vs2.readAll(), vs2.size(), Graphics4::VertexShader);
+        fragmentShader = new Graphics4::Shader(fs2.readAll(), fs2.size(), Graphics4::FragmentShader);
         
         // This defines the structure of your Vertex Buffer
-		structure = VertexStructure();
-        structure.add("pos", Float3VertexData);
-        structure.add("tex", Float2VertexData);
-        structure.add("nor", Float3VertexData);
+		structure = Graphics4::VertexStructure();
+        structure.add("pos", Graphics4::Float3VertexData);
+        structure.add("tex", Graphics4::Float2VertexData);
+        structure.add("nor", Graphics4::Float3VertexData);
         
-        program = new Program;
-        program->setVertexShader(vertexShader);
-        program->setFragmentShader(fragmentShader);
-        program->link(structure);
+        program = new Graphics4::PipelineState;
+		program->inputLayout[0] = &structure;
+		program->inputLayout[1] = nullptr;
+        program->vertexShader = vertexShader;
+        program->fragmentShader = fragmentShader;
+		program->compile();
         
         tex = program->getTextureUnit("tex");
         
@@ -724,15 +729,15 @@ namespace {
         
         Ant::init();
         
-        Graphics::setRenderState(DepthTest, true);
-        Graphics::setRenderState(DepthTestCompare, ZCompareLess);
+        //**Graphics4::setRenderState(Graphics4::DepthTest, true);
+        //**Graphics4::setRenderState(Graphics4::DepthTestCompare, Graphics4::ZCompareLess);
         
-        Graphics::setTextureAddressing(tex, U, Repeat);
-        Graphics::setTextureAddressing(tex, V, Repeat);
+        Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::Repeat);
+        Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::Repeat);
         
         P = mat4::Perspective(45, (float)width / (float)height, 0.1f, 1000);
         
-		g2 = new Graphics2(width, height);
+		g2 = new Graphics2::Graphics2(width, height);
 
         font14 = Kravur::load("Data/Fonts/arial", FontStyle(), 14);
         font24 = Kravur::load("Data/Fonts/arial", FontStyle(), 24);
@@ -759,8 +764,8 @@ int kore(int argc, char** argv) {
 	options.rendererOptions.antialiasing = 0;
 	Kore::System::initWindow(options);
 
-	Kore::Mixer::init();
-	Kore::Audio::init();
+	Kore::Audio1::init();
+	Kore::Audio2::init();
 
 	init();
 

@@ -1,8 +1,11 @@
 #include "pch.h"
+
+#include <Kore/Graphics1/Image.h>
 #include "SimpleGraphics.h"
 #include <Kore/IO/FileReader.h>
-#include <Kore/Graphics/Graphics.h>
-#include <Kore/Graphics/Shader.h>
+#include <Kore/Graphics4/Graphics.h>
+#include <Kore/Graphics4/Shader.h>
+#include <Kore/Graphics4/PipelineState.h>
 #include <Kore/IO/FileReader.h>
 #include <limits>
 
@@ -11,13 +14,13 @@ using namespace Kore;
 //void shadePixel(int x, int y, float z, float u, float v);
 
 namespace {
-	Shader* vertexShader;
-	Shader* fragmentShader;
-	Program* program;
-	TextureUnit tex;
-	VertexBuffer* vb;
-	IndexBuffer* ib;
-	Texture* texture;
+	Graphics4::Shader* vertexShader;
+	Graphics4::Shader* fragmentShader;
+	Graphics4::PipelineState* program;
+	Graphics4::TextureUnit tex;
+	Graphics4::VertexBuffer* vb;
+	Graphics4::IndexBuffer* ib;
+	Graphics4::Texture* texture;
 	int* image;
 }
 
@@ -50,15 +53,15 @@ void setPixel(int x, int y, float red, float green, float blue) {
 #endif
 }
 
-Image* loadImage(const char* filename) {
-	return new Texture(filename, true);
+Kore::Graphics1::Image* loadImage(const char* filename) {
+	return new Graphics4::Texture(filename, true);
 }
 
-void destroyImage(Kore::Image* image) {
+void destroyImage(Kore::Graphics1::Image* image) {
 	delete image;
 }
 
-void drawImage(Image* image, int x, int y) {
+void drawImage(Kore::Graphics1::Image* image, int x, int y) {
 	int ystart = max(0, -y);
 	int xstart = max(0, -x);
 	int h = min(image->height, height - y);
@@ -78,7 +81,7 @@ void drawImage(Image* image, int x, int y) {
 	}
 }
 
-void getPixel(Image* image, int x, int y, float& red, float& green, float& blue) {
+void getPixel(Graphics1::Image* image, int x, int y, float& red, float& green, float& blue) {
 	int col = image->at(x, y);
 	blue = ((col & 0xff0000) >> 16) / 255.0f;
 	green = ((col & 0xff00) >> 8) / 255.0f;
@@ -241,38 +244,40 @@ void drawTriangle(float x1, float y1, float z1, float u1, float v1, float x2, fl
 void endFrame() {
 	texture->unlock();
 
-	Graphics::begin();
-	Graphics::clear(Graphics::ClearColorFlag, 0xff000000);
+	Graphics4::begin();
+	Graphics4::clear(Graphics4::ClearColorFlag, 0xff000000);
 
-	program->set();
+	Graphics4::setPipeline(program);
 	//texture->_set(tex);
-	Graphics::setTexture(tex, texture);
+	Graphics4::setTexture(tex, texture);
 	//vb->_set();
-	Graphics::setVertexBuffer(*vb);
+	Graphics4::setVertexBuffer(*vb);
 	//ib->_set();	
-	Graphics::setIndexBuffer(*ib);
-	Graphics::drawIndexedVertices();
+	Graphics4::setIndexBuffer(*ib);
+	Graphics4::drawIndexedVertices();
 
-	Graphics::end();
-	Graphics::swapBuffers();
+	Graphics4::end();
+	Graphics4::swapBuffers();
 }
 
 void initGraphics() {
 	FileReader vs("shader.vert");
 	FileReader fs("shader.frag");
-	vertexShader = new Shader(vs.readAll(), vs.size(), VertexShader);
-	fragmentShader = new Shader(fs.readAll(), fs.size(), FragmentShader);
-	VertexStructure structure;
-	structure.add("pos", Float3VertexData);
-	structure.add("tex", Float2VertexData);
-	program = new Program;
-	program->setVertexShader(vertexShader);
-	program->setFragmentShader(fragmentShader);
-	program->link(structure);
+	vertexShader = new Graphics4::Shader(vs.readAll(), vs.size(), Graphics4::VertexShader);
+	fragmentShader = new Graphics4::Shader(fs.readAll(), fs.size(), Graphics4::FragmentShader);
+	Graphics4::VertexStructure structure;
+	structure.add("pos", Graphics4::Float3VertexData);
+	structure.add("tex", Graphics4::Float2VertexData);
+	program = new Graphics4::PipelineState;
+	program->inputLayout[0] = &structure;
+	program->inputLayout[1] = nullptr;
+	program->vertexShader = vertexShader;
+	program->fragmentShader = fragmentShader;
+	program->compile();
 
 	tex = program->getTextureUnit("tex");
 
-	texture = new Texture(width, height, Image::RGBA32, false);
+	texture = new Graphics4::Texture(width, height, Graphics1::Image::RGBA32, false);
 	image = (int*)texture->lock();
 	for (int y = 0; y < texture->height; ++y) {
 		for (int x = 0; x < texture->width; ++x) {
@@ -281,7 +286,7 @@ void initGraphics() {
 	}
 	texture->unlock();
 
-	vb = new VertexBuffer(4, structure, 0);
+	vb = new Graphics4::VertexBuffer(4, structure, 0);
 	float* v = vb->lock();
 	{
 		int i = 0;
@@ -294,7 +299,7 @@ void initGraphics() {
 	}
 	vb->unlock();
 
-	ib = new IndexBuffer(6);
+	ib = new Graphics4::IndexBuffer(6);
 	int* ii = ib->lock();
 	{
 		int i = 0;

@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <Kore/Math/Vector.h>
-#include <Kore/Audio/Mixer.h>
+#include <Kore/Audio1/Audio.h>
 
 #include "Tank.h"
 #include "Engine/InstancedMeshObject.h"
@@ -17,10 +17,10 @@ using namespace Kore;
 
 class TankSystem {
 public:
-	TankSystem(PhysicsWorld* world, ParticleRenderer* particleRenderer, InstancedMeshObject* meshB, InstancedMeshObject* meshT, InstancedMeshObject* meshF, vec3 spawn1a, vec3 spawn1b, vec3 spawn2a, vec3 spawn2b, float delay, Projectiles* projectiles, VertexStructure** structures, Ground* grnd);
-	void initBars(vec2 halfSize, VertexStructure** structures);
+	TankSystem(PhysicsWorld* world, ParticleRenderer* particleRenderer, InstancedMeshObject* meshB, InstancedMeshObject* meshT, InstancedMeshObject* meshF, vec3 spawn1a, vec3 spawn1b, vec3 spawn2a, vec3 spawn2b, float delay, Projectiles* projectiles, Graphics4::VertexStructure** structures, Ground* grnd);
+	void initBars(vec2 halfSize, Graphics4::VertexStructure** structures);
 	void update(float dt);
-	void render(TextureUnit tex, mat4 View, ConstantLocation vLocation);
+	void render(Graphics4::TextureUnit tex, mat4 View, Graphics4::ConstantLocation vLocation);
 	void hover(vec3 cameraPosition, vec3 pickDir);
 	void select(vec3 cameraPosition, vec3 pickDir);
 	void issueCommand(vec3 cameraPosition, vec3 pickDir);
@@ -45,7 +45,7 @@ private:
 	InstancedMeshObject* meshBottom;
 	InstancedMeshObject* meshTop;
 	InstancedMeshObject* meshFlag;
-    Texture* particleTexture;
+	Graphics4::Texture* particleTexture;
 	std::vector<Tank*> tanks;
     std::vector<Explosion*> explosions;
     std::vector<int> emptyIndices;
@@ -54,7 +54,7 @@ private:
 	Tank* getHitTank(vec3 cameraPosition, vec3 pickDir);
 	Ground* ground;
 
-	Kore::VertexBuffer** vbs;
-	Kore::IndexBuffer* ib;
-	Kore::Texture* texture;
+	Kore::Graphics4::VertexBuffer** vbs;
+	Kore::Graphics4::IndexBuffer* ib;
+	Kore::Graphics4::Texture* texture;
 };

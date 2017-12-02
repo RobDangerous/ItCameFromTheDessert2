@@ -6,7 +6,7 @@
 class Explosion : public ParticleSystem
 {
 public:
-    Explosion(Kore::vec3 pos, float spawnArea, float grav, int maxParticles, Kore::VertexStructure** structures, Kore::Texture* image);
+    Explosion(Kore::vec3 pos, float spawnArea, float grav, int maxParticles, Kore::Graphics4::VertexStructure** structures, Kore::Graphics4::Texture* image);
     bool isReady();
     void update(float deltaTime);
     void emitParticle(int index);

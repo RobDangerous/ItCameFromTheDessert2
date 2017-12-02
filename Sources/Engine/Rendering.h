@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics4/Graphics.h>
 #include "ObjLoader.h"
 
 Kore::mat4 calculateN(Kore::mat4 MV);

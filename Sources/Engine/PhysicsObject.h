@@ -8,9 +8,9 @@
 #include <Kore/System.h>
 #include <Kore/Input/Keyboard.h>
 #include <Kore/Input/Mouse.h>
-#include <Kore/Audio/Mixer.h>
-#include <Kore/Graphics/Image.h>
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Audio1/Audio.h>
+#include <Kore/Graphics1/Image.h>
+#include <Kore/Graphics4/Graphics.h>
 #include <Kore/Log.h>
 #include "ObjLoader.h"
 

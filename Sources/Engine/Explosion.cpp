@@ -9,7 +9,7 @@
 #include "Particles.h"
 #include "Explosion.h"
 
-Explosion::Explosion(Kore::vec3 pos, float spawnArea, float grav, int maxParticles, Kore::VertexStructure** structures, Kore::Texture* image) :
+Explosion::Explosion(Kore::vec3 pos, float spawnArea, float grav, int maxParticles, Kore::Graphics4::VertexStructure** structures, Kore::Graphics4::Texture* image) :
     ParticleSystem(pos, Kore::vec3(0,1,0), 7.f, 1.f, Kore::vec4(1.f, 1.f, 0.f, 1), Kore::vec4(1.f, 0.f, 0.f, 1), grav, maxParticles, structures, image)
 {
     this->spawnArea = spawnArea;

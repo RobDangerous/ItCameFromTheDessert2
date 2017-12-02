@@ -1,23 +1,23 @@
 #pragma once
 
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics4/Graphics.h>
 
 class Particle;
 
 class ParticleSystem {
 public:
-	ParticleSystem(Kore::vec3 pos, Kore::vec3 dir, float size, float timeToLive, Kore::vec4 colorS, Kore::vec4 colorE, float grav, int maxParticles, Kore::VertexStructure** structures, Kore::Texture* image);
+	ParticleSystem(Kore::vec3 pos, Kore::vec3 dir, float size, float timeToLive, Kore::vec4 colorS, Kore::vec4 colorE, float grav, int maxParticles, Kore::Graphics4::VertexStructure** structures, Kore::Graphics4::Texture* image);
 
     ~ParticleSystem();
 	void setPosition(Kore::vec3 position);
 	void setDirection(Kore::vec3 direction);
 	void update(float deltaTime);
-	void render(Kore::TextureUnit tex, Kore::ConstantLocation vLocation, Kore::mat4 V);
+	void render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation vLocation, Kore::mat4 V);
 
 //private:
-	Kore::VertexBuffer** vbs;
-	Kore::IndexBuffer* ib;
-	Kore::Texture* texture;
+	Kore::Graphics4::VertexBuffer** vbs;
+	Kore::Graphics4::IndexBuffer* ib;
+	Kore::Graphics4::Texture* texture;
 
 	// The coordinates of the emitter box
 	Kore::vec3 emitMin;
@@ -53,7 +53,7 @@ public:
 	float gravity;
     float spawnArea;
 
-	void init(float halfSize, int maxParticles, Kore::VertexStructure** structures);
+	void init(float halfSize, int maxParticles, Kore::Graphics4::VertexStructure** structures);
 	void emitParticle(int index);
 	float getRandom(float minValue, float maxValue);
 };

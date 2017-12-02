@@ -3,22 +3,22 @@
 #include <Kore/IO/FileReader.h>
 #include <Kore/Math/Core.h>
 #include <Kore/System.h>
-#include <Kore/Graphics/Image.h>
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics1/Image.h>
+#include <Kore/Graphics4/Graphics.h>
 
 #include "PhysicsObject.h"
 
 class TriggerCollider {
     public:
-    TriggerCollider(const char* meshFile, const char* textureFile, const Kore::VertexStructure& structure, mat4 M, float scale = 1.0f);
+    TriggerCollider(const char* meshFile, const char* textureFile, const Kore::Graphics4::VertexStructure& structure, mat4 M, float scale = 1.0f);
     
-    void renderTest(Kore::TextureUnit tex, Kore::ConstantLocation mLocation);
+    void renderTest(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation);
     
-    Kore::VertexBuffer* vertexBuffer;
-    Kore::IndexBuffer* indexBuffer;
+    Kore::Graphics4::VertexBuffer* vertexBuffer;
+    Kore::Graphics4::IndexBuffer* indexBuffer;
     
     Mesh* mesh;
-    Kore::Texture* image;
+    Kore::Graphics4::Texture* image;
     
     BoxCollider* collider;
     

@@ -2,7 +2,7 @@
 
 #include <Kore/Math/Vector.h>
 #include <Kore/Math/Quaternion.h>
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics4/Graphics.h>
 
 #include "Engine/MeshObject.h"
 #include "Engine/TriggerCollider.h"
@@ -18,7 +18,7 @@ public:
 	void chooseScent(bool force);
 	static void moveEverybody(float deltaTime);
 	void move(float deltaTime);
-	static void render(Kore::ConstantLocation vLocation, Kore::TextureUnit tex, Kore::mat4 view);
+	static void render(Kore::Graphics4::ConstantLocation vLocation, Kore::Graphics4::TextureUnit tex, Kore::mat4 view);
 
 	static void morePizze(Kore::vec3 position);
 	static void lessPizza(Kore::vec3 position);

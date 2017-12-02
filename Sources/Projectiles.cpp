@@ -9,7 +9,7 @@ namespace {
 	int maxProjectiles = 0;
 }
 
-Projectiles::Projectiles(int maxProjectiles, float hitDistance, Texture* particleTex, MeshObject* mesh, VertexStructure** structures, PhysicsWorld* physics) : maxProj(maxProjectiles), sharedMesh(mesh) {
+Projectiles::Projectiles(int maxProjectiles, float hitDistance, Graphics4::Texture* particleTex, MeshObject* mesh, Graphics4::VertexStructure** structures, PhysicsWorld* physics) : maxProj(maxProjectiles), sharedMesh(mesh) {
 	::maxProjectiles = maxProjectiles;
 	timeToLife = new float[maxProjectiles];
 	collision_data = new projectile_collision_data[maxProjectiles];
@@ -41,9 +41,9 @@ Projectiles::Projectiles(int maxProjectiles, float hitDistance, Texture* particl
 		particles[i] = new ParticleSystem(physicsObject[i]->GetPosition(), vec3(0, 10, 0), 10.f, 0.3f, vec4(0.5, 0.5, 0.5, 1), vec4(0.5, 0.5, 0.5, 0), 0, 100, structures, particleTex);
 	}
 	
-	vertexBuffers = new VertexBuffer*[2];
+	vertexBuffers = new Graphics4::VertexBuffer*[2];
 	vertexBuffers[0] = mesh->vertexBuffers[0];
-	vertexBuffers[1] = new VertexBuffer(maxProjectiles, *structures[1], 1);
+	vertexBuffers[1] = new Graphics4::VertexBuffer(maxProjectiles, *structures[1], 1);
 }
 
 namespace {
@@ -66,7 +66,7 @@ int Projectiles::fire(vec3 pos, PhysicsObject* target, float s, int dmg, Tank* s
     
     Sound* shootSound = getSound();
     shootSound->setVolume(0.3);
-    Mixer::play(shootSound, Random::get(50, 200) / 100.0f);
+    Audio1::play(shootSound, Random::get(50, 200) / 100.0f);
     
     int projectile = *(inactiveProjectiles.begin());
     vec3 direction = (target->GetPosition() - pos).normalize();
@@ -166,7 +166,7 @@ void Projectiles::onShooterDeath(int projectileID) {
 	shooters[projectileID] = nullptr;
 }
 
-void Projectiles::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
+void Projectiles::render(Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
 	float* data = vertexBuffers[1]->lock();
 	int c = 0;
 	for (int i = 0; i < maxProj; i++) {
@@ -180,10 +180,10 @@ void Projectiles::render(ConstantLocation vLocation, TextureUnit tex, mat4 view)
 	}
 	vertexBuffers[1]->unlock();
 	
-	Graphics::setTexture(tex, sharedMesh->image);
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*sharedMesh->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setTexture(tex, sharedMesh->image);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*sharedMesh->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 
 	for (int i = 0; i < maxProj; i++) {
 		if (physicsObject[i]->active) {

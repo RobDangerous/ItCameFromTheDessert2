@@ -2,14 +2,14 @@
 
 #include "Particles.h"
 
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics4/Graphics.h>
 #include <Kore/Math/Random.h>
 
 #include "Rendering.h"
 
 using namespace Kore;
 
-ParticleSystem::ParticleSystem(vec3 pos, vec3 dir, float size, float timeToLive, vec4 colorS, vec4 colorE, float grav, int maxParticles, VertexStructure** structures, Texture* image) :
+ParticleSystem::ParticleSystem(vec3 pos, vec3 dir, float size, float timeToLive, vec4 colorS, vec4 colorE, float grav, int maxParticles, Graphics4::VertexStructure** structures, Graphics4::Texture* image) :
 	colorStart(colorS),
 	colorEnd(colorE),
 	gravity(grav),
@@ -30,9 +30,9 @@ ParticleSystem::ParticleSystem(vec3 pos, vec3 dir, float size, float timeToLive,
 	setDirection(dir);
 }
 
-void ParticleSystem::init(float halfSize, int maxParticles, VertexStructure** structures) {
-	vbs = new VertexBuffer*[2];
-	vbs[0] = new VertexBuffer(4, *structures[0], 0);
+void ParticleSystem::init(float halfSize, int maxParticles, Graphics4::VertexStructure** structures) {
+	vbs = new Graphics4::VertexBuffer*[2];
+	vbs[0] = new Graphics4::VertexBuffer(4, *structures[0], 0);
 	float* vertices = vbs[0]->lock();
 	setVertex(vertices, 0, -1 * halfSize, -1 * halfSize, 0, 0, 0);
 	setVertex(vertices, 1, -1 * halfSize, 1 * halfSize, 0, 0, 1);
@@ -40,10 +40,10 @@ void ParticleSystem::init(float halfSize, int maxParticles, VertexStructure** st
 	setVertex(vertices, 3, 1 * halfSize, -1 * halfSize, 0, 1, 0);
 	vbs[0]->unlock();
 	
-	vbs[1] = new VertexBuffer(maxParticles, *structures[1], 1);
+	vbs[1] = new Graphics4::VertexBuffer(maxParticles, *structures[1], 1);
 
 	// Set index buffer
-	ib = new IndexBuffer(6);
+	ib = new Graphics4::IndexBuffer(6);
 	int* indices = ib->lock();
 	indices[0] = 0;
 	indices[1] = 1;
@@ -97,8 +97,8 @@ void ParticleSystem::update(float deltaTime) {
 	}
 }
 
-void ParticleSystem::render(TextureUnit tex, ConstantLocation vLocation, mat4 V) {
-	Graphics::setRenderState(RenderState::DepthWrite, false);
+void ParticleSystem::render(Graphics4::TextureUnit tex, Graphics4::ConstantLocation vLocation, mat4 V) {
+	//**Graphics4::setRenderState(Graphics4::RenderState::DepthWrite, false);
 
 	mat4 view = V.Invert();
 	view.Set(0, 3, 0.0f);
@@ -125,13 +125,13 @@ void ParticleSystem::render(TextureUnit tex, ConstantLocation vLocation, mat4 V)
 	}
 	vbs[1]->unlock();
 	
-	Graphics::setTexture(tex, texture);
-	Graphics::setVertexBuffers(vbs, 2);
-	Graphics::setIndexBuffer(*ib);
-	Graphics::drawIndexedVerticesInstanced(alive);
+	Graphics4::setTexture(tex, texture);
+	Graphics4::setVertexBuffers(vbs, 2);
+	Graphics4::setIndexBuffer(*ib);
+	Graphics4::drawIndexedVerticesInstanced(alive);
 
-	Graphics::setRenderState(RenderState::DepthWrite, true);
-	Graphics::setRenderState(RenderState::DepthTest, true);
+	//**Graphics4::setRenderState(RenderState::DepthWrite, true);
+	//**Graphics4::setRenderState(RenderState::DepthTest, true);
 }
 
 void ParticleSystem::emitParticle(int index) {

@@ -8,12 +8,12 @@
 
 #include "ParticleRenderer.h"
 
-ParticleRenderer::ParticleRenderer(Kore::VertexStructure** structures) :
+ParticleRenderer::ParticleRenderer(Kore::Graphics4::VertexStructure** structures) :
     structures(structures)
 {
 }
 
-void ParticleRenderer::render(TextureUnit tex, mat4 View, ConstantLocation vLocation)
+void ParticleRenderer::render(Graphics4::TextureUnit tex, mat4 View, Graphics4::ConstantLocation vLocation)
 {
     std::set<ParticleSystem*>::iterator it;
     for( it = particlesystems.begin(); it != particlesystems.end(); ++it)
@@ -32,7 +32,7 @@ void ParticleRenderer::removeParticleSystem( ParticleSystem* system )
     particlesystems.erase(system);
 }
 
-Kore::VertexStructure** ParticleRenderer::getStructures()
+Kore::Graphics4::VertexStructure** ParticleRenderer::getStructures()
 {
     return structures;
 }

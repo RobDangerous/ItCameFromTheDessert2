@@ -23,10 +23,10 @@ KitchenObject::KitchenObject(MeshObject* body, MeshObject* door_closed, MeshObje
     triggerCollider = nullptr;
 }
 
-void KitchenObject::render(TextureUnit tex, ConstantLocation mLocation) {
+void KitchenObject::render(Graphics4::TextureUnit tex, Graphics4::ConstantLocation mLocation) {
 	if (!visible) return;
 
-    Kore::Graphics::setMatrix(mLocation, M);
+    Kore::Graphics4::setMatrix(mLocation, M);
     if (body != nullptr) {
         body->render(tex, mLocation);
     }

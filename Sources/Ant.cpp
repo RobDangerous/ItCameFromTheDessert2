@@ -10,7 +10,7 @@
 using namespace Kore;
 
 namespace {
-	Kore::VertexBuffer** vertexBuffers;
+	Kore::Graphics4::VertexBuffer** vertexBuffers;
 	InstancedMeshObject* body;
 	InstancedMeshObject* leg;
 
@@ -72,23 +72,23 @@ void Ant::init() {
 		scent[i] = Random::get(100) / 200.0f;
 	}
 
-	VertexStructure** structures = new VertexStructure*[2];
-	structures[0] = new VertexStructure();
-	structures[0]->add("pos", Float3VertexData);
-	structures[0]->add("tex", Float2VertexData);
-	structures[0]->add("nor", Float3VertexData);
+	Graphics4::VertexStructure** structures = new Graphics4::VertexStructure*[2];
+	structures[0] = new Graphics4::VertexStructure();
+	structures[0]->add("pos", Graphics4::Float3VertexData);
+	structures[0]->add("tex", Graphics4::Float2VertexData);
+	structures[0]->add("nor", Graphics4::Float3VertexData);
 
-	structures[1] = new VertexStructure();
-	structures[1]->add("M", Float4x4VertexData);
-	structures[1]->add("N", Float4x4VertexData);
-	structures[1]->add("tint", Float4VertexData);
+	structures[1] = new Graphics4::VertexStructure();
+	structures[1]->add("M", Graphics4::Float4x4VertexData);
+	structures[1]->add("N", Graphics4::Float4x4VertexData);
+	structures[1]->add("tint", Graphics4::Float4VertexData);
 
 	body = new InstancedMeshObject("Data/Meshes/ant_body.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
 	leg = new InstancedMeshObject("Data/Meshes/ant_leg.obj", "Data/Textures/tank_bottom.png", structures, 10, 10);
 
-	vertexBuffers = new VertexBuffer*[2];
+	vertexBuffers = new Graphics4::VertexBuffer*[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
-	vertexBuffers[1] = new VertexBuffer(maxAnts, *structures[1], 1);
+	vertexBuffers[1] = new Graphics4::VertexBuffer(maxAnts, *structures[1], 1);
 
 	for (int i = 0; i < maxAnts; ++i) {
 		vec3 start(0, 1.5, 0);
@@ -420,7 +420,7 @@ bool Ant::isDying() {
     return false;
 }
 
-void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
+void Ant::render(Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
 	int c = 0;
 	{
 		float* data = vertexBuffers[1]->lock();
@@ -436,13 +436,13 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 		vertexBuffers[1]->unlock();
 	}
 
-	Graphics::setTexture(tex, body->image);
-	VertexBuffer* vertexBuffers[2];
+	Graphics4::setTexture(tex, body->image);
+	Graphics4::VertexBuffer* vertexBuffers[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
 	vertexBuffers[1] = ::vertexBuffers[1];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*body->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*body->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 
 	vec3 legsOffset = vec3(0.044f, 0.035f, 0.0f);
 
@@ -462,9 +462,9 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	}
 
 	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*leg->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 
 	{
 		float* data = vertexBuffers[1]->lock();
@@ -482,9 +482,9 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	}
 
 	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*leg->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 	
 	{
 		float* data = vertexBuffers[1]->lock();
@@ -504,9 +504,9 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	legsOffset.x() *= -1.0f;
 
 	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*leg->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 
 	{
 		float* data = vertexBuffers[1]->lock();
@@ -524,9 +524,9 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	}
 
 	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*leg->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 
 	{
 		float* data = vertexBuffers[1]->lock();
@@ -544,9 +544,9 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	}
 
 	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*leg->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 	
 	{
 		float* data = vertexBuffers[1]->lock();
@@ -564,7 +564,7 @@ void Ant::render(ConstantLocation vLocation, TextureUnit tex, mat4 view) {
 	}
 
 	vertexBuffers[0] = leg->vertexBuffers[0];
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*leg->indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(c);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*leg->indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(c);
 }

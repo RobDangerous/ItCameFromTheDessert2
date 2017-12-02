@@ -6,8 +6,8 @@
 #include <Kore/IO/FileReader.h>
 #include <Kore/Math/Core.h>
 #include <Kore/System.h>
-#include <Kore/Graphics/Image.h>
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics1/Image.h>
+#include <Kore/Graphics4/Graphics.h>
 
 #include <cassert>
 
@@ -17,12 +17,12 @@
 
 using namespace Kore;
 
-InstancedMeshObject::InstancedMeshObject(const char* meshFile, const char* textureFile, VertexStructure** structures, int maxCount, float scale) {
+InstancedMeshObject::InstancedMeshObject(const char* meshFile, const char* textureFile, Graphics4::VertexStructure** structures, int maxCount, float scale) {
 	mesh = loadObj(meshFile);
-	image = new Texture(textureFile, true);
+	image = new Graphics4::Texture(textureFile, true);
 		
-	vertexBuffers = new VertexBuffer*[2];
-	vertexBuffers[0] = new VertexBuffer(mesh->numVertices, *structures[0], 0);
+	vertexBuffers = new Graphics4::VertexBuffer*[2];
+	vertexBuffers[0] = new Graphics4::VertexBuffer(mesh->numVertices, *structures[0], 0);
 	float* vertices = vertexBuffers[0]->lock();
 	for (int i = 0; i < mesh->numVertices; ++i) {
 		vertices[i * 8 + 0] = mesh->vertices[i * 8 + 0] * scale;
@@ -36,9 +36,9 @@ InstancedMeshObject::InstancedMeshObject(const char* meshFile, const char* textu
 	}
 	vertexBuffers[0]->unlock();
 		
-	vertexBuffers[1] = new VertexBuffer(maxCount, *structures[1], 1);
+	vertexBuffers[1] = new Graphics4::VertexBuffer(maxCount, *structures[1], 1);
 
-	indexBuffer = new IndexBuffer(mesh->numFaces * 3);
+	indexBuffer = new Graphics4::IndexBuffer(mesh->numFaces * 3);
 	int* indices = indexBuffer->lock();
 	for (int i = 0; i < mesh->numFaces * 3; i++) {
 		indices[i] = mesh->indices[i];
@@ -46,9 +46,9 @@ InstancedMeshObject::InstancedMeshObject(const char* meshFile, const char* textu
 	indexBuffer->unlock();
 }
 
-void InstancedMeshObject::render(TextureUnit tex, int instances) {
-	Graphics::setTexture(tex, image);
-	Graphics::setVertexBuffers(vertexBuffers, 2);
-	Graphics::setIndexBuffer(*indexBuffer);
-	Graphics::drawIndexedVerticesInstanced(instances);
+void InstancedMeshObject::render(Graphics4::TextureUnit tex, int instances) {
+	Graphics4::setTexture(tex, image);
+	Graphics4::setVertexBuffers(vertexBuffers, 2);
+	Graphics4::setIndexBuffer(*indexBuffer);
+	Graphics4::drawIndexedVerticesInstanced(instances);
 }
