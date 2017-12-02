@@ -20,9 +20,8 @@ namespace {
 	const int width = 1024;
 	const int height = 768;
 	
-	const float CAMERA_ROTATION_SPEED = 0.01f;
-	const float CAMERA_ZOOM_SPEED = 1.f;
-	const float CAMERA_MOVE_SPEED = 2.f;
+	const float CAMERA_ROTATION_SPEED = 0.05f;
+	const float CAMERA_MOVE_SPEED = 4.f;
 
 	double startTime;
 	double lastTime;
@@ -221,16 +220,16 @@ namespace {
 			D = false;
 			break;
 		case Kore::KeyLeft:
-			L = true;
+			L = false;
 			break;
 		case Kore::KeyRight:
-			R = true;
+			R = false;
 			break;
 		case Kore::KeyUp:
-			F = true;
+			F = false;
 			break;
 		case Kore::KeyDown:
-			B = true;
+			B = false;
 			break;
 		default:
 			break;
@@ -239,20 +238,15 @@ namespace {
 
 	double lastMouseTime = 0;
 	void mouseMove(int windowId, int x, int y, int movementX, int movementY) {
-		//if (rotate) {
-			const float mouseSensitivity = 0.01f;
-			//cameraRotation.rotate(Quaternion(vec3(0, 1, 0), movementX * mouseSensitivity));		// look left and right
-			//cameraRotation.rotate(Quaternion(vec3(1, 0, 0), movementY * mouseSensitivity));		// look up and down
-			
-			double t = System::time() - startTime;
-			double deltaT = t - lastMouseTime;
-			lastMouseTime = t;
-			if (deltaT > 1.0f / 30.0f) return;
-			
-			horizontalAngle += CAMERA_ROTATION_SPEED * movementX * deltaT * 7.0f;
-			verticalAngle -= CAMERA_ROTATION_SPEED * movementY * deltaT * 7.0f;
-			verticalAngle = Kore::min(Kore::max(verticalAngle, -0.49f * pi), 0.49f * pi);
-		//}
+		double t = System::time() - startTime;
+		double deltaT = t - lastMouseTime;
+		lastMouseTime = t;
+		if (deltaT > 1.0f / 30.0f) return;
+		
+		horizontalAngle += CAMERA_ROTATION_SPEED * movementX * deltaT * 7.0f;
+		verticalAngle -= CAMERA_ROTATION_SPEED * movementY * deltaT * 7.0f;
+		verticalAngle = Kore::min(Kore::max(verticalAngle, -0.49f * pi), 0.49f * pi);
+		
 	}
 
 	void mousePress(int windowId, int button, int x, int y) {
