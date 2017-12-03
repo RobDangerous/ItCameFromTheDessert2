@@ -172,8 +172,14 @@ void Ant::init() {
 	for (int i = 0; i < maxObjects; ++i) {
 		for (int j = 0; j < objects[i]->meshesCount; ++j) {
 			Mesh* mesh = objects[i]->meshes[j];
-			boxes[collisionObjects].transform = mat4::Translation(mesh->xmin + (mesh->xmax - mesh->xmin) / 2.0f, mesh->ymin + (mesh->ymax - mesh->ymin) / 2.0f, mesh->zmin + (mesh->zmax - mesh->zmin) / 2.0f);
-			boxes[collisionObjects].halfSize = vec3((mesh->xmax - mesh->xmin) / 2.0f, (mesh->ymax - mesh->ymin) / 2.0f, (mesh->zmax - mesh->zmin) / 2.0f);
+			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
+				boxes[collisionObjects].transform = mat4::Translation(-1000, -1000, -1000).Transpose();
+				boxes[collisionObjects].halfSize = vec3(0, 0, 0);
+			}
+			else {
+				boxes[collisionObjects].transform = mat4::Translation(mesh->xmin + (mesh->xmax - mesh->xmin) / 2.0f, mesh->ymin + (mesh->ymax - mesh->ymin) / 2.0f, mesh->zmin + (mesh->zmax - mesh->zmin) / 2.0f).Transpose();
+				boxes[collisionObjects].halfSize = vec3((mesh->xmax - mesh->xmin) / 2.0f, (mesh->ymax - mesh->ymin) / 2.0f, (mesh->zmax - mesh->zmin) / 2.0f);
+			}
 			++collisionObjects;
 		}
 	}
@@ -184,7 +190,7 @@ void Ant::init() {
 	//boxes[1].transform = mat4::Translation(4, 0, 0).Transpose();
 	//boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
 
-	collisionObjects = 7;
+	collisionObjects = 47;
 }
 
 void Ant::chooseScent(bool force) {
