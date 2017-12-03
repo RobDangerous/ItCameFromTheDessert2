@@ -57,7 +57,7 @@ void applyLight(vec4 lightPosition, out vec3 ambientOut, out vec3 diffuseOut, ou
 	
 	// Specular
 	vec3 halfVector = normalize(lightDirection - normalize(eyeCoord));
-	vec3 specular = pow(max(0.0, dot(halfVector, reflect(-lightDirection, normal))), specularPow) * vec3(specularCol);
+	vec3 specular = vec3(0.0, 0.0, 0.0);//spow(max(0.0, dot(halfVector, reflect(-lightDirection, normal))), specularPow) * vec3(specularCol);
 	
 	ambientOut = ambient;
 	diffuseOut = attenuation * diffuse;
