@@ -16,6 +16,7 @@ namespace {
 	Kore::Graphics4::VertexBuffer** vertexBuffers;
 	MeshObject* body;
 	MeshObject* leg;
+	MeshObject* feeler;
 
 #ifdef NDEBUG
 	const int maxAnts = 500;
@@ -94,6 +95,7 @@ void Ant::init() {
 
 	body = new MeshObject("ant/AntBody.ogex", "ant/", *structures[0], 10);
 	leg = new MeshObject("ant/AntLeg.ogex", "ant/", *structures[0], 10);
+	feeler = new MeshObject("ant/AntFeeler.ogex", "ant/", *structures[0], 10);
 
 	vertexBuffers = new Graphics4::VertexBuffer*[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
@@ -483,13 +485,18 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(4.0f, 2.4f, 4.1f) * legrotation1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 
-		mat4 leg2 = Quaternion(vec3(0, 0, 1), pi).matrix();
+		mat4 leg2 = mat4::Scale(-1.0f, 1.0f, 1.0f);
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.2f, -2.2f, 4.6f) * legrotation2 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.0f, 0.0f, 4.3f) * legrotation1 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.0f, 2.4f, 4.1f) * legrotation2 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+
+		feeler->M = bodytrans * bodyrotation * bodyscale *mat4::Translation(1.0f, -8.0f, 7.0f);
+		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		feeler->M = bodytrans * bodyrotation * bodyscale *mat4::Translation(-1.0f, -8.0f, 7.0f) * mat4::Scale(-1.0f, 1.0f, 1.0f);
+		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
 	/*int c = 0;
