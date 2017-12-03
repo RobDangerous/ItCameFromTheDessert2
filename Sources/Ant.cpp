@@ -13,9 +13,63 @@
 using namespace Kore;
 
 namespace {
+	vec3 getAxisVector(const mat4& transform, int i) {
+		return vec3(transform.data[i], transform.data[i + 4], transform.data[i + 8]);
+	}
+
+	struct Box {
+		vec3 getAxis(unsigned index) const { return getAxisVector(transform, index); }
+		mat4 transform;
+		vec3 halfSize;
+	};
+
+	vec3 transformInverse(const mat4& transform, const vec3& vector) {
+		vec3 tmp = vector;
+		tmp.x() -= transform.data[3];
+		tmp.y() -= transform.data[7];
+		tmp.z() -= transform.data[11];
+		return vec3(
+			tmp.x() * transform.data[0] + tmp.y() * transform.data[4] + tmp.z() * transform.data[8],
+			tmp.x() * transform.data[1] + tmp.y() * transform.data[5] + tmp.z() * transform.data[9],
+			tmp.x() * transform.data[2] + tmp.y() * transform.data[6] + tmp.z() * transform.data[10]
+		);
+	}
+
+	bool boxAndPoint(const Box& box, const vec3& point, vec3& contactNormal, vec3& contactPoint, float& contatctDepth) {
+		vec3 relPt = transformInverse(box.transform, point);
+		vec3 normal;
+
+		float min_depth = box.halfSize.x() - Kore::abs(relPt.x());
+		if (min_depth < 0) return false;
+		normal = box.getAxis(0) * ((relPt.x() < 0) ? -1.0f : 1.0f);
+
+		float depth = box.halfSize.y() - Kore::abs(relPt.y());
+		if (depth < 0) return false;
+		else if (depth < min_depth) {
+			min_depth = depth;
+			normal = box.getAxis(1) * ((relPt.y() < 0) ? -1.0f : 1.0f);
+		}
+
+		depth = box.halfSize.z() - Kore::abs(relPt.z());
+		if (depth < 0) return false;
+		else if (depth < min_depth) {
+			min_depth = depth;
+			normal = box.getAxis(2) * ((relPt.z() < 0) ? -1.0f : 1.0f);
+		}
+
+		contactNormal = normal;
+		contactPoint = point;
+		contatctDepth = min_depth;
+
+		return true;
+	}
+
+	Box boxes[1];
+
 	Kore::Graphics4::VertexBuffer** vertexBuffers;
 	MeshObject* body;
 	MeshObject* leg;
+	MeshObject* feeler;
 
 #ifdef NDEBUG
 	const int maxAnts = 500;
@@ -94,6 +148,7 @@ void Ant::init() {
 
 	body = new MeshObject("ant/AntBody.ogex", "ant/", *structures[0], 10);
 	leg = new MeshObject("ant/AntLeg.ogex", "ant/", *structures[0], 10);
+	feeler = new MeshObject("ant/AntFeeler.ogex", "ant/", *structures[0], 10);
 
 	vertexBuffers = new Graphics4::VertexBuffer*[2];
 	vertexBuffers[0] = body->vertexBuffers[0];
@@ -108,10 +163,15 @@ void Ant::init() {
         ants[i].dead = false;
 		float value = Random::get(-100.0f, 100.0f) / 10.0f;
 		ants[i].forward = vec4(Kore::sin(value), 0.0f, Kore::cos(value), 1.0f);
+		ants[i].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
 	}
+
+	boxes[0].transform = mat4::Translation(4, 0, 0).Transpose();
+	boxes[0].halfSize = vec3(1.5f, 1.5f, 1.5f);
 }
 
 void Ant::chooseScent(bool force) {
+	return;
 	vec3i grid = gridPosition(position);
 	if (force || grid != lastGrid) {
 		if (!force) {
@@ -280,86 +340,19 @@ extern MeshObject* objects[];
 extern MeshObject* roomObjects[7];
 
 void Ant::move(float deltaTime) {
-    
-    /*if (dead) return;
-    //position = vec3(4.0f, 1.5f, 0.0f);// all ants in the microwave
-    if (isDying()) {
-        energy += deltaTime;
-        //log(Info, "Ant dying %f", energy);
-        if (energy > 0.5f) {
-            antsDead ++;
-            log(Info, "%i Ant dead at pos %f %f %f", antsDead, position.x(), position.y(), position.z());
-            dead = true;
-			rotation = Quaternion(vec4(1, 0, 0, 0), pi).matrix();
-            return;
-        }
-    }
-	if (mode == FrontWall) {
-		if (intersects(vec4(0, -1, 0, 0))) {
-			forward = vec4(0, 0, -1, 0);
-			up = vec4(0, 1, 0, 0);
-			right = vec4(-1, 0, 0, 0);
-			rotation = Quaternion(vec4(0, 1, 0, 0), -pi / 2).matrix();
-
-			mode = Floor;
-			chooseScent(true);
-		}
-		else if (!intersects(vec4(0, 0, -1, 0))) {
-			forward = vec4(0, 0, 1, 0);
-			up = vec4(0, 1, 0, 0);
-			right = vec4(1, 0, 0, 0);
-			rotation = mat4::Identity();
-			
-			mode = Floor;
-			chooseScent(true);
-		}
-	}
-	else if (mode == BackWall) {
-		if (intersects(vec4(0, -1, 0, 0))) {
-			forward = vec4(0, 0, 1, 0);
-			up = vec4(0, 1, 0, 0);
-			right = vec4(1, 0, 0, 0);
-			rotation = mat4::Identity();
-
-			mode = Floor;
-			chooseScent(true);
-		}
-	}
-	else {
-		if (intersects(vec4(0, 0, 1, 0))) {
-			forward = vec4(0, 1, 0, 0);
-			up = vec4(0, 0, -1, 0);
-			right = vec4(1, 0, 0, 0);
-			rotation = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
-
-			mode = FrontWall;
-			chooseScent(true);
-		}
-		else if (!intersects(vec4(0, -1, 0, 0))) {
-			forward = vec4(0, -1, 0, 0);
-			up = vec4(0, 0, 1, 0);
-			right = vec4(-1, 0, 0, 0);
-			rotation = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
-
-			mode = BackWall;
-			chooseScent(true);
-		}
-	}
-	
-	if (legRotationUp) {
-		legRotation += 0.15f;
-		if (legRotation > pi / 4.0f) {
-			legRotationUp = false;
-		}
-	}
-	else {
-		legRotation -= 0.15f;
-		if (legRotation < -pi / 4.0f) {
-			legRotationUp = true;
+	for (int i = 0; i < 1; ++i) {
+		vec3 normal;
+		vec3 contact;
+		float depth;
+		if (boxAndPoint(boxes[i], position + (vec3(forward.x(), forward.y(), forward.z()) * 0.004f), normal, contact, depth)) {
+			mat4 newrotation = Quaternion(up.xyz().cross(normal), pi / -2.0f).matrix();
+			forward = newrotation * forward;
+			up = newrotation * up;
+			right = newrotation * right;
+			rotation = newrotation * rotation;
 		}
 	}
 
-	chooseScent(false);*/
 	legRotation += 0.2f;
 	position += forward * 0.004f;
 }
@@ -467,7 +460,7 @@ namespace {
 void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
 	for (int i = 0; i < maxAnts; ++i) {
 		mat4 bodytrans = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z());
-		mat4 bodyrotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
+		mat4 bodyrotation = ants[i].rotation;
 		float scale = 0.005f;
 		mat4 bodyscale = mat4::Scale(scale, scale, scale);
 		body->M = bodytrans * bodyrotation * bodyscale;
@@ -483,13 +476,18 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(4.0f, 2.4f, 4.1f) * legrotation1;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 
-		mat4 leg2 = Quaternion(vec3(0, 0, 1), pi).matrix();
+		mat4 leg2 = mat4::Scale(-1.0f, 1.0f, 1.0f);
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.2f, -2.2f, 4.6f) * legrotation2 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.0f, 0.0f, 4.3f) * legrotation1 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 		leg->M = bodytrans * bodyrotation * bodyscale * mat4::Translation(-4.0f, 2.4f, 4.1f) * legrotation2 * leg2;
 		renderMesh(leg, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+
+		feeler->M = bodytrans * bodyrotation * bodyscale *mat4::Translation(1.0f, -8.0f, 7.0f);
+		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		feeler->M = bodytrans * bodyrotation * bodyscale *mat4::Translation(-1.0f, -8.0f, 7.0f) * mat4::Scale(-1.0f, 1.0f, 1.0f);
+		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
 	/*int c = 0;
