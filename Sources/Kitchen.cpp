@@ -4,7 +4,7 @@
 using namespace Kore;
 
 namespace {
-	const int maxObjects = 1;
+	const int maxObjects = 5;
 	MeshObject* objects[maxObjects];
 	
 	void renderMesh(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -48,14 +48,25 @@ void Kitchen::init() {
 	structures->add("tex", Graphics4::Float2VertexData);
 	structures->add("nor", Graphics4::Float3VertexData);
 	
-	objects[0] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
-	//objects[0] = new MeshObject("kitchen/kitchen.ogex", "kitchen/", *structures, 1);
+	// Walls
+	objects[0] = new MeshObject("kitchen/floor.ogex", "kitchen/", *structures, 1);
+	
+	objects[1] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
+	objects[2] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[3] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
+	
+	MeshObject* obj = new MeshObject("kitchen/broken_egg.ogex", "kitchen/", *structures, 5);
+	obj->M = mat4::Translation(3.0, 0.0, 1.2);
+	objects[4] = obj;
 }
 
-void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
+void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
 	for (int i = 0; i < maxObjects; ++i) {
 		MeshObject* object = objects[i];
-		//object->M = mat4::Translation(0, 0, 0);
+		
+		Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);
+		Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::TextureAddressing::Repeat);
+		
 		renderMesh(object, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 }
