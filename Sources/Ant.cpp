@@ -65,7 +65,7 @@ namespace {
 		return true;
 	}
 
-	Box boxes[32];
+	Box boxes[256];
 
 	Kore::Graphics4::VertexBuffer** vertexBuffers;
 	MeshObject* body;
@@ -178,10 +178,13 @@ void Ant::init() {
 		}
 	}
 
-	//boxes[0].transform = mat4::Translation(0, -1, 0).Transpose();
-	//boxes[0].halfSize = vec3(100, 1, 100);
+	boxes[collisionObjects].transform = mat4::Translation(0, -1, 0).Transpose();
+	boxes[collisionObjects].halfSize = vec3(100, 1, 100);
+	++collisionObjects;
 	//boxes[1].transform = mat4::Translation(4, 0, 0).Transpose();
 	//boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
+
+	collisionObjects = 7;
 }
 
 void Ant::chooseScent(bool force) {
