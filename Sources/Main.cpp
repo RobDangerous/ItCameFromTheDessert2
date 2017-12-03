@@ -10,9 +10,8 @@
 #include <Kore/Log.h>
 
 #include "MeshObject.h"
-#include "LivingRoom.h"
 #include "Ant.h"
-//#include "Kitchen.h"
+#include "Kitchen.h"
 
 using namespace Kore;
 using namespace Kore::Graphics4;
@@ -68,18 +67,8 @@ namespace {
 	float horizontalAngle = -1.24f * pi;
 	float verticalAngle = -0.5f;
 
-	LivingRoom* livingRoom;
 	Ant* ant;
-//	Kitchen* kitchen;
-
-	void renderLivingRoom(mat4 V, mat4 P) {
-		Graphics4::setPipeline(pipeline_living_room);
-
-		livingRoom->setLights(lightCount_living_room, lightPosLocation_living_room);
-		Graphics4::setMatrix(vLocation_living_room, V);
-		Graphics4::setMatrix(pLocation_living_room, P);
-		livingRoom->render(tex_living_room, mLocation_living_room, mLocation_living_room_inverse, diffuse_living_room, specular_living_room, specular_power_living_room);
-	}
+	Kitchen* kitchen;
 
 	void renderAnt(mat4 V, mat4 P) {
 		Graphics4::setPipeline(pipeline_living_room);
@@ -90,12 +79,14 @@ namespace {
 		Ant::render(tex_living_room, mLocation_living_room, mLocation_living_room_inverse, diffuse_living_room, specular_living_room, specular_power_living_room);
 	}
 	
-	/*void renderKitchen(mat4 V, mat4 P) {
-		Kitchen::setLights(lightCount_living_room, lightPosLocation_living_room);
+	void renderKitchen(mat4 V, mat4 P) {
+		Graphics4::setPipeline(pipeline_living_room);
+		
+		kitchen->setLights(lightCount_living_room, lightPosLocation_living_room);
 		Graphics4::setMatrix(vLocation_living_room, V);
 		Graphics4::setMatrix(pLocation_living_room, P);
-		Kitchen::render(tex_living_room, mLocation_living_room, mLocation_living_room_inverse, diffuse_living_room, specular_living_room, specular_power_living_room);
-	}*/
+		kitchen->render(tex_living_room, mLocation_living_room, mLocation_living_room_inverse, diffuse_living_room, specular_living_room, specular_power_living_room);
+	}
 
 	Kore::mat4 getProjectionMatrix() {
 		mat4 P = mat4::Perspective(45, (float)width / (float)height, 0.01f, 1000);
@@ -155,8 +146,8 @@ namespace {
 		Graphics4::setMatrix(vLocation, V);
 		Graphics4::setMatrix(pLocation, P);
 
-		// Render living room
-		renderLivingRoom(V, P);
+		// Render kitchen
+		renderKitchen(V, P);
 
 		Ant::moveEverybody(1.0f / 60.0f);
 		renderAnt(V, P);
@@ -344,19 +335,11 @@ namespace {
 		verticalAngle = 0;
 		horizontalAngle = Kore::pi/1.1;
 		
-		livingRoom = new LivingRoom("kitchen/kitchen.ogex", "kitchen/", structure_living_room, 1);
-		/*livingRoom = new LivingRoom("sherlock_living_room/sherlock_living_room.ogex", "sherlock_living_room/", structure_living_room, 1);
-		Quaternion livingRoomRot = Quaternion(0, 0, 0, 1);
-		livingRoomRot.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 2.0));
-		livingRoomRot.rotate(Quaternion(vec3(0, 0, 1), Kore::pi / 2.0));
-		livingRoom->M = mat4::Translation(-0.7, 0, 0) * livingRoomRot.matrix().Transpose();*/
-		
 		Ant::init();
 		ant = new Ant;
 		
-		//kitchen = new Kitchen;
-		//Kitchen::init();
-		
+		kitchen = new Kitchen;
+		Kitchen::init();
 	}
 
 }

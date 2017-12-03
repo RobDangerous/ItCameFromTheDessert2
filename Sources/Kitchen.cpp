@@ -4,7 +4,7 @@
 using namespace Kore;
 
 namespace {
-	const int maxObjects = 1;
+	const int maxObjects = 3;
 	MeshObject* objects[maxObjects];
 	
 	void renderMesh(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -49,13 +49,13 @@ void Kitchen::init() {
 	structures->add("nor", Graphics4::Float3VertexData);
 	
 	objects[0] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
-	//objects[0] = new MeshObject("kitchen/kitchen.ogex", "kitchen/", *structures, 1);
+	objects[1] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[2] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
 }
 
-void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
+void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
 	for (int i = 0; i < maxObjects; ++i) {
 		MeshObject* object = objects[i];
-		//object->M = mat4::Translation(0, 0, 0);
 		renderMesh(object, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 }
