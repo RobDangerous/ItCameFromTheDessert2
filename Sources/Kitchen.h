@@ -15,3 +15,6 @@ public:
 private:
 
 };
+
+const int maxObjects = 7;
+extern MeshObject* objects[maxObjects];

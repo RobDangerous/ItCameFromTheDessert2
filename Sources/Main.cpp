@@ -334,12 +334,12 @@ namespace {
 		cameraPos = vec3(-1.5, 2.5, 5.5);
 		verticalAngle = 0;
 		horizontalAngle = Kore::pi/1.1;
-		
-		Ant::init();
-		ant = new Ant;
-		
+
 		kitchen = new Kitchen;
 		Kitchen::init();
+
+		Ant::init();
+		ant = new Ant;		
 	}
 
 }

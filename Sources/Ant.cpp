@@ -4,6 +4,7 @@
 //#include "Engine/TriggerCollider.h"
 //#include "KitchenObject.h"
 #include "Rendering.h"
+#include "Kitchen.h"
 
 #include <assert.h>
 
@@ -64,7 +65,7 @@ namespace {
 		return true;
 	}
 
-	Box boxes[1];
+	Box boxes[256];
 
 	Kore::Graphics4::VertexBuffer** vertexBuffers;
 	MeshObject* body;
@@ -118,6 +119,7 @@ namespace {
 	}
 
 	int count = 0;
+	int collisionObjects = 0;
 }
 
 Ant::Ant() : mode(Floor) {
@@ -166,8 +168,29 @@ void Ant::init() {
 		ants[i].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
 	}
 
-	boxes[0].transform = mat4::Translation(4, 0, 0).Transpose();
-	boxes[0].halfSize = vec3(1.5f, 1.5f, 1.5f);
+	collisionObjects = 0;
+	for (int i = 0; i < maxObjects; ++i) {
+		for (int j = 0; j < objects[i]->meshesCount; ++j) {
+			Mesh* mesh = objects[i]->meshes[j];
+			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
+				boxes[collisionObjects].transform = mat4::Translation(-1000, -1000, -1000).Transpose();
+				boxes[collisionObjects].halfSize = vec3(0, 0, 0);
+			}
+			else {
+				boxes[collisionObjects].transform = mat4::Translation(mesh->xmin + (mesh->xmax - mesh->xmin) / 2.0f, mesh->ymin + (mesh->ymax - mesh->ymin) / 2.0f, mesh->zmin + (mesh->zmax - mesh->zmin) / 2.0f).Transpose();
+				boxes[collisionObjects].halfSize = vec3((mesh->xmax - mesh->xmin) / 2.0f, (mesh->ymax - mesh->ymin) / 2.0f, (mesh->zmax - mesh->zmin) / 2.0f);
+			}
+			++collisionObjects;
+		}
+	}
+
+	boxes[collisionObjects].transform = mat4::Translation(0, -1, 0).Transpose();
+	boxes[collisionObjects].halfSize = vec3(100, 1, 100);
+	++collisionObjects;
+	//boxes[1].transform = mat4::Translation(4, 0, 0).Transpose();
+	//boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
+
+	collisionObjects = 47;
 }
 
 void Ant::chooseScent(bool force) {
@@ -340,20 +363,33 @@ extern MeshObject* objects[];
 extern MeshObject* roomObjects[7];
 
 void Ant::move(float deltaTime) {
-	for (int i = 0; i < 1; ++i) {
+	legRotation += 0.2f;
+	bool flying = true;
+	for (int i = 0; i < collisionObjects; ++i) {
 		vec3 normal;
 		vec3 contact;
 		float depth;
-		if (boxAndPoint(boxes[i], position + (vec3(forward.x(), forward.y(), forward.z()) * 0.004f), normal, contact, depth)) {
+		if (boxAndPoint(boxes[i], position + (up.xyz() * 0.1f) + (forward.xyz() * 0.004f), normal, contact, depth)) {
 			mat4 newrotation = Quaternion(up.xyz().cross(normal), pi / -2.0f).matrix();
 			forward = newrotation * forward;
 			up = newrotation * up;
 			right = newrotation * right;
 			rotation = newrotation * rotation;
+			return;
+		}
+		if (boxAndPoint(boxes[i], position + (up.xyz() * -0.1f), normal, contact, depth)) {
+			flying = false;
+			lastNormal = normal;
 		}
 	}
-
-	legRotation += 0.2f;
+	if (flying) {
+		//forward = vec4(0, 0, 0, 0);
+		mat4 newrotation = Quaternion(up.xyz().cross(lastNormal), pi / -2.0f).matrix();
+		forward = newrotation * forward;
+		up = newrotation * up;
+		right = newrotation * right;
+		rotation = newrotation * rotation;
+	}
 	position += forward * 0.004f;
 }
 

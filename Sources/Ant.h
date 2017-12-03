@@ -28,6 +28,7 @@ public:
 	Kore::vec4 forward, up, right;
 	Kore::vec3 dir;
 	Kore::mat4 rotation;
+	Kore::vec3 lastNormal;
     
     float energy;
     bool dead;

@@ -178,6 +178,19 @@ MeshObject::MeshObject(const char* meshFile, const char* textureFile, const Vert
 		setIndexFromMesh(indices, mesh);
 		indexBuffers[j]->unlock();
 		
+		mesh->xmin = 999999; mesh->ymin = 999999; mesh->zmin = 999999;
+		mesh->xmax = -999999; mesh->ymax = -999999; mesh->zmax = -999999;
+		for (int i = 0; i < mesh->numVertices; ++i) {
+			float x = mesh->vertices[i * 3 + 0] * scale;
+			float y = mesh->vertices[i * 3 + 1] * scale;
+			float z = mesh->vertices[i * 3 + 2] * scale;
+			if (x < mesh->xmin) mesh->xmin = x;
+			if (x > mesh->xmax) mesh->xmax = x;
+			if (y < mesh->ymin) mesh->ymin = y;
+			if (y > mesh->ymax) mesh->ymax = y;
+			if (z < mesh->zmin) mesh->zmin = z;
+			if (z > mesh->zmax) mesh->zmax = z;
+		}
 	}
 	
 }

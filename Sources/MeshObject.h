@@ -27,6 +27,8 @@ struct Mesh {
 	int weightCount;
 	
 	unsigned int meshIndex;
+
+	float xmin, xmax, ymin, ymax, zmin, zmax;
 };
 
 struct CompareMesh {

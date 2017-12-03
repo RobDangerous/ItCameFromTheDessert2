@@ -3,10 +3,9 @@
 
 using namespace Kore;
 
-namespace {
-	const int maxObjects = 7;
-	MeshObject* objects[maxObjects];
-	
+MeshObject* objects[maxObjects];
+
+namespace {	
 	void renderMesh(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
 		for (int i = 0; i < mesh->meshesCount; ++i) {
 			Geometry* geometry = mesh->geometries[i];
