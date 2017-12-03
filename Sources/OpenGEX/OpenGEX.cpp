@@ -454,7 +454,9 @@ DataResult TransformStructure::ProcessData(DataDescription *dataDescription)
 
 TranslationStructure::TranslationStructure() :
 		MatrixStructure(kStructureTranslation),
-		translationKind("xyz")
+		translationKind("xyz"),
+		xPos(0), yPos(0), zPos(0),
+		xRot(0), yRot(0), zRot(0)
 {
 }
 
@@ -525,6 +527,10 @@ DataResult TranslationStructure::ProcessData(DataDescription *dataDescription)
 
 	// Data is 1 or 3 floats depending on kind.
 	// Build application-specific transform here.
+	
+	if (translationKind == "x") xPos = *data;
+	if (translationKind == "y") yPos = *data;
+	if (translationKind == "z") zPos = *data;
 
 	return (kDataOkay);
 }

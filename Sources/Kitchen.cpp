@@ -52,10 +52,12 @@ void Kitchen::init() {
 	objects[0] = new MeshObject("kitchen/floor.ogex", "kitchen/", *structures, 1);
 	objects[1] = new MeshObject("kitchen/walls.ogex", "kitchen/", *structures, 1);
 	
-	objects[2] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
-	objects[3] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
-	objects[4] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
-	objects[5] = new MeshObject("kitchen/table_chairs.ogex", "kitchen/", *structures, 1);
+	objects[2] = new MeshObject("kitchen/floor.ogex", "kitchen/", *structures, 1);
+	objects[3] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);		//without door
+	
+	objects[4] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[5] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[6] = new MeshObject("kitchen/table_chairs.ogex", "kitchen/", *structures, 1);
 	
 	MeshObject* obj = new MeshObject("kitchen/broken_egg.ogex", "kitchen/", *structures, 5);
 	obj->M = mat4::Translation(3.0, 0.0, 1.2);

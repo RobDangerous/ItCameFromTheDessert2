@@ -410,6 +410,7 @@ Mesh* MeshObject::ConvertMesh(const OGEX::MeshStructure& structure, const char* 
 
 Geometry* MeshObject::ConvertGeometryNode(const OGEX::GeometryNodeStructure& structure) {
 	Geometry* geometry = new Geometry();
+	geometry->transform = mat4::Identity();
 	
 	geometry->name = structure.GetNodeName();
 	//log(Info, "Geometry name %s", name);
@@ -441,6 +442,24 @@ Geometry* MeshObject::ConvertGeometryNode(const OGEX::GeometryNodeStructure& str
 				geometry->objectRef = subSubStructure->GetStructureName();
 				geometry->geometryIndex = getIndexFromString(geometry->objectRef, 8);
 
+				break;
+			}
+				
+			case OGEX::kStructureTranslation: {
+				const OGEX::TranslationStructure& translationStructure = *static_cast<const OGEX::TranslationStructure *>(subStructure);
+				const char* structureName = translationStructure.GetStructureName();
+				log(Info, "structure name %s", structureName);
+				
+				float posX = translationStructure.GetXPos();
+				float posY = translationStructure.GetYPos();
+				float posZ = translationStructure.GetZPos();
+				
+				if (posX != 0) geometry->transform.Set(0, 3, posX);
+				if (posY != 0) geometry->transform.Set(1, 3, posY);
+				if (posZ != 0) geometry->transform.Set(2, 3, posZ);
+				log(Info, "%f %f %f", posX, posY, posZ);
+				
+				
 				break;
 			}
 				

@@ -319,6 +319,8 @@ namespace OGEX
 		private:
 
 			String		translationKind;
+			float		xPos, yPos, zPos;
+			float		xRot, yRot, zRot;
 
 		public:
 
@@ -328,6 +330,18 @@ namespace OGEX
 			const String& GetTranslationKind(void) const
 			{
 				return (translationKind);
+			}
+		
+			const float GetXPos(void) const {
+				return xPos;
+			}
+		
+			const float GetYPos(void) const {
+				return yPos;
+			}
+		
+			const float GetZPos(void) const {
+				return zPos;
 			}
 
 			bool ValidateProperty(const DataDescription *dataDescription, const String& identifier, DataType *type, void **value);
