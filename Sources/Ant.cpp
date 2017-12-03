@@ -64,7 +64,7 @@ namespace {
 		return true;
 	}
 
-	Box boxes[1];
+	Box boxes[32];
 
 	Kore::Graphics4::VertexBuffer** vertexBuffers;
 	MeshObject* body;
@@ -166,8 +166,10 @@ void Ant::init() {
 		ants[i].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
 	}
 
-	boxes[0].transform = mat4::Translation(4, 0, 0).Transpose();
-	boxes[0].halfSize = vec3(1.5f, 1.5f, 1.5f);
+	boxes[0].transform = mat4::Translation(0, -1, 0).Transpose();
+	boxes[0].halfSize = vec3(100, 1, 100);
+	boxes[1].transform = mat4::Translation(4, 0, 0).Transpose();
+	boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
 }
 
 void Ant::chooseScent(bool force) {
@@ -340,20 +342,33 @@ extern MeshObject* objects[];
 extern MeshObject* roomObjects[7];
 
 void Ant::move(float deltaTime) {
-	for (int i = 0; i < 1; ++i) {
+	legRotation += 0.2f;
+	bool flying = true;
+	for (int i = 0; i < 2; ++i) {
 		vec3 normal;
 		vec3 contact;
 		float depth;
-		if (boxAndPoint(boxes[i], position + (vec3(forward.x(), forward.y(), forward.z()) * 0.004f), normal, contact, depth)) {
+		if (boxAndPoint(boxes[i], position + (up.xyz() * 0.1f) + (forward.xyz() * 0.004f), normal, contact, depth)) {
 			mat4 newrotation = Quaternion(up.xyz().cross(normal), pi / -2.0f).matrix();
 			forward = newrotation * forward;
 			up = newrotation * up;
 			right = newrotation * right;
 			rotation = newrotation * rotation;
+			return;
+		}
+		if (boxAndPoint(boxes[i], position + (up.xyz() * -0.1f), normal, contact, depth)) {
+			flying = false;
+			lastNormal = normal;
 		}
 	}
-
-	legRotation += 0.2f;
+	if (flying) {
+		//forward = vec4(0, 0, 0, 0);
+		mat4 newrotation = Quaternion(up.xyz().cross(lastNormal), pi / -2.0f).matrix();
+		forward = newrotation * forward;
+		up = newrotation * up;
+		right = newrotation * right;
+		rotation = newrotation * rotation;
+	}
 	position += forward * 0.004f;
 }
 
