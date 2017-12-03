@@ -340,55 +340,16 @@ extern MeshObject* objects[];
 extern MeshObject* roomObjects[7];
 
 void Ant::move(float deltaTime) {
-	/*if (mode == Floor) {
-		if (position.x() > 3.23f) {
-			mat4 newrotation = Quaternion(vec4(0, 0, 1, 0), pi / -2.0f).matrix();
-			forward = newrotation * forward;
-			up = newrotation * up;
-			right = newrotation * right;
-			rotation = newrotation * rotation;
-
-			mode = FrontWall;
-			chooseScent(true);
-		}
-		else if (position.x() < -2.7f) {
-			mat4 newrotation = Quaternion(vec4(0, 0, 1, 0), pi / 2.0f).matrix();
-			forward = newrotation * forward;
-			up = newrotation * up;
-			right = newrotation * right;
-			rotation = newrotation * rotation;
-
-			mode = FrontWall;
-			chooseScent(true);
-		}
-		else if (position.z() > 2.5f) {
-			mat4 newrotation = Quaternion(vec4(1, 0, 0, 0), pi / 2.0f).matrix();
-			forward = newrotation * forward;
-			up = newrotation * up;
-			right = newrotation * right;
-			rotation = newrotation * rotation;
-
-			mode = FrontWall;
-			chooseScent(true);
-		}
-		else if (position.z() < -2.5f) {
-			mat4 newrotation = Quaternion(vec4(1, 0, 0, 0), pi / -2.0f).matrix();
-			forward = newrotation * forward;
-			up = newrotation * up;
-			right = newrotation * right;
-			rotation = newrotation * rotation;
-
-			mode = FrontWall;
-			chooseScent(true);
-		}
-	}*/
-
 	for (int i = 0; i < 1; ++i) {
 		vec3 normal;
 		vec3 contact;
 		float depth;
 		if (boxAndPoint(boxes[i], position + (vec3(forward.x(), forward.y(), forward.z()) * 0.004f), normal, contact, depth)) {
-			forward = vec4(0, 0, 0, 1);
+			mat4 newrotation = Quaternion(up.xyz().cross(normal), pi / -2.0f).matrix();
+			forward = newrotation * forward;
+			up = newrotation * up;
+			right = newrotation * right;
+			rotation = newrotation * rotation;
 		}
 	}
 
