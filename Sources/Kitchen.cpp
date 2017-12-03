@@ -4,7 +4,7 @@
 using namespace Kore;
 
 namespace {
-	const int maxObjects = 3;
+	const int maxObjects = 4;
 	MeshObject* objects[maxObjects];
 	
 	void renderMesh(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -51,6 +51,10 @@ void Kitchen::init() {
 	objects[0] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
 	objects[1] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
 	objects[2] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
+	
+	MeshObject* obj = new MeshObject("kitchen/broken_egg.ogex", "kitchen/", *structures, 5);
+	obj->M = mat4::Translation(3.0, 0.0, 0.2);
+	objects[3] = obj;
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {

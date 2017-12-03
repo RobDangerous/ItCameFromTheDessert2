@@ -154,7 +154,7 @@ MeshObject::MeshObject(const char* meshFile, const char* textureFile, const Vert
 			Texture* image = new Texture(temp, true);
 			images[j] = image;
 		} else {
-			log(Info, "Load Texture white");
+			//log(Info, "Load Texture white");
 			Texture* whiteTex = new Graphics4::Texture("white.png", true);
 			images[j] = whiteTex;
 		}
