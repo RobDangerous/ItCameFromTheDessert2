@@ -110,10 +110,12 @@ void Ant::init() {
         ants[i].dead = false;
 		float value = Random::get(-100.0f, 100.0f) / 10.0f;
 		ants[i].forward = vec4(Kore::sin(value), 0.0f, Kore::cos(value), 1.0f);
+		ants[i].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
 	}
 }
 
 void Ant::chooseScent(bool force) {
+	return;
 	vec3i grid = gridPosition(position);
 	if (force || grid != lastGrid) {
 		if (!force) {
@@ -282,86 +284,49 @@ extern MeshObject* objects[];
 extern MeshObject* roomObjects[7];
 
 void Ant::move(float deltaTime) {
-    
-    /*if (dead) return;
-    //position = vec3(4.0f, 1.5f, 0.0f);// all ants in the microwave
-    if (isDying()) {
-        energy += deltaTime;
-        //log(Info, "Ant dying %f", energy);
-        if (energy > 0.5f) {
-            antsDead ++;
-            log(Info, "%i Ant dead at pos %f %f %f", antsDead, position.x(), position.y(), position.z());
-            dead = true;
-			rotation = Quaternion(vec4(1, 0, 0, 0), pi).matrix();
-            return;
-        }
-    }
-	if (mode == FrontWall) {
-		if (intersects(vec4(0, -1, 0, 0))) {
-			forward = vec4(0, 0, -1, 0);
-			up = vec4(0, 1, 0, 0);
-			right = vec4(-1, 0, 0, 0);
-			rotation = Quaternion(vec4(0, 1, 0, 0), -pi / 2).matrix();
-
-			mode = Floor;
-			chooseScent(true);
-		}
-		else if (!intersects(vec4(0, 0, -1, 0))) {
-			forward = vec4(0, 0, 1, 0);
-			up = vec4(0, 1, 0, 0);
-			right = vec4(1, 0, 0, 0);
-			rotation = mat4::Identity();
-			
-			mode = Floor;
-			chooseScent(true);
-		}
-	}
-	else if (mode == BackWall) {
-		if (intersects(vec4(0, -1, 0, 0))) {
-			forward = vec4(0, 0, 1, 0);
-			up = vec4(0, 1, 0, 0);
-			right = vec4(1, 0, 0, 0);
-			rotation = mat4::Identity();
-
-			mode = Floor;
-			chooseScent(true);
-		}
-	}
-	else {
-		if (intersects(vec4(0, 0, 1, 0))) {
-			forward = vec4(0, 1, 0, 0);
-			up = vec4(0, 0, -1, 0);
-			right = vec4(1, 0, 0, 0);
-			rotation = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
+	if (mode == Floor) {
+		if (position.x() > 3.23f) {
+			mat4 newrotation = Quaternion(vec4(0, 0, 1, 0), pi / -2.0f).matrix();
+			forward = newrotation * forward;
+			up = newrotation * up;
+			right = newrotation * right;
+			rotation = newrotation * rotation;
 
 			mode = FrontWall;
 			chooseScent(true);
 		}
-		else if (!intersects(vec4(0, -1, 0, 0))) {
-			forward = vec4(0, -1, 0, 0);
-			up = vec4(0, 0, 1, 0);
-			right = vec4(-1, 0, 0, 0);
-			rotation = Quaternion(vec4(1, 0, 0, 0), -pi / 2).matrix();
+		else if (position.x() < -2.7f) {
+			mat4 newrotation = Quaternion(vec4(0, 0, 1, 0), pi / 2.0f).matrix();
+			forward = newrotation * forward;
+			up = newrotation * up;
+			right = newrotation * right;
+			rotation = newrotation * rotation;
 
-			mode = BackWall;
+			mode = FrontWall;
+			chooseScent(true);
+		}
+		else if (position.z() > 2.5f) {
+			mat4 newrotation = Quaternion(vec4(1, 0, 0, 0), pi / 2.0f).matrix();
+			forward = newrotation * forward;
+			up = newrotation * up;
+			right = newrotation * right;
+			rotation = newrotation * rotation;
+
+			mode = FrontWall;
+			chooseScent(true);
+		}
+		else if (position.z() < -2.5f) {
+			mat4 newrotation = Quaternion(vec4(1, 0, 0, 0), pi / -2.0f).matrix();
+			forward = newrotation * forward;
+			up = newrotation * up;
+			right = newrotation * right;
+			rotation = newrotation * rotation;
+
+			mode = FrontWall;
 			chooseScent(true);
 		}
 	}
-	
-	if (legRotationUp) {
-		legRotation += 0.15f;
-		if (legRotation > pi / 4.0f) {
-			legRotationUp = false;
-		}
-	}
-	else {
-		legRotation -= 0.15f;
-		if (legRotation < -pi / 4.0f) {
-			legRotationUp = true;
-		}
-	}
 
-	chooseScent(false);*/
 	legRotation += 0.2f;
 	position += forward * 0.004f;
 }
@@ -469,7 +434,7 @@ namespace {
 void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
 	for (int i = 0; i < maxAnts; ++i) {
 		mat4 bodytrans = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z());
-		mat4 bodyrotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
+		mat4 bodyrotation = ants[i].rotation;
 		float scale = 0.005f;
 		mat4 bodyscale = mat4::Scale(scale, scale, scale);
 		body->M = bodytrans * bodyrotation * bodyscale;
