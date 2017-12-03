@@ -30,7 +30,7 @@ namespace {
 			}
 			
 			Graphics4::Texture* image = mesh->images[i];
-			if (image != nullptr) Graphics4::setTexture(tex, image);
+			Graphics4::setTexture(tex, image);
 			
 			Graphics4::setVertexBuffer(*mesh->vertexBuffers[i]);
 			Graphics4::setIndexBuffer(*mesh->indexBuffers[i]);
@@ -40,7 +40,6 @@ namespace {
 }
 
 Kitchen::Kitchen() {
-	
 }
 
 void Kitchen::init() {
@@ -49,13 +48,14 @@ void Kitchen::init() {
 	structures->add("tex", Graphics4::Float2VertexData);
 	structures->add("nor", Graphics4::Float3VertexData);
 	
-	objects[0] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 10);	// Fridge
+	objects[0] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
+	//objects[0] = new MeshObject("kitchen/kitchen.ogex", "kitchen/", *structures, 1);
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
 	for (int i = 0; i < maxObjects; ++i) {
 		MeshObject* object = objects[i];
-		object->M = mat4::Translation(0, 0, 0);
+		//object->M = mat4::Translation(0, 0, 0);
 		renderMesh(object, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 }
