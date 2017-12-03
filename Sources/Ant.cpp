@@ -647,7 +647,7 @@ void Ant::setLights(Kore::Graphics4::ConstantLocation lightCountLocation, Kore::
 	const int lightCount = (int)room->lights.size();
 	for (int i = 0; i < lightCount; ++i) {
 		Light* light = room->lights[i];
-		lightPositions[i] = body->M * light->position;
+		lightPositions[i] = room->M * light->position;
 
 		if (light->type == 0) {
 			lightPositions[i].w() = 0;
