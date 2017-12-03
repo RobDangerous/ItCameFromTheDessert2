@@ -469,14 +469,12 @@ Geometry* MeshObject::ConvertGeometryNode(const OGEX::GeometryNodeStructure& str
 				float rotY = scaleStructure.GetYRot();
 				float rotZ = scaleStructure.GetZRot();
 				
-				if (rotX != 0) geometry->transform.Set(0, 0, rotX);
-				if (rotY != 0) geometry->transform.Set(1, 1, rotY);
-				if (rotZ != 0) geometry->transform.Set(2, 2, rotZ);
+				geometry->transform *= mat4::Scale(rotX, rotY, rotZ);
 				log(Info, "%f %f %f", rotX, rotY, rotZ);
 				
 				break;
 			}
-				
+
 			default:
 				break;
 		}
