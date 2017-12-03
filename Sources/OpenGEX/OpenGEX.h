@@ -377,6 +377,7 @@ namespace OGEX
 		private:
 
 			String		scaleKind;
+			float scaleX, scaleY, scaleZ;
 
 		public:
 
@@ -386,6 +387,18 @@ namespace OGEX
 			const String& GetScaleKind(void) const
 			{
 				return (scaleKind);
+			}
+		
+			const float GetXRot(void) const {
+				return scaleX;
+			}
+		
+			const float GetYRot(void) const {
+				return scaleY;
+			}
+		
+			const float GetZRot(void) const {
+				return scaleZ;
 			}
 
 			bool ValidateProperty(const DataDescription *dataDescription, const String& identifier, DataType *type, void **value);

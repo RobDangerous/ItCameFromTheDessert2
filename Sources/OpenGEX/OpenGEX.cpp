@@ -616,7 +616,7 @@ DataResult RotationStructure::ProcessData(DataDescription *dataDescription)
 
 ScaleStructure::ScaleStructure() :
 		MatrixStructure(kStructureScale),
-		scaleKind("xyz")
+		scaleKind("xyz"), scaleX(0), scaleY(0), scaleZ(0)
 {
 }
 
@@ -687,6 +687,11 @@ DataResult ScaleStructure::ProcessData(DataDescription *dataDescription)
 
 	// Data is 1 or 3 floats depending on kind.
 	// Build application-specific transform here.
+	if (scaleKind == "xyz") {
+		scaleX = *data; data++;
+		scaleY = *data; data++;
+		scaleZ = *data;
+	}
 
 	return (kDataOkay);
 }

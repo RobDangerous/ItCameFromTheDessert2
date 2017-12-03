@@ -448,7 +448,7 @@ Geometry* MeshObject::ConvertGeometryNode(const OGEX::GeometryNodeStructure& str
 			case OGEX::kStructureTranslation: {
 				const OGEX::TranslationStructure& translationStructure = *static_cast<const OGEX::TranslationStructure *>(subStructure);
 				const char* structureName = translationStructure.GetStructureName();
-				log(Info, "structure name %s", structureName);
+				//log(Info, "structure name %s", structureName);
 				
 				float posX = translationStructure.GetXPos();
 				float posY = translationStructure.GetYPos();
@@ -457,8 +457,22 @@ Geometry* MeshObject::ConvertGeometryNode(const OGEX::GeometryNodeStructure& str
 				if (posX != 0) geometry->transform.Set(0, 3, posX);
 				if (posY != 0) geometry->transform.Set(1, 3, posY);
 				if (posZ != 0) geometry->transform.Set(2, 3, posZ);
-				log(Info, "%f %f %f", posX, posY, posZ);
+				//log(Info, "%f %f %f", posX, posY, posZ);
 				
+				break;
+			}
+				
+			case OGEX::kStructureScale: {
+				const OGEX::ScaleStructure& scaleStructure = *static_cast<const OGEX::ScaleStructure *>(subStructure);
+				
+				float rotX = scaleStructure.GetXRot();
+				float rotY = scaleStructure.GetYRot();
+				float rotZ = scaleStructure.GetZRot();
+				
+				if (rotX != 0) geometry->transform.Set(0, 0, rotX);
+				if (rotY != 0) geometry->transform.Set(1, 1, rotY);
+				if (rotZ != 0) geometry->transform.Set(2, 2, rotZ);
+				log(Info, "%f %f %f", rotX, rotY, rotZ);
 				
 				break;
 			}
