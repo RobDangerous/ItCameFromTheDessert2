@@ -13,6 +13,59 @@
 using namespace Kore;
 
 namespace {
+	vec3 getAxisVector(const mat4& transform, int i) {
+		return vec3(transform.data[i], transform.data[i + 4], transform.data[i + 8]);
+	}
+
+	struct Box {
+		vec3 getAxis(unsigned index) const { return getAxisVector(transform, index); }
+		mat4 transform;
+		vec3 halfSize;
+	};
+
+	vec3 transformInverse(const mat4& transform, const vec3& vector) {
+		vec3 tmp = vector;
+		tmp.x() -= transform.data[3];
+		tmp.y() -= transform.data[7];
+		tmp.z() -= transform.data[11];
+		return vec3(
+			tmp.x() * transform.data[0] + tmp.y() * transform.data[4] + tmp.z() * transform.data[8],
+			tmp.x() * transform.data[1] + tmp.y() * transform.data[5] + tmp.z() * transform.data[9],
+			tmp.x() * transform.data[2] + tmp.y() * transform.data[6] + tmp.z() * transform.data[10]
+		);
+	}
+
+	bool boxAndPoint(const Box& box, const vec3& point, vec3& contactNormal, vec3& contactPoint, float& contatctDepth) {
+		vec3 relPt = transformInverse(box.transform, point);
+		vec3 normal;
+
+		float min_depth = box.halfSize.x() - Kore::abs(relPt.x());
+		if (min_depth < 0) return false;
+		normal = box.getAxis(0) * ((relPt.x() < 0) ? -1.0f : 1.0f);
+
+		float depth = box.halfSize.y() - Kore::abs(relPt.y());
+		if (depth < 0) return false;
+		else if (depth < min_depth) {
+			min_depth = depth;
+			normal = box.getAxis(1) * ((relPt.y() < 0) ? -1.0f : 1.0f);
+		}
+
+		depth = box.halfSize.z() - Kore::abs(relPt.z());
+		if (depth < 0) return false;
+		else if (depth < min_depth) {
+			min_depth = depth;
+			normal = box.getAxis(2) * ((relPt.z() < 0) ? -1.0f : 1.0f);
+		}
+
+		contactNormal = normal;
+		contactPoint = point;
+		contatctDepth = min_depth;
+
+		return true;
+	}
+
+	Box boxes[1];
+
 	Kore::Graphics4::VertexBuffer** vertexBuffers;
 	MeshObject* body;
 	MeshObject* leg;
@@ -112,6 +165,9 @@ void Ant::init() {
 		ants[i].forward = vec4(Kore::sin(value), 0.0f, Kore::cos(value), 1.0f);
 		ants[i].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
 	}
+
+	boxes[0].transform = mat4::Translation(4, 0, 0).Transpose();
+	boxes[0].halfSize = vec3(1.5f, 1.5f, 1.5f);
 }
 
 void Ant::chooseScent(bool force) {
@@ -284,7 +340,7 @@ extern MeshObject* objects[];
 extern MeshObject* roomObjects[7];
 
 void Ant::move(float deltaTime) {
-	if (mode == Floor) {
+	/*if (mode == Floor) {
 		if (position.x() > 3.23f) {
 			mat4 newrotation = Quaternion(vec4(0, 0, 1, 0), pi / -2.0f).matrix();
 			forward = newrotation * forward;
@@ -324,6 +380,15 @@ void Ant::move(float deltaTime) {
 
 			mode = FrontWall;
 			chooseScent(true);
+		}
+	}*/
+
+	for (int i = 0; i < 1; ++i) {
+		vec3 normal;
+		vec3 contact;
+		float depth;
+		if (boxAndPoint(boxes[i], position + (vec3(forward.x(), forward.y(), forward.z()) * 0.004f), normal, contact, depth)) {
+			forward = vec4(0, 0, 0, 1);
 		}
 	}
 
