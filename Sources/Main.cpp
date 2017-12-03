@@ -335,9 +335,8 @@ namespace {
 		verticalAngle = 0;
 		horizontalAngle = Kore::pi/1.1;
 
-		kitchen = new Kitchen;
-		Kitchen::init();
-
+		kitchen = new Kitchen();
+		
 		Ant::init();
 		ant = new Ant;		
 	}

@@ -5,7 +5,7 @@ using namespace Kore;
 
 MeshObject* objects[maxObjects];
 
-namespace {	
+namespace {
 	void renderMesh(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
 		for (int i = 0; i < mesh->meshesCount; ++i) {
 			Geometry* geometry = mesh->geometries[i];
@@ -39,6 +39,7 @@ namespace {
 }
 
 Kitchen::Kitchen() {
+	init();
 }
 
 void Kitchen::init() {
@@ -47,20 +48,26 @@ void Kitchen::init() {
 	structures->add("tex", Graphics4::Float2VertexData);
 	structures->add("nor", Graphics4::Float3VertexData);
 	
+	openFridge = false;
+	
 	// Walls
 	objects[0] = new MeshObject("kitchen/floor.ogex", "kitchen/", *structures, 1);
 	objects[1] = new MeshObject("kitchen/walls.ogex", "kitchen/", *structures, 1);
 	
 	// Doors
 	objects[2] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
-	objects[3] = new MeshObject("kitchen/fridge_door.ogex", "kitchen/", *structures, 1);
-	objects[4] = new MeshObject("kitchen/fridge_door_open.ogex", "kitchen/", *structures, 1);
+	MeshObject* obj = new MeshObject("kitchen/fridge_door.ogex", "kitchen/", *structures, 1);
+	obj->doorMode = DoorMode::Close;
+	objects[3] = obj;
+	obj = new MeshObject("kitchen/fridge_door_open.ogex", "kitchen/", *structures, 1);
+	obj->doorMode = DoorMode::Open;
+	objects[3] = obj;
 	
 	objects[5] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
 	objects[6] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
 	objects[7] = new MeshObject("kitchen/table_chairs.ogex", "kitchen/", *structures, 1);
 	
-	MeshObject* obj = new MeshObject("kitchen/broken_egg.ogex", "kitchen/", *structures, 5);
+	obj = new MeshObject("kitchen/broken_egg.ogex", "kitchen/", *structures, 5);
 	obj->M = mat4::Translation(3.0, 0.0, 1.2);
 	objects[8] = obj;
 }
@@ -68,6 +75,11 @@ void Kitchen::init() {
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
 	for (int i = 0; i < maxObjects; ++i) {
 		MeshObject* object = objects[i];
+		
+		// Todo: it is too late --> make better
+		if (openFridge && object->doorMode != Close) {
+			continue;
+		}
 		
 		if (object != nullptr) {
 			Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);

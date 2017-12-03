@@ -112,6 +112,8 @@ struct CompareBones {
 	}
 };
 
+enum DoorMode { Close, Open, Default };
+
 class MeshObject {
 public:
 	MeshObject(const char* meshFile, const char* textureFile, const Kore::Graphics4::VertexStructure& structure, float scale = 1.0f);
@@ -139,6 +141,7 @@ public:
 	BoneNode* getBoneWithIndex(int index) const;
 	Material* findMaterialWithIndex(const int index);
 	
+	DoorMode doorMode;
 private:	
 	void LoadObj(const char* filename);
 	
