@@ -4,6 +4,7 @@
 //#include "Engine/TriggerCollider.h"
 //#include "KitchenObject.h"
 #include "Rendering.h"
+#include "Kitchen.h"
 
 #include <assert.h>
 
@@ -118,6 +119,7 @@ namespace {
 	}
 
 	int count = 0;
+	int collisionObjects = 0;
 }
 
 Ant::Ant() : mode(Floor) {
@@ -166,10 +168,20 @@ void Ant::init() {
 		ants[i].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
 	}
 
-	boxes[0].transform = mat4::Translation(0, -1, 0).Transpose();
-	boxes[0].halfSize = vec3(100, 1, 100);
-	boxes[1].transform = mat4::Translation(4, 0, 0).Transpose();
-	boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
+	collisionObjects = 0;
+	for (int i = 0; i < maxObjects; ++i) {
+		for (int j = 0; j < objects[i]->meshesCount; ++j) {
+			Mesh* mesh = objects[i]->meshes[j];
+			boxes[collisionObjects].transform = mat4::Translation(mesh->xmin + (mesh->xmax - mesh->xmin) / 2.0f, mesh->ymin + (mesh->ymax - mesh->ymin) / 2.0f, mesh->zmin + (mesh->zmax - mesh->zmin) / 2.0f);
+			boxes[collisionObjects].halfSize = vec3((mesh->xmax - mesh->xmin) / 2.0f, (mesh->ymax - mesh->ymin) / 2.0f, (mesh->zmax - mesh->zmin) / 2.0f);
+			++collisionObjects;
+		}
+	}
+
+	//boxes[0].transform = mat4::Translation(0, -1, 0).Transpose();
+	//boxes[0].halfSize = vec3(100, 1, 100);
+	//boxes[1].transform = mat4::Translation(4, 0, 0).Transpose();
+	//boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
 }
 
 void Ant::chooseScent(bool force) {
@@ -344,7 +356,7 @@ extern MeshObject* roomObjects[7];
 void Ant::move(float deltaTime) {
 	legRotation += 0.2f;
 	bool flying = true;
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < collisionObjects; ++i) {
 		vec3 normal;
 		vec3 contact;
 		float depth;
