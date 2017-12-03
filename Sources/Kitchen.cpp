@@ -4,7 +4,7 @@
 using namespace Kore;
 
 namespace {
-	const int maxObjects = 5;
+	const int maxObjects = 7;
 	MeshObject* objects[maxObjects];
 	
 	void renderMesh(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -50,14 +50,16 @@ void Kitchen::init() {
 	
 	// Walls
 	objects[0] = new MeshObject("kitchen/floor.ogex", "kitchen/", *structures, 1);
+	objects[1] = new MeshObject("kitchen/walls.ogex", "kitchen/", *structures, 1);
 	
-	objects[1] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
-	objects[2] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
-	objects[3] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[2] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
+	objects[3] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[4] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[5] = new MeshObject("kitchen/table_chairs.ogex", "kitchen/", *structures, 1);
 	
 	MeshObject* obj = new MeshObject("kitchen/broken_egg.ogex", "kitchen/", *structures, 5);
 	obj->M = mat4::Translation(3.0, 0.0, 1.2);
-	objects[4] = obj;
+	objects[6] = obj;
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
