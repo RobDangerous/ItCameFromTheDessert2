@@ -61,7 +61,6 @@ namespace {
 	bool F, L, B, R = false;
 	//bool Z, X = false;
 
-	Quaternion cameraRot = Quaternion(0, 0, 0, 1);
 	vec3 cameraPos = vec3(0, 0, 0);					// x - left, right, y - up, down, z - forward, backward
 	vec3 cameraUp;
 	vec3 right;
@@ -105,10 +104,6 @@ namespace {
 	}
 
 	Kore::mat4 getViewMatrix() {
-		/*vec3 lookAt = cameraPosition + vec3(0, 0, -1);
-		mat4 V = mat4::lookAt(cameraPos, lookAt, vec3(0, 1, 0));
-		V *= cameraRotation.matrix();*/
-		
 		// Calculate camera direction
 		vec3 cameraDir = vec3(Kore::cos(verticalAngle) * Kore::sin(horizontalAngle),
 							  Kore::sin(verticalAngle),
@@ -206,7 +201,7 @@ namespace {
 			break;
 		case KeyL:
 			Kore::log(Kore::LogLevel::Info, "Position: (%f, %f, %f)", cameraPos.x(), cameraPos.y(), cameraPos.z());
-			Kore::log(Kore::LogLevel::Info, "Rotation: (%f, %f, %f, %f)", cameraRot.w, cameraRot.x, cameraRot.y, cameraRot.z);
+			Kore::log(Kore::LogLevel::Info, "Rotation: (%f, %f)", verticalAngle, horizontalAngle);
 			break;
 		case Kore::KeyEscape:
 		case KeyQ:
@@ -345,11 +340,11 @@ namespace {
 		loadShader();
 		loadLivingRoomShader();
 		
-		cameraPos = vec3(1.3, 1.6, 0.5);
-		//cameraRot.rotate(Quaternion(vec3(0, 1, 0), Kore::pi / 2));
-		//cameraRot.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 6));
+		cameraPos = vec3(-1.5, 2.5, 5.5);
+		verticalAngle = 0;
+		horizontalAngle = Kore::pi/1.1;
 		
-		livingRoom = new LivingRoom("kitchen/cube.ogex", "kitchen/", structure_living_room, 1);
+		livingRoom = new LivingRoom("kitchen/kitchen.ogex", "kitchen/", structure_living_room, 1);
 		/*livingRoom = new LivingRoom("sherlock_living_room/sherlock_living_room.ogex", "sherlock_living_room/", structure_living_room, 1);
 		Quaternion livingRoomRot = Quaternion(0, 0, 0, 1);
 		livingRoomRot.rotate(Quaternion(vec3(1, 0, 0), -Kore::pi / 2.0));
