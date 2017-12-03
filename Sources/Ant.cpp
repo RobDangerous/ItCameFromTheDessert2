@@ -170,6 +170,7 @@ void Ant::init() {
 
 	collisionObjects = 0;
 	for (int i = 0; i < maxObjects; ++i) {
+		if (objects[i] == nullptr) continue;
 		for (int j = 0; j < objects[i]->meshesCount; ++j) {
 			Mesh* mesh = objects[i]->meshes[j];
 			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {

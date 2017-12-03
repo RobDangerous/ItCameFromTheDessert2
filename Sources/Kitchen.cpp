@@ -51,32 +51,37 @@ void Kitchen::init() {
 	objects[0] = new MeshObject("kitchen/floor.ogex", "kitchen/", *structures, 1);
 	objects[1] = new MeshObject("kitchen/walls.ogex", "kitchen/", *structures, 1);
 	
-	objects[2] = new MeshObject("kitchen/floor.ogex", "kitchen/", *structures, 1);
-	objects[3] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);		//without door
+	// Doors
+	objects[2] = new MeshObject("kitchen/fridge.ogex", "kitchen/", *structures, 1);
+	objects[3] = new MeshObject("kitchen/fridge_door.ogex", "kitchen/", *structures, 1);
+	objects[4] = new MeshObject("kitchen/fridge_door_open.ogex", "kitchen/", *structures, 1);
 	
-	objects[4] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
-	objects[5] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
-	objects[6] = new MeshObject("kitchen/table_chairs.ogex", "kitchen/", *structures, 1);
+	objects[5] = new MeshObject("kitchen/lower_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[6] = new MeshObject("kitchen/upper_cupboard.ogex", "kitchen/", *structures, 1);
+	objects[7] = new MeshObject("kitchen/table_chairs.ogex", "kitchen/", *structures, 1);
 	
 	MeshObject* obj = new MeshObject("kitchen/broken_egg.ogex", "kitchen/", *structures, 5);
 	obj->M = mat4::Translation(3.0, 0.0, 1.2);
-	objects[6] = obj;
+	objects[8] = obj;
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
 	for (int i = 0; i < maxObjects; ++i) {
 		MeshObject* object = objects[i];
 		
-		Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);
-		Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::TextureAddressing::Repeat);
-		
-		renderMesh(object, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		if (object != nullptr) {
+			Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);
+			Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::TextureAddressing::Repeat);
+			
+			renderMesh(object, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		}
 	}
 }
 
 void Kitchen::setLights(Kore::Graphics4::ConstantLocation lightCountLocation, Kore::Graphics4::ConstantLocation lightPosLocation) {
 	for (int i = 0; i < maxObjects; ++i) {
 		MeshObject* object = objects[i];
+		if (object == nullptr) continue;
 
 		static const int maxLightCount = 10;
 		Kore::vec4 lightPositions[maxLightCount];

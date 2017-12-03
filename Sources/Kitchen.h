@@ -16,5 +16,5 @@ private:
 
 };
 
-const int maxObjects = 7;
+const int maxObjects = 8;
 extern MeshObject* objects[maxObjects];
