@@ -101,7 +101,7 @@ void Kitchen::setLights(Kore::Graphics4::ConstantLocation lightCountLocation, Ko
 #endif
 
 void Kitchen::highlightTheClosestObject(Kore::vec4 playerPosition) {
-	float minDist = MAXFLOAT;
+	float minDist = 4.0f;
 	
 	closestObj = nullptr;
 	
