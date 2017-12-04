@@ -18,5 +18,5 @@ private:
 	void init();
 };
 
-const int maxObjects = 7;
+const int maxObjects = 10;
 extern KitchenObject* objects[maxObjects];

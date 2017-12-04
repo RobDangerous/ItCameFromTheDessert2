@@ -13,11 +13,10 @@ Kitchen::Kitchen() {
 }
 
 void Kitchen::init() {
-	// Walls
+	
 	objects[0] = new KitchenObject("floor.ogex", nullptr, nullptr);
 	objects[1] = new KitchenObject("walls.ogex", nullptr, nullptr);
 	
-	// Fridge
 	objects[2] = new KitchenObject("fridge.ogex", "fridge_door.ogex", "fridge_door_open.ogex");
 	
 	objects[3] = new KitchenObject("lower_cupboard.ogex", nullptr, nullptr);
@@ -25,6 +24,10 @@ void Kitchen::init() {
 	objects[5] = new KitchenObject("table_chairs.ogex", nullptr, nullptr);
 	
 	objects[6] = new KitchenObject("broken_egg.ogex", nullptr, nullptr, 4, vec3(3.0, 0.0, 1.2));
+	
+	objects[7] = new KitchenObject("oven.ogex", "oven_door.ogex", "oven_door_open.ogex");
+	objects[8] = new KitchenObject("drawer.ogex", "drawer_door.ogex", "drawer_door_open.ogex");
+	objects[9] = new KitchenObject("sink.ogex", nullptr, nullptr);
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {

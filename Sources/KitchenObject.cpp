@@ -145,5 +145,7 @@ float KitchenObject::checkDistance(vec4 playerPosition) {
 }
 
 void KitchenObject::highlightKitchenObj(bool highlightObj) {
-	highlight = highlightObj;
+	// Highlight only objects that have doors, which can be opened
+	if (door_open != nullptr)
+		highlight = highlightObj;
 }
