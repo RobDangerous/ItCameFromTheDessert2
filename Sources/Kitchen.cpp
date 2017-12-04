@@ -14,6 +14,8 @@ namespace {
 	KitchenObject* fridge;
 	KitchenObject* egg;
 	KitchenObject* brokenEgg;
+	KitchenObject* pizza;
+	KitchenObject* pizzaDrawer;
 	bool egged = false;
 }
 
@@ -47,6 +49,9 @@ void Kitchen::init() {
 	fridge = objects[2];
 	egg = objects[11];
 	brokenEgg = objects[6];
+	pizza = objects[12];
+	pizza->visible = false;
+	pizzaDrawer = objects[8];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -60,7 +65,7 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 			}
 		}
 		
-		if (kitchenObj != nullptr && (kitchenObj != brokenEgg || egged) && (kitchenObj != egg || !egged)) {
+		if (kitchenObj != nullptr && (kitchenObj != brokenEgg || egged) && (kitchenObj != egg || !egged) && kitchenObj->visible) {
 			Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);
 			Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::TextureAddressing::Repeat);
 			
@@ -128,7 +133,8 @@ void Kitchen::openTheDoor() {
 		
 		if (kitchenObj == closestObj && kitchenObj->isHighlighted()) {
 			kitchenObj->openDoor();
-			if (kitchenObj == fridge) {
+			if (kitchenObj == fridge && !fridge->activated) {
+				fridge->activated = true;
 				KitchenObject* egg = objects[11];
 				egg->speed = vec3(0.001f, 0.03f, 0.015f);
 				egg->acc = vec3(0, -0.002f, 0);
@@ -148,6 +154,13 @@ void Kitchen::openTheDoor() {
 					ants[i].right = ants[i].forward.cross(ants[i].up);
 				}
 			}
+		}
+		if (kitchenObj == pizzaDrawer && !pizzaDrawer->activated) {
+			pizzaDrawer->activated = true;
+			pizza->visible = true;
+			pizza->dynamic = true;
+			pizza->acc = vec3(0, 0, 0);
+			pizza->speed = vec3(0, 0, 0.1f);
 		}
 	}
 }

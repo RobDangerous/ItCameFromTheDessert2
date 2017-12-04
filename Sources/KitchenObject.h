@@ -34,7 +34,8 @@ public:
 	vec3 speed;
 	vec3 acc;
 	bool dynamic;
-	
+	bool activated;
+	bool visible;
 private:
 	bool closed;
 	bool highlight;

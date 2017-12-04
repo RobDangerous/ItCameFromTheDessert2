@@ -3,7 +3,7 @@
 #include <Kore/Log.h>
 
 
-KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoorFile, const char* meshOpenDoorFile, const float scale, const vec3 position, const Quaternion rotation) : dynamic(false), speed(0, 0, 0), acc(0, -0.00001f, 0), closed(true), highlight(false), body(nullptr), door_open(nullptr), door_closed(nullptr) {
+KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoorFile, const char* meshOpenDoorFile, const float scale, const vec3 position, const Quaternion rotation) : visible(true), activated(false), dynamic(false), speed(0, 0, 0), acc(0, -0.00001f, 0), closed(true), highlight(false), body(nullptr), door_open(nullptr), door_closed(nullptr) {
 	
 	M = mat4::Identity();
 	M *= mat4::Translation(position.x(), position.y(), position.z());
