@@ -56,23 +56,6 @@ GeometryNode $node3
 	}
 }
 
-LightNode $node4
-{
-	Name {string {"Point"}}
-	ObjectRef {ref {$light1}}
-
-	Transform
-	{
-		float[16]
-		{
-			{-1.7099578380584717, 5.615334987640381, -0.324449747800827, 0.0,
-			 -4.53320837020874, -1.1750900745391846, 3.5539278984069824, 0.0,
-			 3.329756498336792, 1.2838952541351318, 4.671781539916992, 0.0,
-			 1.1639654636383057, 8.675622940063477, 34.726318359375, 1.0}
-		}
-	}
-}
-
 GeometryObject $geometry1		// sink
 {
 	Mesh (primitive = "triangles")
@@ -3562,17 +3545,6 @@ GeometryObject $geometry3		// sink.002
 				{21, 23, 18}, {17, 21, 18}, {298, 296, 297}, {299, 298, 297}, {297, 302, 301}, {297, 301, 300}, {299, 297, 300}, {303, 302, 297}
 			}
 		}
-	}
-}
-
-LightObject $light1 (type = "point")		// Point
-{
-	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
-	Param (attrib = "intensity") {float {2.0}}
-
-	Atten (curve = "inverse_square")
-	{
-		Param (attrib = "scale") {float {5.47722400800463}}
 	}
 }
 

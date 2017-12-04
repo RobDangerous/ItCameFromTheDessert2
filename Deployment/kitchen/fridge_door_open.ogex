@@ -21,24 +21,7 @@ GeometryNode $node1
 	}
 }
 
-LightNode $node2
-{
-	Name {string {"Point"}}
-	ObjectRef {ref {$light1}}
-
-	Transform
-	{
-		float[16]
-		{
-			{-1.7099578380584717, 5.615334987640381, -0.324449747800827, 0.0,
-			 -4.53320837020874, -1.1750900745391846, 3.5539278984069824, 0.0,
-			 3.329756498336792, 1.2838952541351318, 4.671781539916992, 0.0,
-			 1.1639654636383057, 8.675622940063477, 34.726318359375, 1.0}
-		}
-	}
-}
-
-GeometryNode $node3
+GeometryNode $node2
 {
 	Name {string {"fridge_open_door.001"}}
 	ObjectRef {ref {$geometry2}}
@@ -715,17 +698,6 @@ GeometryObject $geometry2		// fridge_open_door.001
 				{205, 204, 206}, {206, 207, 205}, {78, 205, 207}, {207, 74, 78}, {206, 138, 139}, {139, 208, 206}, {207, 206, 208}, {208, 209, 207}, {74, 207, 209}, {209, 75, 74}, {208, 139, 105}, {105, 140, 208}, {209, 208, 140}, {140, 142, 209}, {75, 209, 142}, {142, 76, 75}
 			}
 		}
-	}
-}
-
-LightObject $light1 (type = "point")		// Point
-{
-	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
-	Param (attrib = "intensity") {float {2.0}}
-
-	Atten (curve = "inverse_square")
-	{
-		Param (attrib = "scale") {float {5.47722400800463}}
 	}
 }
 
