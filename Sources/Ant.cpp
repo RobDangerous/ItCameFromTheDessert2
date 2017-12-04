@@ -130,7 +130,7 @@ namespace {
 		
 		for (int j = 0; j < object->meshesCount; ++j) {
 			Mesh* mesh = object->meshes[j];
-			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
+			if (false) { //collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
 				boxes[collisionObjects].transform = mat4::Translation(-1000, -1000, -1000).Transpose();
 				boxes[collisionObjects].halfSize = vec3(0, 0, 0);
 			}
@@ -200,13 +200,40 @@ void Ant::init() {
 		collisionDetection(kitchenObj->getOpenDoor());
 	}
 
-	boxes[collisionObjects].transform = mat4::Translation(0, -1, 0).Transpose();
-	boxes[collisionObjects].halfSize = vec3(100, 1, 100);
-	++collisionObjects;
+	collisionObjects = 0;
+	boxes[collisionObjects].transform = mat4::Translation(0, 0, 0).Transpose();
+	boxes[collisionObjects].halfSize = vec3(5, 5, 5);
+	collisionObjects = 9;
+
+	boxes[0].transform = mat4::Translation(-0.2f, 0, 0).Transpose();
+	boxes[0].halfSize = vec3(2.6f, 1.394f, 1);
+	boxes[1].transform = mat4::Translation(3, 0, 0).Transpose();
+	boxes[1].halfSize = vec3(0.7f, 2.9f, 1.015f);
+	boxes[2].transform = mat4::Translation(0.75f, 2.9f, 0).Transpose();
+	boxes[2].halfSize = vec3(3.0f, 0.6f, 0.665f);
+	boxes[3].transform = mat4::Translation(0, 0, -0.999f).Transpose();
+	boxes[3].halfSize = vec3(10, 10, 1);
+	boxes[4].transform = mat4::Translation(0, -1.0f, 0).Transpose();
+	boxes[4].halfSize = vec3(10, 1, 10);
+	boxes[5].transform = mat4::Translation(0, 7.0f, 0).Transpose();
+	boxes[5].halfSize = vec3(10, 1, 10);
+	boxes[6].transform = mat4::Translation(8.999f, 0, 0).Transpose();
+	boxes[6].halfSize = vec3(1, 10, 10);
+	boxes[7].transform = mat4::Translation(0, 0, 10.99f).Transpose();
+	boxes[7].halfSize = vec3(10, 10, 1);
+	boxes[8].transform = mat4::Translation(-8.99f, 0, 0).Transpose();
+	boxes[8].halfSize = vec3(1, 10, 10);
+	boxes[9].transform = mat4::Translation(0, 0, 0).Transpose();
+	boxes[9].halfSize = vec3(0, 0, 0);
+
+	//boxes[collisionObjects].transform = mat4::Translation(0, -1, 0).Transpose();
+	//boxes[collisionObjects].halfSize = vec3(100, 1, 100);
+	//++collisionObjects;
 	//boxes[1].transform = mat4::Translation(4, 0, 0).Transpose();
 	//boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
 
-	collisionObjects = 47;
+	//collisionObjects = 47;
+	//collisionObjects = 15;
 
 	boxVertexBuffer = new Graphics4::VertexBuffer(24, *structures[0]);
 	float* vertices = boxVertexBuffer->lock();
@@ -602,15 +629,16 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
+#ifndef NDEBUG
 	for (int i = 0; i < collisionObjects; ++i) {
-		Box* box = &boxes[collisionObjects];
-		mat4 modelMatrix = mat4::Scale(box->halfSize.x(), box->halfSize.y(), box->halfSize.z()) * mat4::Translation(box->transform.data[3], box->transform.data[7], box->transform.data[11]);
+		Box* box = &boxes[i];
+		mat4 modelMatrix =  mat4::Translation(box->transform.data[3], box->transform.data[7], box->transform.data[11]) * mat4::Scale(box->halfSize.x(), box->halfSize.y(), box->halfSize.z());
 		mat4 modelMatrixInverse = modelMatrix.Invert();
 
 		Graphics4::setMatrix(mLocation, modelMatrix);
 		Graphics4::setMatrix(mLocationInverse, modelMatrixInverse);
 
-		Graphics4::setFloat3(diffuseLocation, vec3(1.0, 1.0, 1.0));
+		Graphics4::setFloat3(diffuseLocation, vec3(1.0, 0.0, 1.0));
 		Graphics4::setFloat3(specularLocation, vec3(1.0, 1.0, 1.0));
 		Graphics4::setFloat(specularPowerLocation, 1.0);
 
@@ -620,7 +648,7 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		Graphics4::setIndexBuffer(*boxIndexBuffer);
 		Graphics4::drawIndexedVertices();
 	}
-
+#endif
 	/*int c = 0;
 	{
 		float* data = vertexBuffers[1]->lock();
