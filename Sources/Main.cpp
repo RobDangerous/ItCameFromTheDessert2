@@ -259,7 +259,7 @@ namespace {
 		lastMouseTime = t;
 		if (deltaT > 1.0f / 30.0f) return;
 		
-		horizontalAngle += CAMERA_ROTATION_SPEED * movementX * deltaT * 7.0f;
+		horizontalAngle -= CAMERA_ROTATION_SPEED * movementX * deltaT * 7.0f;
 		verticalAngle -= CAMERA_ROTATION_SPEED * movementY * deltaT * 7.0f;
 		verticalAngle = Kore::min(Kore::max(verticalAngle, -0.49f * pi), 0.49f * pi);
 		
