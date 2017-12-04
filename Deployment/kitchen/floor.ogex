@@ -23,17 +23,34 @@ GeometryNode $node1
 
 LightNode $node2
 {
-	Name {string {"Point"}}
+	Name {string {"Spot"}}
 	ObjectRef {ref {$light1}}
 
 	Transform
 	{
 		float[16]
 		{
-			{-1.7099578380584717, 5.615334987640381, -0.324449747800827, 0.0,
-			 -4.53320837020874, -1.1750900745391846, 3.5539278984069824, 0.0,
-			 3.329756498336792, 1.2838952541351318, 4.671781539916992, 0.0,
-			 1.1639654636383057, 8.675622940063477, 34.726318359375, 1.0}
+			{5.878878116607666, 0.0, 0.0, 0.0,
+			 0.0, -2.5697397632029606e-07, -5.878879070281982, 0.0,
+			 0.0, 5.878878116607666, -2.569739194768772e-07, 0.0,
+			 4.980696201324463, 4.898934841156006, 2.808426856994629, 1.0}
+		}
+	}
+}
+
+LightNode $node3
+{
+	Name {string {"Point"}}
+	ObjectRef {ref {$light2}}
+
+	Transform
+	{
+		float[16]
+		{
+			{-1.7099578380584717, -1.3496099710464478, -5.460384845733643, 0.0,
+			 -4.53320837020874, 3.7092337608337402, 0.5028173327445984, 0.0,
+			 3.329756498336792, 4.356759071350098, -2.119570255279541, 0.0,
+			 4.551968097686768, 4.898934841156006, 5.549463748931885, 1.0}
 		}
 	}
 }
@@ -76,14 +93,31 @@ GeometryObject $geometry1		// floor
 	}
 }
 
-LightObject $light1 (type = "point")		// Point
+LightObject $light1 (type = "spot")		// Spot
 {
 	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
-	Param (attrib = "intensity") {float {2.0}}
+	Param (attrib = "intensity") {float {0.5}}
 
 	Atten (curve = "inverse_square")
 	{
-		Param (attrib = "scale") {float {5.47722400800463}}
+		Param (attrib = "scale") {float {3.1622776601683795}}
+	}
+
+	Atten (kind = "angle", curve = "linear")
+	{
+		Param (attrib = "begin") {float {0.556323685321221}}
+		Param (attrib = "end") {float {0.6544984579086304}}
+	}
+}
+
+LightObject $light2 (type = "point")		// Point
+{
+	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
+	Param (attrib = "intensity") {float {0.5}}
+
+	Atten (curve = "inverse_square")
+	{
+		Param (attrib = "scale") {float {3.1622776601683795}}
 	}
 }
 

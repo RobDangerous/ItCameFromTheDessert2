@@ -3,24 +3,7 @@ Metric (key = "angle") {float {1.0}}
 Metric (key = "time") {float {1.0}}
 Metric (key = "up") {string {"z"}}
 
-LightNode $node1
-{
-	Name {string {"Point"}}
-	ObjectRef {ref {$light1}}
-
-	Transform
-	{
-		float[16]
-		{
-			{-1.7099578380584717, 5.615334987640381, -0.324449747800827, 0.0,
-			 -4.53320837020874, -1.1750900745391846, 3.5539278984069824, 0.0,
-			 3.329756498336792, 1.2838952541351318, 4.671781539916992, 0.0,
-			 0.021875977516174316, 3.068946361541748, 5.840796947479248, 1.0}
-		}
-	}
-}
-
-GeometryNode $node2
+GeometryNode $node1
 {
 	Name {string {"oven_door_open.001"}}
 	ObjectRef {ref {$geometry1}}
@@ -38,7 +21,7 @@ GeometryNode $node2
 	}
 }
 
-GeometryNode $node3
+GeometryNode $node2
 {
 	Name {string {"oven_door_open"}}
 	ObjectRef {ref {$geometry2}}
@@ -745,16 +728,6 @@ GeometryObject $geometry2		// oven_door_open
 				{206, 207, 205}, {206, 205, 204}, {207, 103, 102}, {207, 102, 205}, {139, 208, 206}, {139, 206, 138}, {208, 209, 207}, {208, 207, 206}, {209, 104, 103}, {209, 103, 207}, {106, 141, 208}, {106, 208, 139}, {141, 143, 209}, {141, 209, 208}, {143, 89, 104}, {143, 104, 209}
 			}
 		}
-	}
-}
-
-LightObject $light1 (type = "point")		// Point
-{
-	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
-
-	Atten (curve = "inverse_square")
-	{
-		Param (attrib = "scale") {float {5.47722400800463}}
 	}
 }
 

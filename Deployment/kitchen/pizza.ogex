@@ -3,24 +3,7 @@ Metric (key = "angle") {float {1.0}}
 Metric (key = "time") {float {1.0}}
 Metric (key = "up") {string {"z"}}
 
-LightNode $node1
-{
-	Name {string {"Point"}}
-	ObjectRef {ref {$light1}}
-
-	Transform
-	{
-		float[16]
-		{
-			{-1.7099578380584717, -1.3496099710464478, -5.460384845733643, 0.0,
-			 -4.53320837020874, 3.7092337608337402, 0.5028173327445984, 0.0,
-			 3.329756498336792, 4.356759071350098, -2.119570255279541, 0.0,
-			 0.7197373509407043, 4.898934841156006, 2.808426856994629, 1.0}
-		}
-	}
-}
-
-GeometryNode $node2
+GeometryNode $node1
 {
 	Name {string {"Pizza"}}
 	ObjectRef {ref {$geometry1}}
@@ -86,17 +69,6 @@ GeometryObject $geometry1		// Pizza
 				{30, 31, 32}, {32, 33, 34}, {34, 35, 30}, {32, 34, 30}
 			}
 		}
-	}
-}
-
-LightObject $light1 (type = "point")		// Point
-{
-	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
-	Param (attrib = "intensity") {float {1.5}}
-
-	Atten (curve = "inverse_square")
-	{
-		Param (attrib = "scale") {float {3.1622776601683795}}
 	}
 }
 
