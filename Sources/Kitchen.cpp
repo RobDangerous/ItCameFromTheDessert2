@@ -99,6 +99,7 @@ void Kitchen::highlightTheClosestObject(Kore::vec4 playerPosition) {
 		KitchenObject* kitchenObj = objects[i];
 		
 		if (kitchenObj != nullptr) {
+			if (kitchenObj->getClosedDoor() == nullptr) continue;
 			float dist = kitchenObj->checkDistance(playerPosition);
 			
 			if (dist < minDist) {
@@ -117,7 +118,7 @@ void Kitchen::highlightTheClosestObject(Kore::vec4 playerPosition) {
 			kitchenObj->highlightKitchenObj(false);
 		}
 	}
-	//log(Info, "Closest Obj %s", closestObj->name);
+	log(Info, "Closest Obj %s", closestObj->name);
 }
 
 bool Kitchen::canOpen() const {
