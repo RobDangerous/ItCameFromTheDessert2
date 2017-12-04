@@ -172,4 +172,6 @@ void KitchenObject::update() {
 	body->M.Set(0, 3, x);
 	body->M.Set(1, 3, y);
 	body->M.Set(2, 3, z);
+
+	body->M = body->M;
 }

@@ -7,6 +7,12 @@ using namespace Kore;
 
 KitchenObject* objects[maxObjects];
 
+namespace {
+	KitchenObject* fridge;
+	KitchenObject* egg;
+	KitchenObject* brokenEgg;
+	bool egged = false;
+}
 
 Kitchen::Kitchen() {
 	init();
@@ -34,9 +40,10 @@ void Kitchen::init() {
 	objects[12] = new KitchenObject("pizza.ogex", nullptr, nullptr);
 	objects[13] = new KitchenObject("door.ogex", nullptr, nullptr);
 	objects[14] = new KitchenObject("window.ogex", nullptr, nullptr);
-	
 
-	objects[10]->dynamic = true;
+	fridge = objects[2];
+	egg = objects[11];
+	brokenEgg = objects[6];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -44,8 +51,13 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 		KitchenObject* kitchenObj = objects[i];
 
 		kitchenObj->update();
+		if (kitchenObj == egg) {
+			if (egg->getBody()->M.get(1, 3) < -1) {
+				egged = true;
+			}
+		}
 		
-		if (kitchenObj != nullptr) {
+		if (kitchenObj != nullptr && (kitchenObj != brokenEgg || egged) && (kitchenObj != egg || !egged)) {
 			Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);
 			Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::TextureAddressing::Repeat);
 			
@@ -113,6 +125,13 @@ void Kitchen::openTheDoor() {
 		
 		if (kitchenObj == closestObj && kitchenObj->isHighlighted()) {
 			kitchenObj->openDoor();
+			if (kitchenObj == objects[2]) {
+				KitchenObject* egg = objects[11];
+				egg->speed = vec3(0.001f, 0.03f, 0.015f);
+				egg->acc = vec3(0, -0.002f, 0);
+				egg->dynamic = true;
+				
+			}
 		}
 	}
 }
