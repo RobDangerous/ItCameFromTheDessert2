@@ -128,7 +128,7 @@ void Kitchen::highlightTheClosestObject(Kore::vec4 playerPosition) {
 			kitchenObj->highlightKitchenObj(false);
 		}
 	}
-	log(Info, "Closest Obj %s", closestObj->name);
+	//log(Info, "Closest Obj %s", closestObj->name);
 }
 
 bool Kitchen::canOpen() const {
