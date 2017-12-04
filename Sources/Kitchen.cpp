@@ -32,6 +32,8 @@ void Kitchen::init() {
 	objects[10] = new KitchenObject("cake.ogex", nullptr, nullptr);
 	objects[11] = new KitchenObject("eggs.ogex", nullptr, nullptr);
 	objects[12] = new KitchenObject("pizza.ogex", nullptr, nullptr);
+	objects[13] = new KitchenObject("door.ogex", nullptr, nullptr);
+	
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
