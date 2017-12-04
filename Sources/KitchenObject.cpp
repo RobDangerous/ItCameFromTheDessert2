@@ -114,12 +114,16 @@ void KitchenObject::setLightsForMesh(Kore::Graphics4::ConstantLocation lightCoun
 	Graphics4::setFloats(lightPosLocation, (float*)lightPositions, lightCount * 4);
 }
 
-void KitchenObject::openDoor(bool open) {
-	closed = !open;
+void KitchenObject::openDoor() {
+	closed = !closed;
 }
 
 bool KitchenObject::isClosed() const {
 	return closed;
+}
+
+bool KitchenObject::isHighlighted() const {
+	return highlight;
 }
 
 MeshObject* KitchenObject::getBody() const {

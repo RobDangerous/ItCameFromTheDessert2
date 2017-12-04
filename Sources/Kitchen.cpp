@@ -13,6 +13,7 @@ Kitchen::Kitchen() {
 }
 
 void Kitchen::init() {
+	closestObj = nullptr;
 	
 	objects[0] = new KitchenObject("floor.ogex", nullptr, nullptr);
 	objects[1] = new KitchenObject("walls.ogex", nullptr, nullptr);
@@ -54,10 +55,10 @@ void Kitchen::setLights(Kore::Graphics4::ConstantLocation lightCountLocation, Ko
 	}
 }
 
-void Kitchen::checkDistance(Kore::vec4 playerPosition) {
+void Kitchen::highlightTheClosestObject(Kore::vec4 playerPosition) {
 	float minDist = MAXFLOAT;
 	
-	KitchenObject* closestObj = nullptr;
+	closestObj = nullptr;
 	
 	for (int i = 0; i < maxObjects; ++i) {
 		KitchenObject* kitchenObj = objects[i];
@@ -77,12 +78,26 @@ void Kitchen::checkDistance(Kore::vec4 playerPosition) {
 		
 		if (kitchenObj == closestObj) {
 			kitchenObj->highlightKitchenObj(true);
-			kitchenObj->openDoor(true);
 		} else {
 			kitchenObj->highlightKitchenObj(false);
-			kitchenObj->openDoor(false);
 		}
 	}
-	
 	//log(Info, "Closest Obj %s", closestObj->name);
+}
+
+bool Kitchen::canOpen() const {
+	if (closestObj != nullptr && closestObj->isHighlighted())
+		return true;
+	else
+		return false;
+}
+
+void Kitchen::openTheDoor() {
+	for (int i = 0; i < maxObjects; ++i) {
+		KitchenObject* kitchenObj = objects[i];
+		
+		if (kitchenObj == closestObj && kitchenObj->isHighlighted()) {
+			kitchenObj->openDoor();
+		}
+	}
 }

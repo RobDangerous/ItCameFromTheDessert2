@@ -15,8 +15,9 @@ public:
 	void renderMesh(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation);
 	void setLightsForMesh(Kore::Graphics4::ConstantLocation lightCountLocation, Kore::Graphics4::ConstantLocation lightPosLocation);
 	
-	void openDoor(bool open);
+	void openDoor();
 	bool isClosed() const;
+	bool isHighlighted() const;
 	
 	float checkDistance(vec4 playerPosition);
 	void highlightKitchenObj(bool highlightObj);
