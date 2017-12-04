@@ -24,6 +24,10 @@ namespace {
 		vec3 halfSize;
 	};
 
+	Graphics4::VertexBuffer* boxVertexBuffer;
+	Graphics4::IndexBuffer* boxIndexBuffer;
+	Graphics4::Texture* boxTexture;
+
 	vec3 transformInverse(const mat4& transform, const vec3& vector) {
 		vec3 tmp = vector;
 		tmp.x() -= transform.data[3];
@@ -124,7 +128,6 @@ namespace {
 	void collisionDetection(MeshObject* object) {
 		if (object == nullptr) return;
 		
-		// TODO
 		for (int j = 0; j < object->meshesCount; ++j) {
 			Mesh* mesh = object->meshes[j];
 			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
@@ -204,6 +207,65 @@ void Ant::init() {
 	//boxes[1].halfSize = vec3(1.5f, 1.5f, 1.5f);
 
 	collisionObjects = 47;
+
+	boxVertexBuffer = new Graphics4::VertexBuffer(24, *structures[0]);
+	float* vertices = boxVertexBuffer->lock();
+	int i = 0;
+	vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] =  0;
+	vertices[i++] = -1; vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] =  0;
+	vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] =  0;
+	vertices[i++] = -1; vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] =  0;
+
+	vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  0; vertices[i++] = 0; vertices[i++] = -1;
+	vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  0; vertices[i++] = 0; vertices[i++] = -1;
+	vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  0; vertices[i++] = 0; vertices[i++] = -1;
+	vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  0; vertices[i++] = 0; vertices[i++] = -1;
+
+	vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] =  0;
+	vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] =  0;
+	vertices[i++] =  1; vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] =  0;
+	vertices[i++] =  1; vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] =  0;
+
+	vertices[i++] = -1; vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1;
+	vertices[i++] =  1; vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1;
+	vertices[i++] = -1; vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1;
+	vertices[i++] =  1; vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1;
+
+	vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0;
+	vertices[i++] = -1; vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0;
+	vertices[i++] =  1; vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0;
+	vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = -1; vertices[i++] = 0;
+
+	vertices[i++] = -1; vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0;
+	vertices[i++] = -1; vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0;
+	vertices[i++] =  1; vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0;
+	vertices[i++] =  1; vertices[i++] =  1; vertices[i++] = -1; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] = 0; vertices[i++] =  1; vertices[i++] = 0;
+
+	boxVertexBuffer->unlock();
+
+	boxIndexBuffer = new Graphics4::IndexBuffer(6 * 6);
+	int* indices = boxIndexBuffer->lock();
+	i = 0;
+	indices[i++] = 0; indices[i++] = 1; indices[i++] = 2;
+	indices[i++] = 1; indices[i++] = 3; indices[i++] = 2;
+
+	indices[i++] = 4; indices[i++] = 5; indices[i++] = 6;
+	indices[i++] = 5; indices[i++] = 7; indices[i++] = 6;
+
+	indices[i++] =  8; indices[i++] =  9; indices[i++] = 10;
+	indices[i++] = 10; indices[i++] = 11; indices[i++] = 8;
+
+	indices[i++] = 12; indices[i++] = 13; indices[i++] = 14;
+	indices[i++] = 13; indices[i++] = 15; indices[i++] = 14;
+
+	indices[i++] = 16; indices[i++] = 17; indices[i++] = 18;
+	indices[i++] = 18; indices[i++] = 19; indices[i++] = 16;
+
+	indices[i++] = 20; indices[i++] = 21; indices[i++] = 22;
+	indices[i++] = 22; indices[i++] = 23; indices[i++] = 20;
+	boxIndexBuffer->unlock();
+
+	boxTexture = new Graphics4::Texture("white.png");
 }
 
 void Ant::chooseScent(bool force) {
@@ -538,6 +600,25 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 		feeler->M = bodytrans * bodyrotation * bodyscale *mat4::Translation(-1.0f, -8.0f, 7.0f) * mat4::Scale(-1.0f, 1.0f, 1.0f);
 		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+	}
+
+	for (int i = 0; i < collisionObjects; ++i) {
+		Box* box = &boxes[collisionObjects];
+		mat4 modelMatrix = mat4::Scale(box->halfSize.x(), box->halfSize.y(), box->halfSize.z()) * mat4::Translation(box->transform.data[3], box->transform.data[7], box->transform.data[11]);
+		mat4 modelMatrixInverse = modelMatrix.Invert();
+
+		Graphics4::setMatrix(mLocation, modelMatrix);
+		Graphics4::setMatrix(mLocationInverse, modelMatrixInverse);
+
+		Graphics4::setFloat3(diffuseLocation, vec3(1.0, 1.0, 1.0));
+		Graphics4::setFloat3(specularLocation, vec3(1.0, 1.0, 1.0));
+		Graphics4::setFloat(specularPowerLocation, 1.0);
+
+		Graphics4::setTexture(tex, boxTexture);
+
+		Graphics4::setVertexBuffer(*boxVertexBuffer);
+		Graphics4::setIndexBuffer(*boxIndexBuffer);
+		Graphics4::drawIndexedVertices();
 	}
 
 	/*int c = 0;
