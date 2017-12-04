@@ -1,0 +1,74 @@
+Metric (key = "distance") {float {1.0}}
+Metric (key = "angle") {float {1.0}}
+Metric (key = "time") {float {1.0}}
+Metric (key = "up") {string {"z"}}
+
+GeometryNode $node1
+{
+	Name {string {"wall.001"}}
+	ObjectRef {ref {$geometry1}}
+	MaterialRef (index = 0) {ref {$material1}}
+
+	Transform
+	{
+		float[16]
+		{
+			{5.099999904632568, 0.0, 0.0, 0.0,
+			 0.0, 5.099999904632568, 0.0, 0.0,
+			 0.0, 0.0, 1.0, 0.0,
+			 1.566360592842102, 3.0, 0.0, 1.0}
+		}
+	}
+}
+
+GeometryObject $geometry1		// wall.001
+{
+	Mesh (primitive = "triangles")
+	{
+		VertexArray (attrib = "position")
+		{
+			float[3]		// 4
+			{
+				{-1.0, -1.0, 0.0}, {1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}, {-1.0, 1.0, 0.0}
+			}
+		}
+
+		VertexArray (attrib = "normal")
+		{
+			float[3]		// 4
+			{
+				{0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}
+			}
+		}
+
+		VertexArray (attrib = "texcoord")
+		{
+			float[2]		// 4
+			{
+				{-1.116017460823059, -1.1160167455673218}, {2.1160168647766113, -1.116017460823059}, {2.1160173416137695, 2.1160168647766113}, {-1.1160167455673218, 2.1160173416137695}
+			}
+		}
+
+		IndexArray
+		{
+			unsigned_int32[3]		// 2
+			{
+				{0, 1, 2}, {0, 2, 3}
+			}
+		}
+	}
+}
+
+Material $material1
+{
+	Name {string {"Material.006"}}
+
+	Color (attrib = "diffuse") {float[3] {{0.6400000190734865, 0.6400000190734865, 0.6400000190734865}}}
+	Color (attrib = "specular") {float[3] {{0.5, 0.5, 0.5}}}
+	Param (attrib = "specular_power") {float {50}}
+
+	Texture (attrib = "diffuse")
+	{
+		string {"//textura_stena_1024x1024.png"}
+	}
+}

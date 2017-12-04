@@ -1,0 +1,72 @@
+Metric (key = "distance") {float {1.0}}
+Metric (key = "angle") {float {1.0}}
+Metric (key = "time") {float {1.0}}
+Metric (key = "up") {string {"z"}}
+
+GeometryNode $node1
+{
+	Name {string {"wall.003"}}
+	ObjectRef {ref {$geometry1}}
+	MaterialRef (index = 0) {ref {$material1}}
+
+	Transform
+	{
+		float[16]
+		{
+			{-2.229280795518207e-07, 0.0, -5.099999904632568, 0.0,
+			 0.0, 5.099999904632568, 0.0, 0.0,
+			 1.0, 0.0, -4.371138828673793e-08, 0.0,
+			 -7.827088832855225, 3.0, -1.2000000476837158, 1.0}
+		}
+	}
+}
+
+GeometryObject $geometry1		// wall.003
+{
+	Mesh (primitive = "triangles")
+	{
+		VertexArray (attrib = "position")
+		{
+			float[3]		// 4
+			{
+				{-2.215118885040283, -1.0, 4.4437994956970215}, {-0.2151188850402832, -1.0, 4.4437994956970215}, {-0.2151188850402832, 1.0, 4.4437994956970215}, {-2.215118885040283, 1.0, 4.4437994956970215}
+			}
+		}
+
+		VertexArray (attrib = "normal")
+		{
+			float[3]		// 4
+			{
+				{0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}
+			}
+		}
+
+		VertexArray (attrib = "texcoord")
+		{
+			float[2]		// 4
+			{
+				{-1.1085766553878784, -1.1085758209228516}, {2.1085758209228516, -1.1085766553878784}, {2.108576774597168, 2.1085760593414307}, {-1.1085751056671143, 2.108576774597168}
+			}
+		}
+
+		IndexArray
+		{
+			unsigned_int32[3]		// 2
+			{
+				{0, 1, 2}, {0, 2, 3}
+			}
+		}
+	}
+}
+
+Material $material1
+{
+	Name {string {"Material.001"}}
+
+	Color (attrib = "diffuse") {float[3] {{0.8000000715255737, 0.7327405214309692, 0.7988924384117126}}}
+
+	Texture (attrib = "diffuse")
+	{
+		string {"//textura_stena_1024x1024.png"}
+	}
+}
