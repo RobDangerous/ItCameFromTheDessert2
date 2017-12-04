@@ -176,4 +176,6 @@ void KitchenObject::update() {
 	body->M.Set(2, 3, z);
 
 	body->M = body->M;
+	
+	//log(Info, "Animate %s", name);
 }

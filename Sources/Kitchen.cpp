@@ -59,6 +59,7 @@ void Kitchen::init() {
 	pizza->visible = false;
 	pizzaDrawer = objects[12];
 	cake = objects[14];
+	egg = objects[15];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -148,7 +149,6 @@ void Kitchen::openTheDoor() {
 			kitchenObj->openDoor();
 			if (kitchenObj == fridge && !fridge->activated) {
 				fridge->activated = true;
-				KitchenObject* egg = objects[11];
 				egg->speed = vec3(0.001f, 0.03f, 0.015f);
 				egg->acc = vec3(0, -0.002f, 0);
 				egg->dynamic = true;
