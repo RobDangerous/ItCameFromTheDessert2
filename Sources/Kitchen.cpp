@@ -69,7 +69,17 @@ void Kitchen::checkDistance(Kore::vec4 playerPosition) {
 		}
 	}
 	
-	//log(Info, "Closest Obj %s", closestObj->name);
+	for (int i = 0; i < maxObjects; ++i) {
+		KitchenObject* kitchenObj = objects[i];
+		
+		if (kitchenObj == closestObj) {
+			kitchenObj->highlightKitchenObj(true);
+			kitchenObj->openDoor(true);
+		} else {
+			kitchenObj->highlightKitchenObj(false);
+			kitchenObj->openDoor(false);
+		}
+	}
 	
-	closestObj->openDoor(true);
+	//log(Info, "Closest Obj %s", closestObj->name);
 }

@@ -2,45 +2,8 @@
 
 #include <Kore/Log.h>
 
-namespace {
-	bool render(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
-		
-		if (mesh == nullptr) return false;
-		
-		for (int i = 0; i < mesh->meshesCount; ++i) {
-			Geometry* geometry = mesh->geometries[i];
-			mat4 modelMatrix = mesh->M * geometry->transform;
-			mat4 modelMatrixInverse = modelMatrix.Invert();
-			
-			Graphics4::setMatrix(mLocation, modelMatrix);
-			Graphics4::setMatrix(mLocationInverse, modelMatrixInverse);
-			
-			unsigned int materialIndex = geometry->materialIndex;
-			Material* material = mesh->findMaterialWithIndex(materialIndex);
-			if (material != nullptr) {
-				Graphics4::setFloat3(diffuseLocation, material->diffuse);
-				Graphics4::setFloat3(specularLocation, material->specular);
-				Graphics4::setFloat(specularPowerLocation, material->specular_power);
-			}
-			else {
-				Graphics4::setFloat3(diffuseLocation, vec3(1.0, 1.0, 1.0));
-				Graphics4::setFloat3(specularLocation, vec3(1.0, 1.0, 1.0));
-				Graphics4::setFloat(specularPowerLocation, 1.0);
-			}
-			
-			Graphics4::Texture* image = mesh->images[i];
-			Graphics4::setTexture(tex, image);
-			
-			Graphics4::setVertexBuffer(*mesh->vertexBuffers[i]);
-			Graphics4::setIndexBuffer(*mesh->indexBuffers[i]);
-			Graphics4::drawIndexedVertices();
-		}
-		
-		return true;
-	}
-}
 
-KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoorFile, const char* meshOpenDoorFile, const float scale, const vec3 position, const Quaternion rotation) : closed(true), body(nullptr), door_open(nullptr), door_closed(nullptr) {
+KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoorFile, const char* meshOpenDoorFile, const float scale, const vec3 position, const Quaternion rotation) : closed(true), highlight(false), body(nullptr), door_open(nullptr), door_closed(nullptr) {
 	
 	M = mat4::Identity();
 	M *= mat4::Translation(position.x(), position.y(), position.z());
@@ -93,6 +56,43 @@ void KitchenObject::renderMesh(Kore::Graphics4::TextureUnit tex, Kore::Graphics4
 	
 }
 
+bool KitchenObject::render(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
+	
+	if (mesh == nullptr) return false;
+	
+	for (int i = 0; i < mesh->meshesCount; ++i) {
+		Geometry* geometry = mesh->geometries[i];
+		mat4 modelMatrix = mesh->M * geometry->transform;
+		mat4 modelMatrixInverse = modelMatrix.Invert();
+		
+		Graphics4::setMatrix(mLocation, modelMatrix);
+		Graphics4::setMatrix(mLocationInverse, modelMatrixInverse);
+		
+		unsigned int materialIndex = geometry->materialIndex;
+		Material* material = mesh->findMaterialWithIndex(materialIndex);
+		if (material != nullptr) {
+			if(highlight) Graphics4::setFloat3(diffuseLocation, material->diffuse + vec3(1, 0, 0));
+			else Graphics4::setFloat3(diffuseLocation, material->diffuse);
+			Graphics4::setFloat3(specularLocation, material->specular);
+			Graphics4::setFloat(specularPowerLocation, material->specular_power);
+		}
+		else {
+			Graphics4::setFloat3(diffuseLocation, vec3(1.0, 1.0, 1.0));
+			Graphics4::setFloat3(specularLocation, vec3(1.0, 1.0, 1.0));
+			Graphics4::setFloat(specularPowerLocation, 1.0);
+		}
+		
+		Graphics4::Texture* image = mesh->images[i];
+		Graphics4::setTexture(tex, image);
+		
+		Graphics4::setVertexBuffer(*mesh->vertexBuffers[i]);
+		Graphics4::setIndexBuffer(*mesh->indexBuffers[i]);
+		Graphics4::drawIndexedVertices();
+	}
+	
+	return true;
+}
+
 void KitchenObject::setLightsForMesh(Kore::Graphics4::ConstantLocation lightCountLocation, Kore::Graphics4::ConstantLocation lightPosLocation) {
 	static const int maxLightCount = 10;
 	Kore::vec4 lightPositions[maxLightCount];
@@ -142,4 +142,8 @@ float KitchenObject::checkDistance(vec4 playerPosition) {
 	//log(Info, "dist %s %f", name, dist);
 	
 	return dist;
+}
+
+void KitchenObject::highlightKitchenObj(bool highlightObj) {
+	highlight = highlightObj;
 }
