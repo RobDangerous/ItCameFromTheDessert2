@@ -61,6 +61,8 @@ KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoo
 	body = new MeshObject(bodyMeshDir, kitchenDir, *structures, 1);
 	body->M = M;
 	
+	name = meshBodyFile;
+	
 	if (meshOpenDoorFile != nullptr) {
 		char openDoorMeshDir[100];
 		std::strcpy(openDoorMeshDir, kitchenDir);
@@ -130,4 +132,14 @@ MeshObject* KitchenObject::getOpenDoor() const {
 
 MeshObject* KitchenObject::getClosedDoor() const {
 	return door_closed;
+}
+
+float KitchenObject::checkDistance(vec4 playerPosition) {
+	vec4 meshPos = body->geometries[0]->transform * vec4(0, 0, 0, 1);
+	//log(Info, "pos %f %f %f", meshPos.x(), meshPos.y(), meshPos.z());
+	
+	float dist = (meshPos - playerPosition).getLength();
+	//log(Info, "dist %s %f", name, dist);
+	
+	return dist;
 }

@@ -152,7 +152,7 @@ namespace {
 		Ant::moveEverybody(1.0f / 60.0f);
 		renderAnt(V, P);
 		
-		//renderKitchen(V, P);
+		kitchen->checkDistance(vec4(cameraPos.x(), cameraPos.y(), cameraPos.z(), 1.0));
 		
 		Graphics4::end();
 		Graphics4::swapBuffers();

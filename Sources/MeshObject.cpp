@@ -127,6 +127,7 @@ namespace {
 
 MeshObject::MeshObject(const char* meshFile, const char* textureFile, const VertexStructure& structure, float scale) : textureDir(textureFile), structure(structure), scale(scale), M(mat4::Identity()), doorMode(Default) {
 	
+	log(Info, "Load Mesh %s", meshFile);
 	LoadObj(meshFile);
 	
 	meshesCount = meshes.size();

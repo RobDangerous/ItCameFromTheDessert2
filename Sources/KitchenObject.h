@@ -18,11 +18,14 @@ public:
 	void openDoor(bool open);
 	bool isClosed() const;
 	
+	float checkDistance(vec4 playerPosition);
+	
 	MeshObject* getBody() const;
 	MeshObject* getOpenDoor() const;
 	MeshObject* getClosedDoor() const;
     
     mat4 M;
+	const char* name;
 	
 private:
 	bool closed;
@@ -30,5 +33,4 @@ private:
 	MeshObject* body;
 	MeshObject* door_closed;
 	MeshObject* door_open;
-	
 };
