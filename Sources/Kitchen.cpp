@@ -28,28 +28,33 @@ void Kitchen::init() {
 	closestObj = nullptr;
 	
 	objects[0] = new KitchenObject("floor.ogex", nullptr, nullptr);
-	objects[1] = new KitchenObject("walls.ogex", nullptr, nullptr);
+	objects[1] = new KitchenObject("wall0.ogex", nullptr, nullptr);
+	objects[2] = new KitchenObject("wall1.ogex", nullptr, nullptr);
+	objects[3] = new KitchenObject("wall2.ogex", nullptr, nullptr);
+	objects[4] = new KitchenObject("wall3.ogex", nullptr, nullptr);
+	objects[5] = new KitchenObject("wall4.ogex", nullptr, nullptr);
 	
-	objects[2] = new KitchenObject("fridge.ogex", "fridge_door.ogex", "fridge_door_open.ogex");
+	objects[6] = new KitchenObject("fridge.ogex", "fridge_door.ogex", "fridge_door_open.ogex");
 	
-	objects[3] = new KitchenObject("lower_cupboard.ogex", nullptr, nullptr);
-	objects[4] = new KitchenObject("upper_cupboard.ogex", nullptr, nullptr);
-	objects[5] = new KitchenObject("table_chairs.ogex", nullptr, nullptr);
+	objects[7] = new KitchenObject("lower_cupboard.ogex", nullptr, nullptr);
+	objects[8] = new KitchenObject("upper_cupboard.ogex", nullptr, nullptr);
+	objects[9] = new KitchenObject("table_chairs.ogex", nullptr, nullptr);
 	
-	objects[6] = new KitchenObject("broken_egg.ogex", nullptr, nullptr, 4, vec3(3.0, 0.0, 1.2));
+	objects[10] = new KitchenObject("broken_egg.ogex", nullptr, nullptr, 4, vec3(3.0, 0.0, 1.2));
 	
-	objects[7] = new KitchenObject("oven.ogex", "oven_door.ogex", "oven_door_open.ogex");
-	objects[8] = new KitchenObject("drawer.ogex", "drawer_door.ogex", "drawer_door_open.ogex");
-	objects[9] = new KitchenObject("sink.ogex", nullptr, nullptr);
-	objects[10] = new KitchenObject("cake.ogex", nullptr, nullptr);
-	objects[11] = new KitchenObject("eggs.ogex", nullptr, nullptr);
-	objects[12] = new KitchenObject("pizza.ogex", nullptr, nullptr);
-	objects[13] = new KitchenObject("door.ogex", nullptr, nullptr);
-	objects[14] = new KitchenObject("window.ogex", nullptr, nullptr);
+	objects[11] = new KitchenObject("oven.ogex", "oven_door.ogex", "oven_door_open.ogex");
+	objects[12] = new KitchenObject("drawer.ogex", "drawer_door.ogex", "drawer_door_open.ogex");
+	objects[13] = new KitchenObject("sink.ogex", nullptr, nullptr);
+	objects[14] = new KitchenObject("cake.ogex", nullptr, nullptr);
+	objects[15] = new KitchenObject("eggs.ogex", nullptr, nullptr);
+	objects[16] = new KitchenObject("pizza.ogex", nullptr, nullptr);
+	objects[17] = new KitchenObject("door.ogex", nullptr, nullptr);
+	objects[18] = new KitchenObject("window.ogex", nullptr, nullptr);
+	objects[19] = new KitchenObject("lamp.ogex", nullptr, nullptr);
 
-	fridge = objects[2];
-	egg = objects[11];
-	brokenEgg = objects[6];
+	fridge = objects[6];
+	egg = objects[15];
+	brokenEgg = objects[10];
 	pizza = objects[12];
 	pizza->visible = false;
 	pizzaDrawer = objects[8];

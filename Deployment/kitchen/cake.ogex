@@ -637,11 +637,6 @@ Material $material2
 	Name {string {"Material.001"}}
 
 	Color (attrib = "diffuse") {float[3] {{0.8000000715255737, 0.7327405214309692, 0.7988924384117126}}}
-
-	Texture (attrib = "diffuse")
-	{
-		string {"//textura_stena_1024x1024.png"}
-	}
 }
 
 Material $material3
