@@ -55,10 +55,10 @@ void Kitchen::init() {
 	fridge = objects[6];
 	egg = objects[15];
 	brokenEgg = objects[10];
-	pizza = objects[12];
+	pizza = objects[16];
 	pizza->visible = false;
-	pizzaDrawer = objects[8];
-	cake = objects[10];
+	pizzaDrawer = objects[12];
+	cake = objects[14];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
