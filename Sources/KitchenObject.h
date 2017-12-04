@@ -26,8 +26,14 @@ public:
 	MeshObject* getOpenDoor() const;
 	MeshObject* getClosedDoor() const;
     
+	void update();
+
     mat4 M;
 	const char* name;
+
+	vec3 speed;
+	vec3 acc;
+	bool dynamic;
 	
 private:
 	bool closed;

@@ -3,7 +3,7 @@
 #include <Kore/Log.h>
 
 
-KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoorFile, const char* meshOpenDoorFile, const float scale, const vec3 position, const Quaternion rotation) : closed(true), highlight(false), body(nullptr), door_open(nullptr), door_closed(nullptr) {
+KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoorFile, const char* meshOpenDoorFile, const float scale, const vec3 position, const Quaternion rotation) : dynamic(false), speed(0, 0, 0), acc(0, -0.00001f, 0), closed(true), highlight(false), body(nullptr), door_open(nullptr), door_closed(nullptr) {
 	
 	M = mat4::Identity();
 	M *= mat4::Translation(position.x(), position.y(), position.z());
@@ -152,4 +152,24 @@ void KitchenObject::highlightKitchenObj(bool highlightObj) {
 	// Highlight only objects that have doors, which can be opened
 	if (door_open != nullptr)
 		highlight = highlightObj;
+}
+
+void KitchenObject::update() {
+	if (!dynamic) return;
+	
+	float x = body->M.get(0, 3);
+	float y = body->M.get(1, 3);
+	float z = body->M.get(2, 3);
+
+	x += speed.x();
+	y += speed.y();
+	z += speed.z();
+
+	speed.x() += acc.x();
+	speed.y() += acc.y();
+	speed.z() += acc.z();
+
+	body->M.Set(0, 3, x);
+	body->M.Set(1, 3, y);
+	body->M.Set(2, 3, z);
 }
