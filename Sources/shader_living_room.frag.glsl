@@ -44,12 +44,12 @@ void applyLight(vec4 lightPosition, out vec3 ambientOut, out vec3 diffuseOut, ou
 		
 	} else {
 		// Directional light
-		lightDirection = normalize(lightPosition.xyz);
+		lightDirection = normalize(lightPosition.xyz - eyeCoord);
 		attenuation = 1.0; // No attenuation for directional lights
 	}
 	
 	// Ambient
-	const float amb = 0.3;
+	const float amb = 0.15;
 	vec3 ambient = vec3(amb);
 	
 	// Diffuse
