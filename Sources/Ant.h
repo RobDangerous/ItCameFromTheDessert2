@@ -32,6 +32,7 @@ public:
     
     float energy;
     bool dead;
+	bool active;
     
 	Kore::vec3i lastGrid;
 	float legRotation;
@@ -43,3 +44,6 @@ private:
     
     bool isDying();
 };
+
+const int maxAnts = 50;
+extern Ant ants[maxAnts];

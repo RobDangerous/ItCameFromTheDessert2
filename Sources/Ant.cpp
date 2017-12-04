@@ -13,6 +13,8 @@
 
 using namespace Kore;
 
+Ant ants[maxAnts];
+
 namespace {
 	vec3 getAxisVector(const mat4& transform, int i) {
 		return vec3(transform.data[i], transform.data[i + 4], transform.data[i + 8]);
@@ -76,12 +78,6 @@ namespace {
 	MeshObject* leg;
 	MeshObject* feeler;
 
-#ifdef NDEBUG
-	const int maxAnts = 500;
-#else
-	const int maxAnts = 50;
-#endif
-	Ant ants[maxAnts];
 	float* scent;
 	const int scents = 100;
     int antsDead = 0;
@@ -143,7 +139,7 @@ namespace {
 	}
 }
 
-Ant::Ant() : mode(Floor) {
+Ant::Ant() : mode(Floor), active(false) {
 	rotation = mat4::Identity();
 	forward = vec4(0, 0, -1, 0);
 	right = vec4(1, 0, 0, 0);
@@ -466,6 +462,7 @@ void Ant::lessPizza(Kore::vec3 position) {
 extern KitchenObject* objects[];
 
 void Ant::move(float deltaTime) {
+	if (!active) return;
 	legRotation += 0.2f;
 	bool flying = true;
 	for (int i = 0; i < collisionObjects; ++i) {
@@ -598,6 +595,7 @@ namespace {
 
 void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) { //Graphics4::ConstantLocation vLocation, Graphics4::TextureUnit tex, mat4 view) {
 	for (int i = 0; i < maxAnts; ++i) {
+		if (!ants[i].active) continue;
 		mat4 bodytrans = mat4::Translation(ants[i].position.x(), ants[i].position.y(), ants[i].position.z());
 		mat4 bodyrotation = ants[i].rotation;
 		float scale = 0.005f;

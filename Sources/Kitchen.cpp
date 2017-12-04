@@ -1,7 +1,10 @@
 #include "pch.h"
+
 #include "Kitchen.h"
+#include "Ant.h"
 
 #include <Kore/Log.h>
+#include <Kore/Math/Random.h>
 
 using namespace Kore;
 
@@ -124,12 +127,25 @@ void Kitchen::openTheDoor() {
 		
 		if (kitchenObj == closestObj && kitchenObj->isHighlighted()) {
 			kitchenObj->openDoor();
-			if (kitchenObj == objects[2]) {
+			if (kitchenObj == fridge) {
 				KitchenObject* egg = objects[11];
 				egg->speed = vec3(0.001f, 0.03f, 0.015f);
 				egg->acc = vec3(0, -0.002f, 0);
 				egg->dynamic = true;
 				
+				for (int i = 0; i < maxAnts; ++i) {
+					vec3 start(0, 0.0f, 0);
+					// mat4::Translation(0.75f, 2.9f, 0)
+					ants[i].position = vec3(2.5f + 0.6f * Random::get(0, 1000) / 1000.0f, 2.5f * Random::get(0, 1000) / 1000.0f, 0.665f + 0.4f);
+					ants[i].energy = 0;
+					ants[i].dead = false;
+					ants[i].active = true;
+					float value = Random::get(-100.0f, 100.0f) / 10.0f;
+					ants[i].forward = vec4(Kore::sin(value), Kore::cos(value), 0.0f, 1.0f);
+					ants[i].rotation = Quaternion(vec3(0, 0, 1), pi / 2.0f - Kore::atan2(ants[i].forward.y(), ants[i].forward.x())).matrix() * Quaternion(vec3(0, 0, 1), pi).matrix();
+					ants[i].up = vec4(0, 0, 1, 1);
+					ants[i].right = ants[i].forward.cross(ants[i].up);
+				}
 			}
 		}
 	}
