@@ -119,3 +119,15 @@ void KitchenObject::openDoor(bool open) {
 bool KitchenObject::isClosed() const {
 	return closed;
 }
+
+MeshObject* KitchenObject::getBody() const {
+	return body;
+}
+
+MeshObject* KitchenObject::getOpenDoor() const {
+	return door_open;
+}
+
+MeshObject* KitchenObject::getClosedDoor() const {
+	return door_closed;
+}

@@ -17,6 +17,10 @@ public:
 	
 	void openDoor(bool open);
 	bool isClosed() const;
+	
+	MeshObject* getBody() const;
+	MeshObject* getOpenDoor() const;
+	MeshObject* getClosedDoor() const;
     
     mat4 M;
 	

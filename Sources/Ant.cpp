@@ -120,6 +120,24 @@ namespace {
 
 	int count = 0;
 	int collisionObjects = 0;
+	
+	void collisionDetection(MeshObject* object) {
+		if (object == nullptr) return;
+		
+		// TODO
+		for (int j = 0; j < object->meshesCount; ++j) {
+			Mesh* mesh = object->meshes[j];
+			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
+				boxes[collisionObjects].transform = mat4::Translation(-1000, -1000, -1000).Transpose();
+				boxes[collisionObjects].halfSize = vec3(0, 0, 0);
+			}
+			else {
+				boxes[collisionObjects].transform = mat4::Translation(mesh->xmin + (mesh->xmax - mesh->xmin) / 2.0f, mesh->ymin + (mesh->ymax - mesh->ymin) / 2.0f, mesh->zmin + (mesh->zmax - mesh->zmin) / 2.0f).Transpose();
+				boxes[collisionObjects].halfSize = vec3((mesh->xmax - mesh->xmin) / 2.0f, (mesh->ymax - mesh->ymin) / 2.0f, (mesh->zmax - mesh->zmin) / 2.0f);
+			}
+			++collisionObjects;
+		 }
+	}
 }
 
 Ant::Ant() : mode(Floor) {
@@ -173,19 +191,10 @@ void Ant::init() {
 		KitchenObject* kitchenObj = objects[i];
 		if (kitchenObj == nullptr) continue;
 		
-		// TODO
-		/*for (int j = 0; j < objects[i]->meshesCount; ++j) {
-			Mesh* mesh = objects[i]->meshes[j];
-			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
-				boxes[collisionObjects].transform = mat4::Translation(-1000, -1000, -1000).Transpose();
-				boxes[collisionObjects].halfSize = vec3(0, 0, 0);
-			}
-			else {
-				boxes[collisionObjects].transform = mat4::Translation(mesh->xmin + (mesh->xmax - mesh->xmin) / 2.0f, mesh->ymin + (mesh->ymax - mesh->ymin) / 2.0f, mesh->zmin + (mesh->zmax - mesh->zmin) / 2.0f).Transpose();
-				boxes[collisionObjects].halfSize = vec3((mesh->xmax - mesh->xmin) / 2.0f, (mesh->ymax - mesh->ymin) / 2.0f, (mesh->zmax - mesh->zmin) / 2.0f);
-			}
-			++collisionObjects;
-		}*/
+		// TODO: Robert check this
+		collisionDetection(kitchenObj->getBody());
+		collisionDetection(kitchenObj->getClosedDoor());
+		collisionDetection(kitchenObj->getOpenDoor());
 	}
 
 	boxes[collisionObjects].transform = mat4::Translation(0, -1, 0).Transpose();
