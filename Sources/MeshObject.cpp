@@ -647,9 +647,9 @@ Light* MeshObject::ConvertLightNode(const OGEX::LightNodeStructure& structure) {
 	light->name = name;
 	
 	std::string lightName(name);
-	if (lightName.compare("Spot") == 0) {
+	if (lightName.substr(0, 4).compare("Spot") == 0) {
 		light->type = 0;
-	} else if (lightName.compare("Point") == 0) {
+	} else if (lightName.substr(0, 5).compare("Point") == 0) {
 		light->type = 1;
 	}
 	
