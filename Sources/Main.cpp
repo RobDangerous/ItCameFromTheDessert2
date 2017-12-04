@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include <Kore/IO/FileReader.h>
+#include <Kore/Graphics2/Graphics.h>
 #include <Kore/Graphics4/Graphics.h>
 #include <Kore/Graphics4/PipelineState.h>
 #include <Kore/Graphics1/Color.h>
@@ -53,6 +54,12 @@ namespace {
 	ConstantLocation specular_power_living_room;
 	ConstantLocation lightPosLocation_living_room;
 	ConstantLocation lightCount_living_room;
+	
+	Kore::Graphics2::Graphics2* g2;
+	Kravur* font14;
+	Kravur* font24;
+	Kravur* font34;
+	Kravur* font44;
 
 	// Keyboard controls
 	bool rotate = false;
@@ -154,7 +161,13 @@ namespace {
 		
 		kitchen->highlightTheClosestObject(vec4(cameraPos.x(), cameraPos.y(), cameraPos.z(), 1.0));
 		if(kitchen->canOpen()) {
-			log(Info, "Press Space to open or close the door");
+			const char* text = "Press Space to open or close the door";
+			//log(Info, "%s", text);
+			
+			g2->begin(false, width, height, false);
+			g2->setFont(font44);
+			g2->drawString(text, 10, 10);
+			g2->end();
 		}
 		
 		Graphics4::end();
@@ -343,14 +356,21 @@ namespace {
 		kitchen = new Kitchen();
 		
 		Ant::init();
-		ant = new Ant;		
+		ant = new Ant;
+		
+		font14 = Kravur::load("Data/Fonts/arial", FontStyle(), 14);
+		font24 = Kravur::load("Data/Fonts/arial", FontStyle(), 24);
+		font34 = Kravur::load("Data/Fonts/arial", FontStyle(), 34);
+		font44 = Kravur::load("Data/Fonts/arial", FontStyle(), 44);
+		g2 = new Graphics2::Graphics2(width, height);
+		g2->setFont(font44);
 	}
 
 }
 
 int kore(int argc, char** argv) {
 	System::init("ItCameFromTheDessert2", width, height, 4);
-
+	
 	init();
 
 	System::setCallback(update);
