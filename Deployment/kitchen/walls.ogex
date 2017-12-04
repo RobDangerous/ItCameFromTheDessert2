@@ -5,8 +5,25 @@ Metric (key = "up") {string {"z"}}
 
 GeometryNode $node1
 {
-	Name {string {"wall"}}
+	Name {string {"wall.005"}}
 	ObjectRef {ref {$geometry1}}
+
+	Transform
+	{
+		float[16]
+		{
+			{8.020000457763672, 0.0, 0.0, 0.0,
+			 0.0, 5.0, 0.0, 0.0,
+			 0.0, 0.0, 0.009999999776482582, 0.0,
+			 0.0, 1.0, 10.0, 1.0}
+		}
+	}
+}
+
+GeometryNode $node2
+{
+	Name {string {"wall"}}
+	ObjectRef {ref {$geometry2}}
 
 	Transform
 	{
@@ -20,10 +37,10 @@ GeometryNode $node1
 	}
 }
 
-GeometryNode $node2
+GeometryNode $node3
 {
 	Name {string {"wall.001"}}
-	ObjectRef {ref {$geometry2}}
+	ObjectRef {ref {$geometry3}}
 	MaterialRef (index = 0) {ref {$material1}}
 
 	Transform
@@ -38,10 +55,10 @@ GeometryNode $node2
 	}
 }
 
-GeometryNode $node3
+GeometryNode $node4
 {
 	Name {string {"wall.002"}}
-	ObjectRef {ref {$geometry3}}
+	ObjectRef {ref {$geometry4}}
 	MaterialRef (index = 0) {ref {$material1}}
 
 	Transform
@@ -56,10 +73,10 @@ GeometryNode $node3
 	}
 }
 
-GeometryNode $node4
+GeometryNode $node5
 {
 	Name {string {"wall.003"}}
-	ObjectRef {ref {$geometry4}}
+	ObjectRef {ref {$geometry5}}
 	MaterialRef (index = 0) {ref {$material1}}
 
 	Transform
@@ -74,7 +91,7 @@ GeometryNode $node4
 	}
 }
 
-LightNode $node5
+LightNode $node6
 {
 	Name {string {"Point"}}
 	ObjectRef {ref {$light1}}
@@ -91,24 +108,41 @@ LightNode $node5
 	}
 }
 
-LightNode $node6
+GeometryObject $geometry1		// wall.005
 {
-	Name {string {"Spot"}}
-	ObjectRef {ref {$light2}}
-
-	Transform
+	Mesh (primitive = "triangles")
 	{
-		float[16]
+		VertexArray (attrib = "position")
 		{
-			{-1.2100263833999634, -1.2405089139938354, -5.617666721343994, 0.0,
-			 -5.7522125244140625, 0.16565969586372375, 1.2024255990982056, 0.0,
-			 -0.09542612731456757, 5.744119167327881, -1.247877836227417, 0.0,
-			 0.7197373509407043, 18.38066291809082, 4.66383171081543, 1.0}
+			float[3]		// 24
+			{
+				{-1.0, -1.0, -1.0}, {-1.0, -1.0, 1.0}, {-1.0, 1.0, 1.0}, {-1.0, 1.0, -1.0}, {-1.0, 1.0, -1.0}, {-1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, 1.0, -1.0},
+				{1.0, 1.0, -1.0}, {1.0, 1.0, 1.0}, {1.0, -1.0, 1.0}, {1.0, -1.0, -1.0}, {-1.0, -1.0, 1.0}, {-1.0, -1.0, -1.0}, {1.0, -1.0, -1.0}, {1.0, -1.0, 1.0},
+				{1.0, -1.0, -1.0}, {-1.0, -1.0, -1.0}, {-1.0, 1.0, -1.0}, {1.0, 1.0, -1.0}, {1.0, 1.0, 1.0}, {-1.0, 1.0, 1.0}, {-1.0, -1.0, 1.0}, {1.0, -1.0, 1.0}
+			}
+		}
+
+		VertexArray (attrib = "normal")
+		{
+			float[3]		// 24
+			{
+				{-1.0, -0.0, 0.0}, {-1.0, -0.0, 0.0}, {-1.0, -0.0, 0.0}, {-1.0, -0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 1.0, 0.0},
+				{1.0, -0.0, 0.0}, {1.0, -0.0, 0.0}, {1.0, -0.0, 0.0}, {1.0, -0.0, 0.0}, {-0.0, -1.0, 0.0}, {-0.0, -1.0, 0.0}, {-0.0, -1.0, 0.0}, {-0.0, -1.0, 0.0},
+				{0.0, -0.0, -1.0}, {0.0, -0.0, -1.0}, {0.0, -0.0, -1.0}, {0.0, -0.0, -1.0}, {0.0, -0.0, 1.0}, {0.0, -0.0, 1.0}, {0.0, -0.0, 1.0}, {0.0, -0.0, 1.0}
+			}
+		}
+
+		IndexArray
+		{
+			unsigned_int32[3]		// 12
+			{
+				{0, 1, 2}, {0, 2, 3}, {4, 5, 6}, {4, 6, 7}, {8, 9, 10}, {8, 10, 11}, {12, 13, 14}, {12, 14, 15}, {16, 17, 18}, {16, 18, 19}, {20, 21, 22}, {20, 22, 23}
+			}
 		}
 	}
 }
 
-GeometryObject $geometry1		// wall
+GeometryObject $geometry2		// wall
 {
 	Mesh (primitive = "triangles")
 	{
@@ -138,37 +172,7 @@ GeometryObject $geometry1		// wall
 	}
 }
 
-GeometryObject $geometry2		// wall.001
-{
-	Mesh (primitive = "triangles")
-	{
-		VertexArray (attrib = "position")
-		{
-			float[3]		// 4
-			{
-				{-1.0, -1.0, 0.0}, {1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}, {-1.0, 1.0, 0.0}
-			}
-		}
-
-		VertexArray (attrib = "normal")
-		{
-			float[3]		// 4
-			{
-				{0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}
-			}
-		}
-
-		IndexArray
-		{
-			unsigned_int32[3]		// 2
-			{
-				{0, 1, 2}, {0, 2, 3}
-			}
-		}
-	}
-}
-
-GeometryObject $geometry4		// wall.003
+GeometryObject $geometry5		// wall.003
 {
 	Mesh (primitive = "triangles")
 	{
@@ -198,7 +202,7 @@ GeometryObject $geometry4		// wall.003
 	}
 }
 
-GeometryObject $geometry3		// wall.002
+GeometryObject $geometry4		// wall.002
 {
 	Mesh (primitive = "triangles")
 	{
@@ -228,9 +232,40 @@ GeometryObject $geometry3		// wall.002
 	}
 }
 
+GeometryObject $geometry3		// wall.001
+{
+	Mesh (primitive = "triangles")
+	{
+		VertexArray (attrib = "position")
+		{
+			float[3]		// 4
+			{
+				{-1.0, -1.0, 0.0}, {1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}, {-1.0, 1.0, 0.0}
+			}
+		}
+
+		VertexArray (attrib = "normal")
+		{
+			float[3]		// 4
+			{
+				{0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}
+			}
+		}
+
+		IndexArray
+		{
+			unsigned_int32[3]		// 2
+			{
+				{0, 1, 2}, {0, 2, 3}
+			}
+		}
+	}
+}
+
 LightObject $light1 (type = "point")		// Point
 {
 	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
+	Param (attrib = "intensity") {float {1.5}}
 
 	Atten (curve = "inverse_square")
 	{
@@ -238,28 +273,9 @@ LightObject $light1 (type = "point")		// Point
 	}
 }
 
-LightObject $light2 (type = "spot")		// Spot
-{
-	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
-	Param (attrib = "intensity") {float {1000.0}}
-
-	Atten (curve = "inverse_square")
-	{
-		Param (attrib = "scale") {float {1.4142135623730951}}
-	}
-
-	Atten (kind = "angle", curve = "linear")
-	{
-		Param (attrib = "begin") {float {0.556323685321221}}
-		Param (attrib = "end") {float {0.6544984579086304}}
-	}
-}
-
 Material $material1
 {
 	Name {string {"Material.001"}}
 
-	Color (attrib = "diffuse") {float[3] {{0.800000011920929, 0.800000011920929, 0.800000011920929}}}
-	Color (attrib = "specular") {float[3] {{0.5, 0.5, 0.5}}}
-	Param (attrib = "specular_power") {float {50}}
+	Color (attrib = "diffuse") {float[3] {{0.8000000715255737, 0.7327405214309692, 0.7988924384117126}}}
 }

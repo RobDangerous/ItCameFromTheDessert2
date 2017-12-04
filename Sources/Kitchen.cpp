@@ -30,6 +30,10 @@ void Kitchen::init() {
 	objects[8] = new KitchenObject("drawer.ogex", "drawer_door.ogex", "drawer_door_open.ogex");
 	objects[9] = new KitchenObject("sink.ogex", nullptr, nullptr);
 	objects[10] = new KitchenObject("cake.ogex", nullptr, nullptr);
+	objects[11] = new KitchenObject("eggs.ogex", nullptr, nullptr);
+	objects[12] = new KitchenObject("pizza.ogex", nullptr, nullptr);
+	objects[13] = new KitchenObject("door.ogex", nullptr, nullptr);
+	
 
 	objects[10]->dynamic = true;
 }
