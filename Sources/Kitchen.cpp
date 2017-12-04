@@ -14,6 +14,9 @@ namespace {
 	KitchenObject* fridge;
 	KitchenObject* egg;
 	KitchenObject* brokenEgg;
+	KitchenObject* pizza;
+	KitchenObject* pizzaDrawer;
+	KitchenObject* cake;
 	bool egged = false;
 }
 
@@ -52,6 +55,10 @@ void Kitchen::init() {
 	fridge = objects[6];
 	egg = objects[15];
 	brokenEgg = objects[10];
+	pizza = objects[16];
+	pizza->visible = false;
+	pizzaDrawer = objects[12];
+	cake = objects[14];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -64,8 +71,11 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 				egged = true;
 			}
 		}
+		if (kitchenObj == cake) {
+			//cake->R = mat4::RotationZ(0.01f) * cake->R; // deactivate because of weird lighting/normals
+		}
 		
-		if (kitchenObj != nullptr && (kitchenObj != brokenEgg || egged) && (kitchenObj != egg || !egged)) {
+		if (kitchenObj != nullptr && (kitchenObj != brokenEgg || egged) && (kitchenObj != egg || !egged) && kitchenObj->visible) {
 			Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);
 			Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::TextureAddressing::Repeat);
 			
@@ -128,13 +138,16 @@ bool Kitchen::canOpen() const {
 		return false;
 }
 
+extern vec3 cameraPos;
+
 void Kitchen::openTheDoor() {
 	for (int i = 0; i < maxObjects; ++i) {
 		KitchenObject* kitchenObj = objects[i];
 		
 		if (kitchenObj == closestObj && kitchenObj->isHighlighted()) {
 			kitchenObj->openDoor();
-			if (kitchenObj == fridge) {
+			if (kitchenObj == fridge && !fridge->activated) {
+				fridge->activated = true;
 				KitchenObject* egg = objects[11];
 				egg->speed = vec3(0.001f, 0.03f, 0.015f);
 				egg->acc = vec3(0, -0.002f, 0);
@@ -154,6 +167,16 @@ void Kitchen::openTheDoor() {
 					ants[i].right = ants[i].forward.cross(ants[i].up);
 				}
 			}
+		}
+		if (kitchenObj == pizzaDrawer && !pizzaDrawer->activated) {
+			pizzaDrawer->activated = true;
+			pizza->visible = true;
+			pizza->dynamic = true;
+			pizza->acc = vec3(0, 0, 0);
+			vec3 pizzaPos(pizza->getBody()->M.get(0, 3), pizza->getBody()->M.get(1, 3), pizza->getBody()->M.get(2, 3));
+			pizza->speed = cameraPos - pizzaPos;
+			pizza->speed.setLength(0.001f);
+			//pizza->R = mat4::RotationY(pi / 2.0f);
 		}
 	}
 }

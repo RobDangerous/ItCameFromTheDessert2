@@ -17,6 +17,8 @@
 using namespace Kore;
 using namespace Kore::Graphics4;
 
+vec3 cameraPos = vec3(0, 0, 0);					// x - left, right, y - up, down, z - forward, backward
+
 namespace {
 	const int width = 1024;
 	const int height = 768;
@@ -67,7 +69,6 @@ namespace {
 	bool F, L, B, R = false;
 	//bool Z, X = false;
 
-	vec3 cameraPos = vec3(0, 0, 0);					// x - left, right, y - up, down, z - forward, backward
 	vec3 cameraUp;
 	vec3 right;
 	vec3 forward;
