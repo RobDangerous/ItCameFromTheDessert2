@@ -16,6 +16,7 @@ namespace {
 	KitchenObject* brokenEgg;
 	KitchenObject* pizza;
 	KitchenObject* pizzaDrawer;
+	KitchenObject* cake;
 	bool egged = false;
 }
 
@@ -52,6 +53,7 @@ void Kitchen::init() {
 	pizza = objects[12];
 	pizza->visible = false;
 	pizzaDrawer = objects[8];
+	cake = objects[10];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -63,6 +65,9 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 			if (egg->getBody()->M.get(1, 3) < -1) {
 				egged = true;
 			}
+		}
+		if (kitchenObj == cake) {
+			//cake->R = mat4::RotationZ(0.01f) * cake->R; // deactivate because of weird lighting/normals
 		}
 		
 		if (kitchenObj != nullptr && (kitchenObj != brokenEgg || egged) && (kitchenObj != egg || !egged) && kitchenObj->visible) {
@@ -127,6 +132,8 @@ bool Kitchen::canOpen() const {
 		return false;
 }
 
+extern vec3 cameraPos;
+
 void Kitchen::openTheDoor() {
 	for (int i = 0; i < maxObjects; ++i) {
 		KitchenObject* kitchenObj = objects[i];
@@ -160,7 +167,10 @@ void Kitchen::openTheDoor() {
 			pizza->visible = true;
 			pizza->dynamic = true;
 			pizza->acc = vec3(0, 0, 0);
-			pizza->speed = vec3(0, 0, 0.1f);
+			vec3 pizzaPos(pizza->getBody()->M.get(0, 3), pizza->getBody()->M.get(1, 3), pizza->getBody()->M.get(2, 3));
+			pizza->speed = cameraPos - pizzaPos;
+			pizza->speed.setLength(0.001f);
+			//pizza->R = mat4::RotationY(pi / 2.0f);
 		}
 	}
 }

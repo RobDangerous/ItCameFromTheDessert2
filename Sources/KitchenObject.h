@@ -29,6 +29,7 @@ public:
 	void update();
 
     mat4 M;
+	mat4 R;
 	const char* name;
 
 	vec3 speed;

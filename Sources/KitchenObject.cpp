@@ -9,6 +9,8 @@ KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoo
 	M *= mat4::Translation(position.x(), position.y(), position.z());
 	M *= mat4::Scale(scale, scale, scale);
 	M *= rotation.matrix();
+
+	R = mat4::Identity();
 	
 	Graphics4::VertexStructure* structures = new Graphics4::VertexStructure();
 	structures->add("pos", Graphics4::Float3VertexData);
@@ -62,7 +64,7 @@ bool KitchenObject::render(MeshObject* mesh, Kore::Graphics4::TextureUnit tex, K
 	
 	for (int i = 0; i < mesh->meshesCount; ++i) {
 		Geometry* geometry = mesh->geometries[i];
-		mat4 modelMatrix = mesh->M * geometry->transform;
+		mat4 modelMatrix = mesh->M * geometry->transform * R;
 		mat4 modelMatrixInverse = modelMatrix.Invert();
 		
 		Graphics4::setMatrix(mLocation, modelMatrix);
