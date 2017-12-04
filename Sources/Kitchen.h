@@ -23,5 +23,5 @@ private:
 	KitchenObject* closestObj;
 };
 
-const int maxObjects = 19;
+const int maxObjects = 20;
 extern KitchenObject* objects[maxObjects];
