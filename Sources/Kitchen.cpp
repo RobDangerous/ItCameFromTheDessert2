@@ -37,7 +37,7 @@ void Kitchen::init() {
 	objects[6] = new KitchenObject("fridge.ogex", "fridge_door.ogex", "fridge_door_open.ogex");
 	
 	objects[7] = new KitchenObject("lower_cupboard.ogex", nullptr, nullptr);
-	objects[8] = new KitchenObject("upper_cupboard.ogex", nullptr, nullptr);
+	objects[8] = new KitchenObject("upper_cupboard.ogex", "upper_cupboard_door.ogex", "upper_cupboard_door_open.ogex");
 	objects[9] = new KitchenObject("table_chairs.ogex", nullptr, nullptr);
 	
 	objects[10] = new KitchenObject("broken_egg.ogex", nullptr, nullptr, 4, vec3(3.0, 0.0, 1.2));
