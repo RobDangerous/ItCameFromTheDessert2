@@ -174,18 +174,6 @@ void Ant::init() {
 	vertexBuffers[0] = body->vertexBuffers[0];
 	vertexBuffers[1] = new Graphics4::VertexBuffer(maxAnts, *structures[1], 1);
 
-	for (int i = 0; i < maxAnts; ++i) {
-		vec3 start(0, 0.0f, 0);
-		ants[i].position = vec3(start.x() + Random::get(-100, 100) / 50.0f, start.y(), start.z() + Random::get(-100, 100) / 50.0f); // vec3(Random::get(-100, 100) / 10.0f, -1, Random::get(-100, 100) / 10.0f);
-		//ants[i].rotation = Quaternion(ants[i].right, Random::get(3000.0f) / 1000.0f).matrix() * ants[i].rotation;
-        
-        ants[i].energy = 0;
-        ants[i].dead = false;
-		float value = Random::get(-100.0f, 100.0f) / 10.0f;
-		ants[i].forward = vec4(Kore::sin(value), 0.0f, Kore::cos(value), 1.0f);
-		ants[i].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[i].forward.z(), ants[i].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
-	}
-
 	collisionObjects = 0;
 	for (int i = 0; i < maxObjects; ++i) {
 		KitchenObject* kitchenObj = objects[i];

@@ -160,8 +160,6 @@ void Kitchen::openTheDoor() {
 				egg->dynamic = true;
 				
 				for (int i = currentAnts; i < currentAnts + 50; ++i) {
-					vec3 start(0, 0.0f, 0);
-					// mat4::Translation(0.75f, 2.9f, 0)
 					ants[i].position = vec3(2.5f + 0.6f * Random::get(0, 1000) / 1000.0f, 2.5f * Random::get(0, 1000) / 1000.0f, 0.665f + 0.4f);
 					ants[i].energy = 0;
 					ants[i].dead = false;
@@ -183,6 +181,18 @@ void Kitchen::openTheDoor() {
 			}
 			if (kitchenObj == oven && !oven->activated) {
 				oven->activated = true;
+				for (int i = currentAnts; i < currentAnts + 50; ++i) {
+					ants[i].position = vec3(-1.9f + Random::get(0, 1000) / 1000.0f * 1.5f, 1.3f - Random::get(0, 1000) / 1000.0f, 0.665f + 0.3f);
+					ants[i].energy = 0;
+					ants[i].dead = false;
+					ants[i].active = true;
+					float value = Random::get(-100.0f, 100.0f) / 10.0f;
+					ants[i].forward = vec4(Kore::sin(value), Kore::cos(value), 0.0f, 1.0f);
+					ants[i].rotation = Quaternion(vec3(0, 0, 1), pi / 2.0f - Kore::atan2(ants[i].forward.y(), ants[i].forward.x())).matrix() * Quaternion(vec3(0, 0, 1), pi).matrix();
+					ants[i].up = vec4(0, 0, 1, 1);
+					ants[i].right = ants[i].forward.cross(ants[i].up);
+				}
+				currentAnts += 50;
 			}
 		}
 	}
