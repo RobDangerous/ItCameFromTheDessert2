@@ -130,7 +130,7 @@ MeshObject::MeshObject(const char* meshFile, const char* textureFile, const Vert
 	LoadObj(meshFile);
 	
 	meshesCount = meshes.size();
-	log(Info, "Meshes length %i, geometry length %i, material length %i", meshesCount, geometries.size(), materials.size());
+	//log(Info, "Meshes length %i, geometry length %i, material length %i", meshesCount, geometries.size(), materials.size());
 	
 	std::sort(meshes.begin(), meshes.end(), CompareMesh());
 	std::sort(geometries.begin(), geometries.end(), CompareGeometry());

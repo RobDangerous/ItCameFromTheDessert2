@@ -170,8 +170,11 @@ void Ant::init() {
 
 	collisionObjects = 0;
 	for (int i = 0; i < maxObjects; ++i) {
-		if (objects[i] == nullptr) continue;
-		for (int j = 0; j < objects[i]->meshesCount; ++j) {
+		KitchenObject* kitchenObj = objects[i];
+		if (kitchenObj == nullptr) continue;
+		
+		// TODO
+		/*for (int j = 0; j < objects[i]->meshesCount; ++j) {
 			Mesh* mesh = objects[i]->meshes[j];
 			if (collisionObjects == 28 || collisionObjects == 31 || collisionObjects == 44 || collisionObjects == 45 || collisionObjects == 46) {
 				boxes[collisionObjects].transform = mat4::Translation(-1000, -1000, -1000).Transpose();
@@ -182,7 +185,7 @@ void Ant::init() {
 				boxes[collisionObjects].halfSize = vec3((mesh->xmax - mesh->xmin) / 2.0f, (mesh->ymax - mesh->ymin) / 2.0f, (mesh->zmax - mesh->zmin) / 2.0f);
 			}
 			++collisionObjects;
-		}
+		}*/
 	}
 
 	boxes[collisionObjects].transform = mat4::Translation(0, -1, 0).Transpose();
@@ -358,10 +361,11 @@ void Ant::lessPizza(Kore::vec3 position) {
 	}
 }
 
-extern MeshObject* objects[];
+//extern MeshObject* objects[];
 //extern KitchenObject* kitchenObjects[];
 //extern TriggerCollider* triggerCollider[];
-extern MeshObject* roomObjects[7];
+//extern MeshObject* roomObjects[7];
+extern KitchenObject* objects[];
 
 void Ant::move(float deltaTime) {
 	legRotation += 0.2f;
