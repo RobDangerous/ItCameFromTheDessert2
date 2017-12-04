@@ -55,6 +55,10 @@ void Kitchen::setLights(Kore::Graphics4::ConstantLocation lightCountLocation, Ko
 	}
 }
 
+#ifndef MAXFLOAT
+#define MAXFLOAT 9999999999999999
+#endif
+
 void Kitchen::highlightTheClosestObject(Kore::vec4 playerPosition) {
 	float minDist = MAXFLOAT;
 	
