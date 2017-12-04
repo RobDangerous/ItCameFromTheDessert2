@@ -35,11 +35,15 @@ void Kitchen::init() {
 	objects[13] = new KitchenObject("door.ogex", nullptr, nullptr);
 	objects[14] = new KitchenObject("window.ogex", nullptr, nullptr);
 	
+
+	objects[10]->dynamic = true;
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
 	for (int i = 0; i < maxObjects; ++i) {
 		KitchenObject* kitchenObj = objects[i];
+
+		kitchenObj->update();
 		
 		if (kitchenObj != nullptr) {
 			Graphics4::setTextureAddressing(tex, Graphics4::U, Graphics4::TextureAddressing::Repeat);
@@ -57,6 +61,7 @@ void Kitchen::setLights(Kore::Graphics4::ConstantLocation lightCountLocation, Ko
 		if (kitchenObj != nullptr) {
 			
 			kitchenObj->setLightsForMesh(lightCountLocation, lightPosLocation);
+			break;
 		}
 	}
 }
