@@ -55,7 +55,7 @@ struct CompareGeometry {
 struct Light {
 	Kore::vec4 position;
 	const char* name;
-	int type;
+	int type;			// 0 - Spot, 1 - Point
 };
 
 struct Material {

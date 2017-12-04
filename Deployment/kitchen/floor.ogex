@@ -5,7 +5,7 @@ Metric (key = "up") {string {"z"}}
 
 GeometryNode $node1
 {
-	Name {string {"Plane"}}
+	Name {string {"floor"}}
 	ObjectRef {ref {$geometry1}}
 	MaterialRef (index = 0) {ref {$material1}}
 
@@ -38,7 +38,7 @@ LightNode $node2
 	}
 }
 
-GeometryObject $geometry1		// Plane
+GeometryObject $geometry1		// floor
 {
 	Mesh (primitive = "triangles")
 	{
@@ -79,6 +79,7 @@ GeometryObject $geometry1		// Plane
 LightObject $light1 (type = "point")		// Point
 {
 	Color (attrib = "light") {float[3] {{1.0, 1.0, 1.0}}}
+	Param (attrib = "intensity") {float {2.0}}
 
 	Atten (curve = "inverse_square")
 	{

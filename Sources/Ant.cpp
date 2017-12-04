@@ -629,7 +629,7 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
 
-#ifndef NDEBUG
+#ifdef DEBUG_COLLISIONS
 	for (int i = 0; i < collisionObjects; ++i) {
 		Box* box = &boxes[i];
 		mat4 modelMatrix =  mat4::Translation(box->transform.data[3], box->transform.data[7], box->transform.data[11]) * mat4::Scale(box->halfSize.x(), box->halfSize.y(), box->halfSize.z());
