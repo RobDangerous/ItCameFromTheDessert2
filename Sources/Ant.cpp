@@ -13,6 +13,7 @@
 
 using namespace Kore;
 
+int currentAnts = 0;
 Ant ants[maxAnts];
 
 namespace {
@@ -510,7 +511,7 @@ void Ant::moveEverybody(float deltaTime) {
 		ant.dead = false;
 	}*/
 
-	for (int i = 0; i < maxAnts; ++i) {
+	for (int i = 0; i < currentAnts; ++i) {
 		ants[i].move(deltaTime);
 	}
 }

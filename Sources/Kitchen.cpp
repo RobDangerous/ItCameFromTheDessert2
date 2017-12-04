@@ -17,6 +17,7 @@ namespace {
 	KitchenObject* pizza;
 	KitchenObject* pizzaDrawer;
 	KitchenObject* cake;
+	KitchenObject* oven;
 	bool egged = false;
 }
 
@@ -57,9 +58,9 @@ void Kitchen::init() {
 	brokenEgg = objects[10];
 	pizza = objects[16];
 	pizza->visible = false;
-	pizzaDrawer = objects[12];
+	pizzaDrawer = objects[8];
 	cake = objects[14];
-	egg = objects[15];
+	oven = objects[11];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -68,12 +69,17 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 
 		kitchenObj->update();
 		if (kitchenObj == egg) {
-			if (egg->getBody()->M.get(1, 3) < -1) {
+			if (egg->getBody()->M.get(1, 3) < -1.8f) {
 				egged = true;
 			}
 		}
 		if (kitchenObj == cake) {
 			//cake->R = mat4::RotationZ(0.01f) * cake->R; // deactivate because of weird lighting/normals
+		}
+		if (kitchenObj == pizza) {
+			if (pizza->getBody()->M.get(1, 3) < -0.9f) {
+				pizza->dynamic = false;
+			}
 		}
 		
 		if (kitchenObj != nullptr && (kitchenObj != brokenEgg || egged) && (kitchenObj != egg || !egged) && kitchenObj->visible) {
@@ -153,7 +159,7 @@ void Kitchen::openTheDoor() {
 				egg->acc = vec3(0, -0.002f, 0);
 				egg->dynamic = true;
 				
-				for (int i = 0; i < maxAnts; ++i) {
+				for (int i = currentAnts; i < currentAnts + 50; ++i) {
 					vec3 start(0, 0.0f, 0);
 					// mat4::Translation(0.75f, 2.9f, 0)
 					ants[i].position = vec3(2.5f + 0.6f * Random::get(0, 1000) / 1000.0f, 2.5f * Random::get(0, 1000) / 1000.0f, 0.665f + 0.4f);
@@ -166,17 +172,18 @@ void Kitchen::openTheDoor() {
 					ants[i].up = vec4(0, 0, 1, 1);
 					ants[i].right = ants[i].forward.cross(ants[i].up);
 				}
+				currentAnts += 50;
 			}
-		}
-		if (kitchenObj == pizzaDrawer && !pizzaDrawer->activated) {
-			pizzaDrawer->activated = true;
-			pizza->visible = true;
-			pizza->dynamic = true;
-			pizza->acc = vec3(0, 0, 0);
-			vec3 pizzaPos(pizza->getBody()->M.get(0, 3), pizza->getBody()->M.get(1, 3), pizza->getBody()->M.get(2, 3));
-			pizza->speed = cameraPos - pizzaPos;
-			pizza->speed.setLength(0.001f);
-			//pizza->R = mat4::RotationY(pi / 2.0f);
+			if (kitchenObj == pizzaDrawer && !pizzaDrawer->activated) {
+				pizzaDrawer->activated = true;
+				pizza->visible = true;
+				pizza->speed = vec3(0.001f, 0.03f, 0.01f);
+				pizza->acc = vec3(0, -0.002f, 0);
+				pizza->dynamic = true;
+			}
+			if (kitchenObj == oven && !oven->activated) {
+				oven->activated = true;
+			}
 		}
 	}
 }
