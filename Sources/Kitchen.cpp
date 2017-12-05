@@ -19,6 +19,8 @@ namespace {
 	KitchenObject* cake;
 	KitchenObject* roomfloor;
 	KitchenObject* oven;
+	KitchenObject* donut;
+	KitchenObject* donutDrawer;
 	bool egged = false;
 }
 
@@ -54,6 +56,7 @@ void Kitchen::init() {
 	objects[18] = new KitchenObject("window.ogex", nullptr, nullptr);
 	objects[19] = new KitchenObject("lamp.ogex", nullptr, nullptr);
 	objects[20] = new KitchenObject("credits.ogex", nullptr, nullptr);
+	objects[21] = new KitchenObject("donut.ogex", nullptr, nullptr);
 
 	fridge = objects[6];
 	egg = objects[15];
@@ -64,6 +67,9 @@ void Kitchen::init() {
 	cake = objects[14];
 	roomfloor = objects[0];
 	oven = objects[11];
+	donut = objects[21];
+	donut->visible = false;
+	donutDrawer = objects[12];
 }
 
 void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLocation mLocation, Kore::Graphics4::ConstantLocation mLocationInverse, Kore::Graphics4::ConstantLocation diffuseLocation, Kore::Graphics4::ConstantLocation specularLocation, Kore::Graphics4::ConstantLocation specularPowerLocation) {
@@ -102,6 +108,13 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 			Graphics4::setTextureAddressing(tex, Graphics4::V, Graphics4::TextureAddressing::Repeat);
 			
 			kitchenObj->renderMesh(tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
+		}
+		
+		if (kitchenObj == donut && donut->dynamic) {
+			if (donut->getBody()->M.get(1, 3) < -0.85) {
+				donut->dynamic = false;
+			}
+		
 		}
 	}
 }
@@ -193,6 +206,13 @@ void Kitchen::openTheDoor() {
 				pizza->speed = vec3(0.001f, 0.03f, 0.01f);
 				pizza->acc = vec3(0, -0.002f, 0);
 				pizza->dynamic = true;
+			}
+			if (kitchenObj == donutDrawer && !donutDrawer->activated) {
+				donutDrawer->activated = true;
+				donut->visible = true;
+				donut->speed = vec3(0.001f, 0.05f, 0.01f);
+				donut->acc = vec3(0, -0.002f, 0);
+				donut->dynamic = true;
 			}
 			if (kitchenObj == oven && !oven->activated) {
 				oven->activated = true;
