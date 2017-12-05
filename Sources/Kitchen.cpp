@@ -120,7 +120,7 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 				donut->dynamic = false;
 				for (int j = currentAnts; j < currentAnts + 25; ++j) {
 					vec4 pos = donut->getBody()->M * vec4(0, 0, 0, 1);
-					ants[j].position = vec3(pos.x(),1, pos.z());//vec3(1.15f /*+ Random::get(0, 1000) / 1000.0f * 1.5f*/, 1.42f /*- Random::get(0, 1000) / 1000.0f*/, 0.665f + 0.3f);
+					ants[j].position = vec3(-2.25f, 0.0f, 1.85f);//vec3(1.15f /*+ Random::get(0, 1000) / 1000.0f * 1.5f*/, 1.42f /*- Random::get(0, 1000) / 1000.0f*/, 0.665f + 0.3f);
 					ants[j].energy = 0;
 					ants[j].dead = false;
 					ants[j].active = true;
@@ -130,7 +130,7 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 					ants[j].up = vec4(0, 1, 0, 1);
 					ants[j].right = ants[j].forward.cross(ants[j].up);
 				}
-				Audio1::play(sound, true, 1.4f);
+				Audio1::play(sound, true, 0.8f);
 				currentAnts += 25;
 			}
 		
