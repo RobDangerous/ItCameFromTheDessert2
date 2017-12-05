@@ -379,7 +379,7 @@ namespace {
 }
 
 int kore(int argc, char** argv) {
-	System::init("ItCameFromTheDessert2", width, height, 4);
+	System::init("It Came From the Dessert 2", width, height, 4);
 	
 	init();
 
