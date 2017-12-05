@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include <Kore/Audio1/Audio.h>
+#include <Kore/Audio2/Audio.h>
 #include <Kore/IO/FileReader.h>
 #include <Kore/Graphics2/Graphics.h>
 #include <Kore/Graphics4/Graphics.h>
@@ -117,6 +119,8 @@ namespace {
 	}
 
 	void update() {
+		Audio2::update();
+
 		float t = (float)(System::time() - startTime);
 		double deltaT = t - lastTime;
 		lastTime = t;
@@ -379,7 +383,10 @@ namespace {
 }
 
 int kore(int argc, char** argv) {
-	System::init("It Came From the Dessert 2", width, height, 4);
+	System::init("It Came from the Dessert 2", width, height, 4);
+
+	Audio2::init();
+	Audio1::init();
 	
 	init();
 

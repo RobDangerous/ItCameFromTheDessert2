@@ -3,6 +3,8 @@
 #include "Kitchen.h"
 #include "Ant.h"
 
+#include <Kore/Audio1/Audio.h>
+#include <Kore/Audio1/Sound.h>
 #include <Kore/Log.h>
 #include <Kore/Math/Random.h>
 
@@ -20,10 +22,12 @@ namespace {
 	KitchenObject* roomfloor;
 	KitchenObject* oven;
 	bool egged = false;
+	Sound* sound;
 }
 
 Kitchen::Kitchen() {
 	init();
+	sound = new Sound("ants.wav");
 }
 
 void Kitchen::init() {
@@ -93,6 +97,7 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 					ants[j].up = vec4(0, 1, 0, 1);
 					ants[j].right = ants[j].forward.cross(ants[j].up);
 				}
+				Audio1::play(sound, true, 1.4f);
 				currentAnts += 25;
 			}
 		}
@@ -185,6 +190,7 @@ void Kitchen::openTheDoor() {
 					ants[i].up = vec4(0, 0, 1, 1);
 					ants[i].right = ants[i].forward.cross(ants[i].up);
 				}
+				Audio1::play(sound, true);
 				currentAnts += 100;
 			}
 			if (kitchenObj == pizzaDrawer && !pizzaDrawer->activated) {
@@ -207,6 +213,7 @@ void Kitchen::openTheDoor() {
 					ants[i].up = vec4(0, 0, 1, 1);
 					ants[i].right = ants[i].forward.cross(ants[i].up);
 				}
+				Audio1::play(sound, true, 1.2f);
 				currentAnts += 100;
 			}
 		}

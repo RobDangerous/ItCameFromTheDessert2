@@ -2,7 +2,7 @@
 
 Entry for [Ludum Dare 40](http://ldjam.com/) and the topic "The more you have, the worse it is".
 
-This is a successor to our previous game, where giant ants came our of the cake. 
+This is a successor to our previous game, where giant ants came out of the cake. 
 
 ## How to play:
 Look around the kitchen with your mouse. Move around with WASD. Do not look in the kitchen cupboards. There can be a nasty surprise waiting for you.
