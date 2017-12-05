@@ -81,7 +81,7 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 		if (kitchenObj == pizza && pizza->dynamic) {
 			if (pizza->getBody()->M.get(1, 3) < -0.9f) {
 				pizza->dynamic = false;
-				for (int j = currentAnts; j < currentAnts + 10; ++j) {
+				for (int j = currentAnts; j < currentAnts + 25; ++j) {
 					ants[j].position = vec3(1.15f /*+ Random::get(0, 1000) / 1000.0f * 1.5f*/, 1.42f /*- Random::get(0, 1000) / 1000.0f*/, 0.665f + 0.3f);
 					ants[j].energy = 0;
 					ants[j].dead = false;
@@ -92,7 +92,7 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 					ants[j].up = vec4(0, 1, 0, 1);
 					ants[j].right = ants[j].forward.cross(ants[j].up);
 				}
-				currentAnts += 10;
+				currentAnts += 25;
 			}
 		}
 		
@@ -173,7 +173,7 @@ void Kitchen::openTheDoor() {
 				egg->acc = vec3(0, -0.002f, 0);
 				egg->dynamic = true;
 				
-				for (int i = currentAnts; i < currentAnts + 50; ++i) {
+				for (int i = currentAnts; i < currentAnts + 100; ++i) {
 					ants[i].position = vec3(2.5f + 0.6f * Random::get(0, 1000) / 1000.0f, 2.5f * Random::get(0, 1000) / 1000.0f, 0.665f + 0.4f);
 					ants[i].energy = 0;
 					ants[i].dead = false;
@@ -184,7 +184,7 @@ void Kitchen::openTheDoor() {
 					ants[i].up = vec4(0, 0, 1, 1);
 					ants[i].right = ants[i].forward.cross(ants[i].up);
 				}
-				currentAnts += 50;
+				currentAnts += 100;
 			}
 			if (kitchenObj == pizzaDrawer && !pizzaDrawer->activated) {
 				pizzaDrawer->activated = true;
@@ -195,7 +195,7 @@ void Kitchen::openTheDoor() {
 			}
 			if (kitchenObj == oven && !oven->activated) {
 				oven->activated = true;
-				for (int i = currentAnts; i < currentAnts + 50; ++i) {
+				for (int i = currentAnts; i < currentAnts + 100; ++i) {
 					ants[i].position = vec3(-1.9f + Random::get(0, 1000) / 1000.0f * 1.5f, 1.3f - Random::get(0, 1000) / 1000.0f, 0.665f + 0.3f);
 					ants[i].energy = 0;
 					ants[i].dead = false;
@@ -206,7 +206,7 @@ void Kitchen::openTheDoor() {
 					ants[i].up = vec4(0, 0, 1, 1);
 					ants[i].right = ants[i].forward.cross(ants[i].up);
 				}
-				currentAnts += 50;
+				currentAnts += 100;
 			}
 		}
 	}
