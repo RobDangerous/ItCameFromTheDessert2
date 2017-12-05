@@ -53,6 +53,7 @@ void Kitchen::init() {
 	objects[17] = new KitchenObject("door.ogex", nullptr, nullptr);
 	objects[18] = new KitchenObject("window.ogex", nullptr, nullptr);
 	objects[19] = new KitchenObject("lamp.ogex", nullptr, nullptr);
+	objects[20] = new KitchenObject("credits.ogex", nullptr, nullptr);
 
 	fridge = objects[6];
 	egg = objects[15];
