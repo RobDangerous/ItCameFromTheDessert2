@@ -76,9 +76,21 @@ void Kitchen::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::Constant
 		if (kitchenObj == cake) {
 			//cake->R = mat4::RotationZ(0.01f) * cake->R; // deactivate because of weird lighting/normals
 		}
-		if (kitchenObj == pizza) {
+		if (kitchenObj == pizza && pizza->dynamic) {
 			if (pizza->getBody()->M.get(1, 3) < -0.9f) {
 				pizza->dynamic = false;
+				for (int j = currentAnts; j < currentAnts + 10; ++j) {
+					ants[j].position = vec3(1.15f /*+ Random::get(0, 1000) / 1000.0f * 1.5f*/, 1.42f /*- Random::get(0, 1000) / 1000.0f*/, 0.665f + 0.3f);
+					ants[j].energy = 0;
+					ants[j].dead = false;
+					ants[j].active = true;
+					float value = Random::get(-100.0f, 100.0f) / 10.0f;
+					ants[j].forward = vec4(Kore::sin(value), 0.0f, Kore::cos(value), 1.0f);
+					ants[j].rotation = Quaternion(vec3(0, 1, 0), pi / -2.0f + Kore::atan2(ants[j].forward.z(), ants[j].forward.x())).matrix() * Quaternion(vec3(1, 0, 0), pi / 2.0f).matrix();
+					ants[j].up = vec4(0, 1, 0, 1);
+					ants[j].right = ants[j].forward.cross(ants[j].up);
+				}
+				currentAnts += 10;
 			}
 		}
 		
