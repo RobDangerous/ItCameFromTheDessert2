@@ -45,5 +45,6 @@ private:
     bool isDying();
 };
 
-const int maxAnts = 50;
+const int maxAnts = 500;
+extern int currentAnts;
 extern Ant ants[maxAnts];
