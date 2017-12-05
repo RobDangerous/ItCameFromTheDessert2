@@ -1,0 +1,74 @@
+Metric (key = "distance") {float {1.0}}
+Metric (key = "angle") {float {1.0}}
+Metric (key = "time") {float {1.0}}
+Metric (key = "up") {string {"z"}}
+
+GeometryNode $node1
+{
+	Name {string {"credits"}}
+	ObjectRef {ref {$geometry1}}
+	MaterialRef (index = 0) {ref {$material1}}
+
+	Transform
+	{
+		float[16]
+		{
+			{-1.0, 0.0, 8.742277657347586e-08, 0.0,
+			 0.0, 1.0, 0.0, 0.0,
+			 -8.742277657347586e-08, 0.0, -1.0, 0.0,
+			 1.665804386138916, 2.3443822860717773, 9.985198020935059, 1.0}
+		}
+	}
+}
+
+GeometryObject $geometry1		// credits
+{
+	Mesh (primitive = "triangles")
+	{
+		VertexArray (attrib = "position")
+		{
+			float[3]		// 4
+			{
+				{-1.0200001001358032, -1.0, 0.0}, {1.0200001001358032, -1.0, 0.0}, {1.0200001001358032, 1.0, 0.0}, {-1.0200001001358032, 1.0, 0.0}
+			}
+		}
+
+		VertexArray (attrib = "normal")
+		{
+			float[3]		// 4
+			{
+				{0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, 1.0}
+			}
+		}
+
+		VertexArray (attrib = "texcoord")
+		{
+			float[2]		// 4
+			{
+				{9.899515134748071e-05, 9.934569970937446e-05}, {0.9999009370803833, 9.899515134748071e-05}, {1.0010802745819092, 0.9991647005081177}, {0.0008771687280386686, 1.000343918800354}
+			}
+		}
+
+		IndexArray
+		{
+			unsigned_int32[3]		// 2
+			{
+				{0, 1, 2}, {0, 2, 3}
+			}
+		}
+	}
+}
+
+Material $material1
+{
+	Name {string {"Material.000"}}
+
+	Color (attrib = "diffuse") {float[3] {{0.6400000190734865, 0.6400000190734865, 0.6400000190734865}}}
+	Color (attrib = "specular") {float[3] {{0.5, 0.5, 0.5}}}
+	Param (attrib = "specular_power") {float {50}}
+
+	Texture (attrib = "diffuse")
+	{
+		string {"//creditsTexture.png"}
+	}
+}
