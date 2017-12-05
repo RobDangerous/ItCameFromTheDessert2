@@ -17,6 +17,7 @@ namespace {
 	KitchenObject* pizza;
 	KitchenObject* pizzaDrawer;
 	KitchenObject* cake;
+	KitchenObject* roomfloor;
 	KitchenObject* oven;
 	bool egged = false;
 }
@@ -60,6 +61,7 @@ void Kitchen::init() {
 	pizza->visible = false;
 	pizzaDrawer = objects[8];
 	cake = objects[14];
+	roomfloor = objects[0];
 	oven = objects[11];
 }
 
@@ -208,4 +210,18 @@ void Kitchen::openTheDoor() {
 			}
 		}
 	}
+}
+
+void Kitchen::getRoomSize(float& xMin, float& xMax, float& yMin, float& yMax) {
+	vec4 pos = roomfloor->getBody()->geometries[0]->transform * vec4(0, 0, 0, 1);
+	float scaleFac = 5;
+	vec4 scale = vec4(scaleFac, 0, scaleFac, 1.0);
+	
+	vec4 max = pos + scale;
+	xMax = max.x();
+	yMax = max.z();
+	
+	vec4 min = pos - scale;
+	xMin = min.x();
+	yMin = min.z();
 }

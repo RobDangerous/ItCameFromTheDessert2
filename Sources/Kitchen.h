@@ -17,6 +17,8 @@ public:
 	bool canOpen() const;
 	void openTheDoor();
 	
+	void getRoomSize(float& xMin, float& xMax, float& yMin, float& yMax);
+	
 private:
 	void init();
 	

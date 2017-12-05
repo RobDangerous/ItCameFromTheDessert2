@@ -128,7 +128,14 @@ namespace {
 		
 		forward = cameraUp.cross(right);  // cross product
 		
+		float xMin;
+		float xMax;
+		float zMin;
+		float zMax;
+		kitchen->getRoomSize(xMin, xMax, zMin, zMax);
+		
 		// Move position of camera based on WASD keys
+		vec3 lasPos = cameraPos;
 		if (S || B) {
 			cameraPos -= forward * (float) deltaT * CAMERA_MOVE_SPEED;
 		}
@@ -141,6 +148,8 @@ namespace {
 		if (D || R) {
 			cameraPos += right * (float)deltaT * CAMERA_MOVE_SPEED;
 		}
+		
+		if (!((cameraPos.x() > xMin + 1) && (cameraPos.z() > zMin + 1) && (cameraPos.z() < zMax - 1) && (cameraPos.x() < xMax - 1))) cameraPos = lasPos;
 
 		Graphics4::begin();
 		Graphics4::clear(Graphics4::ClearColorFlag | Graphics4::ClearDepthFlag, Graphics1::Color::Green, 1.0f, 0);
