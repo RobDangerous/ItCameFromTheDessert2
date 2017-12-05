@@ -202,11 +202,11 @@ void Ant::init() {
 	boxes[4].halfSize = vec3(10, 1, 10);
 	boxes[5].transform = mat4::Translation(0, 7.0f, 0).Transpose();
 	boxes[5].halfSize = vec3(10, 1, 10);
-	boxes[6].transform = mat4::Translation(8.999f, 0, 0).Transpose();
+	boxes[6].transform = mat4::Translation(7.498f, 0, 0).Transpose();
 	boxes[6].halfSize = vec3(1, 10, 10);
-	boxes[7].transform = mat4::Translation(0, 0, 10.99f).Transpose();
+	boxes[7].transform = mat4::Translation(0, 0, 10.98f).Transpose();
 	boxes[7].halfSize = vec3(10, 10, 1);
-	boxes[8].transform = mat4::Translation(-8.99f, 0, 0).Transpose();
+	boxes[8].transform = mat4::Translation(-4.383f, 0, 0).Transpose();
 	boxes[8].halfSize = vec3(1, 10, 10);
 	boxes[9].transform = mat4::Translation(0, 0, 0).Transpose();
 	boxes[9].halfSize = vec3(0, 0, 0);
@@ -615,7 +615,29 @@ void Ant::render(Kore::Graphics4::TextureUnit tex, Kore::Graphics4::ConstantLoca
 		feeler->M = bodytrans * bodyrotation * bodyscale *mat4::Translation(-1.0f, -8.0f, 7.0f) * mat4::Scale(-1.0f, 1.0f, 1.0f);
 		renderMesh(feeler, tex, mLocation, mLocationInverse, diffuseLocation, specularLocation, specularPowerLocation);
 	}
-
+/*
+#define DEBUG_COLLISIONS
+	boxes[0].transform = mat4::Translation(-0.2f, 0, 0).Transpose();
+	boxes[0].halfSize = vec3(2.6f, 1.394f, 1);
+	boxes[1].transform = mat4::Translation(3, 0, 0).Transpose();
+	boxes[1].halfSize = vec3(0.7f, 2.9f, 1.015f);
+	boxes[2].transform = mat4::Translation(0.75f, 2.9f, 0).Transpose();
+	boxes[2].halfSize = vec3(3.0f, 0.6f, 0.665f);
+	boxes[3].transform = mat4::Translation(0, 0, -0.999f).Transpose();
+	boxes[3].halfSize = vec3(10, 10, 1);
+	boxes[4].transform = mat4::Translation(0, -1.0f, 0).Transpose();
+	boxes[4].halfSize = vec3(10, 1, 10);
+	boxes[5].transform = mat4::Translation(0, 7.0f, 0).Transpose();
+	boxes[5].halfSize = vec3(10, 1, 10);
+	boxes[6].transform = mat4::Translation(7.498f, 0, 0).Transpose();
+	boxes[6].halfSize = vec3(1, 10, 10);
+	boxes[7].transform = mat4::Translation(0, 0, 10.98f).Transpose();
+	boxes[7].halfSize = vec3(10, 10, 1);
+	boxes[8].transform = mat4::Translation(-4.383f, 0, 0).Transpose();
+	boxes[8].halfSize = vec3(1, 10, 10);
+	boxes[9].transform = mat4::Translation(0, 0, 0).Transpose();
+	boxes[9].halfSize = vec3(0, 0, 0);
+*/
 #ifdef DEBUG_COLLISIONS
 	for (int i = 0; i < collisionObjects; ++i) {
 		Box* box = &boxes[i];
