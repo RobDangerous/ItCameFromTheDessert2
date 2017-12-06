@@ -1,7 +1,7 @@
 #include "KitchenObject.h"
 
 #include <Kore/Log.h>
-
+#include <string.h>
 
 KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoorFile, const char* meshOpenDoorFile, const float scale, const vec3 position, const Quaternion rotation) : visible(true), activated(false), dynamic(false), speed(0, 0, 0), acc(0, -0.00001f, 0), closed(true), highlight(false), body(nullptr), door_open(nullptr), door_closed(nullptr) {
 	
@@ -18,11 +18,11 @@ KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoo
 	structures->add("nor", Graphics4::Float3VertexData);
 	
 	char kitchenDir[100];
-	std::strcpy(kitchenDir, "kitchen/");
+	strcpy(kitchenDir, "kitchen/");
 	
 	char bodyMeshDir[100];
-	std::strcpy(bodyMeshDir, kitchenDir);
-	std::strcat(bodyMeshDir, meshBodyFile);
+	strcpy(bodyMeshDir, kitchenDir);
+	strcat(bodyMeshDir, meshBodyFile);
 	body = new MeshObject(bodyMeshDir, kitchenDir, *structures, 1);
 	body->M = M;
 	
@@ -30,16 +30,16 @@ KitchenObject::KitchenObject(const char* meshBodyFile, const char* meshClosedDoo
 	
 	if (meshOpenDoorFile != nullptr) {
 		char openDoorMeshDir[100];
-		std::strcpy(openDoorMeshDir, kitchenDir);
-		std::strcat(openDoorMeshDir, meshOpenDoorFile);
+		strcpy(openDoorMeshDir, kitchenDir);
+		strcat(openDoorMeshDir, meshOpenDoorFile);
 		door_open = new MeshObject(openDoorMeshDir, kitchenDir, *structures, 1);
 		door_open->M = M;
 	}
 	
 	if (meshClosedDoorFile != nullptr) {
 		char closedDoorMeshDir[100];
-		std::strcpy(closedDoorMeshDir, kitchenDir);
-		std::strcat(closedDoorMeshDir, meshClosedDoorFile);
+		strcpy(closedDoorMeshDir, kitchenDir);
+		strcat(closedDoorMeshDir, meshClosedDoorFile);
 		door_closed = new MeshObject(closedDoorMeshDir, kitchenDir, *structures, 1);
 		door_closed->M = M;
 	}

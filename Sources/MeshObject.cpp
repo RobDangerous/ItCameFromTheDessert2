@@ -7,6 +7,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <string.h>
 
 using namespace Kore;
 using namespace Kore::Graphics4;
@@ -149,8 +150,8 @@ MeshObject::MeshObject(const char* meshFile, const char* textureFile, const Vert
 		images[j] = nullptr;
 		if (material != nullptr && material->textureName != nullptr) {
 			char temp[200];
-			std::strcpy(temp, textureDir);
-			std::strcat(temp, material->textureName);
+			strcpy(temp, textureDir);
+			strcat(temp, material->textureName);
 			log(Info, "Load Texture %s", temp);
 			Texture* image = new Texture(temp, true);
 			images[j] = image;
